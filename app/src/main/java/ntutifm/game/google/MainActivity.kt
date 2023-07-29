@@ -35,6 +35,7 @@ open class MainActivity : AppCompatActivity(),
         transaction?.replace(R.id.fragment_main, fragment)
         transaction?.commit()
         setNavigationViewListener()
+        //豬頭
     }
 
     fun api(){

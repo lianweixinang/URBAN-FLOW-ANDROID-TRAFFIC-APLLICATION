@@ -39,20 +39,22 @@ class SearchFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        val galleryViewModel =
+        val ViewModel =
             ViewModelProvider(this).get(SearchViewModel::class.java)
 
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         val root: View = binding.root
         searchview = binding.searchView
-        searchview.clearFocus()
+        searchview.requestFocus()
+        searchview.onActionViewExpanded()
+
         searchview.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                filterList(newText)
+                //filterList(newText)
                 return true
             }
         })

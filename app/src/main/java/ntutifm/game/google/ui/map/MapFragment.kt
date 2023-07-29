@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -31,10 +32,10 @@ import ntutifm.game.google.R
 import ntutifm.game.google.databinding.FragmentMapBinding
 import ntutifm.game.google.entity.MyItem
 import ntutifm.game.google.entity.MyItemReader
+import ntutifm.game.google.ui.home.HomeFragment
 import ntutifm.game.google.ui.search.SearchFragment
 import org.json.JSONException
 import java.io.InputStream
-
 
 class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
@@ -58,14 +59,36 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
-        val search: ImageView = binding.fragmentHome.button7
+        var idx = 0
+        val search: ImageView = binding.fragmentHome.searchBtn
         search.setOnClickListener {
+            isOpen.value = true
+            Log.e("mmm",isOpen.value.toString())
             val fragment = SearchFragment()
             val transaction = parentFragmentManager?.beginTransaction()
             transaction?.replace(R.id.fragment_home, fragment)
             transaction?.commit()
         }
-
+        binding.bg.setOnClickListener {
+            Log.e("mmm",isOpen.value.toString())
+            if(isOpen.value == true){
+                val fragment = HomeFragment()
+                val transaction = parentFragmentManager?.beginTransaction()
+                transaction?.replace(R.id.fragment_home, fragment)
+                transaction?.commit()
+            }
+            isOpen.value = false
+        }
+        val favorite: ImageView = binding.fragmentHome.favoriteBtn
+        favorite.setOnClickListener {
+            if(idx ==0){
+                favorite.setImageResource(android.R.drawable.star_big_on)
+                idx = 1
+            }else{
+                favorite.setImageResource(android.R.drawable.star_big_off)
+                idx = 0
+            }
+        }
 
         val root: View = binding.root
         return root

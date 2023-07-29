@@ -7,6 +7,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import com.google.android.material.navigation.NavigationView
 import ntutifm.game.google.databinding.ActivityMainBinding
 import ntutifm.game.google.net.City
@@ -20,6 +21,8 @@ import ntutifm.game.google.ui.weather.WeatherFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
+val isOpen: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
 
 open class MainActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener{

@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <ImageView
-                    android:id="@+id/button7"
+                    android:id="@+id/searchBtn"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     app:cardCornerRadius="10dp"
@@ -39,7 +39,7 @@
                     app:cardCornerRadius="10dp"
                     app:srcCompat="@drawable/ic_baseline_videocam_24" />
                 <ImageView
-                    android:id="@+id/button9"
+                    android:id="@+id/favoriteBtn"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_marginLeft="15dp"

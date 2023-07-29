@@ -2,6 +2,7 @@ package ntutifm.game.google.ui.home
 
 import android.R
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import ntutifm.game.google.databinding.FragmentHomeBinding
+import ntutifm.game.google.isOpen
 import ntutifm.game.google.ui.search.SearchFragment
 
 
@@ -31,20 +33,22 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         val root: View = binding.root
-        val search: ImageView = binding.button7
+        val search: ImageView = binding.searchBtn
         search.setOnClickListener {
+            isOpen.value = true
+            Log.e("mmm",isOpen.value.toString())
             val fragment = SearchFragment()
             val transaction = parentFragmentManager?.beginTransaction()
             transaction?.replace(ntutifm.game.google.R.id.fragment_home, fragment)
             transaction?.commit()
         }
-        val btn9: ImageView = binding.button9
-        btn9.setOnClickListener {
+        val favorite: ImageView = binding.favoriteBtn
+        favorite.setOnClickListener {
             if(idx ==0){
-                btn9.setImageResource(R.drawable.star_big_on)
+                favorite.setImageResource(R.drawable.star_big_on)
                 idx = 1
             }else{
-                btn9.setImageResource(R.drawable.star_big_off)
+                favorite.setImageResource(R.drawable.star_big_off)
                 idx = 0
             }
         }

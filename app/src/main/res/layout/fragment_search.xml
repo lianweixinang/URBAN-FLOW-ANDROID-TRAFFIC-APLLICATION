@@ -37,6 +37,8 @@
                     app:cardCornerRadius="10dp"
                     app:cardElevation="20dp"
                     app:cardMaxElevation="20dp"
+                    app:closeIcon="@drawable/ic_baseline_close_24"
+                    app:showAsAction="always"
                     app:queryHint="Search Something">
 
                 </androidx.appcompat.widget.SearchView>

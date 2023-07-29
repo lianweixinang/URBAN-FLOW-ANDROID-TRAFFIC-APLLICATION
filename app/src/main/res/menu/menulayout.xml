@@ -13,13 +13,13 @@
             android:id="@+id/nav_weather"
             android:title="天氣" />
         <item
-            android:id="@+id/nav_home"
+            android:id="@+id/nav_map"
             android:title="跳轉"/>
         <item
             android:id="@+id/nav_search"
             android:title="設定"/>
         <item
-            android:id="@+id/nav_map"
+            android:id="@+id/nav_home"
             android:title="使用說明"/>
         <item
             android:id="@+id/nav_slideshow"

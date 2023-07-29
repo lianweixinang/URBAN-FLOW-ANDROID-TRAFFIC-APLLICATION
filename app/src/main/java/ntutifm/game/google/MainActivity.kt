@@ -34,6 +34,7 @@ open class MainActivity : AppCompatActivity(),
         val transaction = supportFragmentManager.beginTransaction()
         transaction?.replace(R.id.fragment_main, fragment)
         transaction?.commit()
+
         setNavigationViewListener()
         //豬頭2
     }

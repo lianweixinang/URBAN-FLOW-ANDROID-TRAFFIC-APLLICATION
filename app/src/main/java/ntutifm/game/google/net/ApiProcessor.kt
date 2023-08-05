@@ -3,6 +3,7 @@ package ntutifm.game.google.net
 import android.content.Context
 import android.util.Log
 import ntutifm.game.google.entity.MyItem
+import ntutifm.game.google.net.ApiClass.Parking
 import ntutifm.game.google.ui.map.mClusterManager
 import retrofit2.Call
 import retrofit2.Callback

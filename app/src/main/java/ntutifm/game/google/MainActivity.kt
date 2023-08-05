@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.navigation.NavigationView
 import ntutifm.game.google.databinding.ActivityMainBinding
-import ntutifm.game.google.net.City
+import ntutifm.game.google.net.ApiClass.City
 import ntutifm.game.google.net.RetrofitManager
 import ntutifm.game.google.ui.home.HomeFragment
 import ntutifm.game.google.ui.map.MapFragment

@@ -320,29 +320,6 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         }
     }
 
-    @Throws(JSONException::class)
-    private fun readItems() {
-        val myAPIService = RetrofitManager.getInstance().api
-        val call: Call<List<Parking>>? = myAPIService.parkingList
-        call!!.enqueue(object : Callback<List<Parking>> {
-            override fun onResponse(
-                call: Call<List<Parking>>?,
-                response: Response<List<Parking>>?
-            ) {
-                if(response?.body()!= null){
-                    for (item in response.body()!!){
-                        mClusterManager?.addItem(MyItem(item.lat, item.lng))
-                    }
-                }else{
-                    Log.d("parkingName", "Null")
-                }
-            }
-            override fun onFailure(call: Call<List<Parking>>?, t: Throwable?) {
-                Log.d("title", t.toString())
-            }
-        })
-    }
-
     override fun onSuccess(successData: ArrayList<String>){}
 
     override fun onError(errorCode: Int, errorData: ArrayList<String>){}

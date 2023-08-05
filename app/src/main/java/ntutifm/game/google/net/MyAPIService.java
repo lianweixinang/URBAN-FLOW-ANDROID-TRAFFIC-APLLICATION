@@ -9,8 +9,9 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
 public interface MyAPIService {
-    @GET("city")
-    Call<City> getCity();
+
     @GET("city")
     Call<List<City>> getCityList();
+    @GET("parking")
+    Call<List<Parking>> getParkingList();
 }

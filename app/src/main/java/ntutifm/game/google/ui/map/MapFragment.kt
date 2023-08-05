@@ -32,9 +32,15 @@ import ntutifm.game.google.R
 import ntutifm.game.google.databinding.FragmentMapBinding
 import ntutifm.game.google.entity.MyItem
 import ntutifm.game.google.entity.MyItemReader
+import ntutifm.game.google.net.City
+import ntutifm.game.google.net.Parking
+import ntutifm.game.google.net.RetrofitManager
 import ntutifm.game.google.ui.home.HomeFragment
 import ntutifm.game.google.ui.search.SearchFragment
 import org.json.JSONException
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.InputStream
 
 class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
@@ -314,18 +320,26 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
 
     @Throws(JSONException::class)
     private fun readItems() {
-        val inputStream: InputStream = resources.openRawResource(R.raw.radar_search)
-        val items: List<MyItem> = MyItemReader().read(inputStream)
-        for (i in 0..9) {
-            val offset = i / 60.0
-            for (item in items) {
-                val position: LatLng = item.getPosition()
-                val lat = position.latitude + offset
-                val lng = position.longitude + offset
-                val offsetItem = MyItem(lat, lng)
-                mClusterManager?.addItem(offsetItem)
+        val myAPIService = RetrofitManager.getInstance().api
+        val call: Call<List<Parking>>? = myAPIService.parkingList
+        call!!.enqueue(object : Callback<List<Parking>> {
+            override fun onResponse(
+                call: Call<List<Parking>>?,
+                response: Response<List<Parking>>?
+            ) {
+                if(response?.body()!= null){
+                    for (item in response?.body()!!){
+                        //val position: LatLng = item.latLng
+                        //mClusterManager?.addItem(MyItem(position.latitude , position.longitude))
+                    }
+                }else{
+                    Log.d("parkingName", "Null")
+                }
             }
-        }
+            override fun onFailure(call: Call<List<Parking>>?, t: Throwable?) {
+                Log.d("title", t.toString())
+            }
+        })
     }
 
 }

@@ -37,7 +37,6 @@ open class MainActivity : AppCompatActivity(),
         val transaction = supportFragmentManager.beginTransaction()
         transaction?.replace(R.id.fragment_main, fragment)
         transaction?.commit()
-
         setNavigationViewListener()
         //豬頭2
     }
@@ -45,6 +44,7 @@ open class MainActivity : AppCompatActivity(),
     fun api(){
         val myAPIService = RetrofitManager.getInstance().api
         val call: Call<List<City>>? = myAPIService.cityList
+        Log.d("cityName", "Null")
         call!!.enqueue(object : Callback<List<City>> {
             override fun onResponse(
                 call: Call<List<City>>?,
@@ -57,7 +57,7 @@ open class MainActivity : AppCompatActivity(),
                 }
             }
             override fun onFailure(call: Call<List<City>>?, t: Throwable?) {
-                Log.d("title", t.toString())
+                Log.d("titlecity", t.toString())
             }
         })
     }

@@ -2,28 +2,31 @@ package ntutifm.game.google.net;
 
 public class City {
 
-    private String CityID;
-    private String CityName;
-    private String CityCode;
-    private String City;
-    private String CountryID;
-    private String Version;
+    private String cityID;
+    private String cityName;
+    private String cityCode;
+    private String city;
+    private String countryID;
+    private String version;
 
     public City(String CityID, String CityName, String  CityCode,
                   String City, String CountryID, String Version) {
-        this.CityID = CityID;
-        this.CityName = CityName;
-        this.CityCode = CityCode;
-        this.City = City;
-        this.CountryID = CountryID;
-        this.Version = Version;
+        this.cityID = CityID;
+        this.cityName = CityName;
+        this.cityCode = CityCode;
+        this.city = City;
+        this.countryID = CountryID;
+        this.version = Version;
     }
 
     public String getCityID() {
-        return CityID;
+        return cityID;
     }
 
     public String getCityName() {
-        return CityName;
+        return cityName;
     }
+
+    //public LatLng getLatLng() {return LatLng(this.City)}
+
 }

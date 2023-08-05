@@ -22,15 +22,17 @@ class OilFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val weatherViewModel =
+        val oilViewModel =
             ViewModelProvider(this).get(OilViewModel::class.java)
 
         _binding =FragmentOilBinding.inflate(inflater, container, false)
 
         val root: View = binding.root
-        val textView: TextView = binding.textView
-        weatherViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+        val textView1: TextView = binding.t1
+        val textView2: TextView = binding.t2
+        oilViewModel.text.observe(viewLifecycleOwner) {
+            textView1.text = it
+            textView2.text = it
 
         }
         return root

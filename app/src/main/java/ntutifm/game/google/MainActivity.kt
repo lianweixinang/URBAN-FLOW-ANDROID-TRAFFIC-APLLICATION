@@ -143,6 +143,3 @@ open class MainActivity : AppCompatActivity(),
 class MyActivity : MainActivity() {
     val context = this@MyActivity
 }
-
-class oil {
-}

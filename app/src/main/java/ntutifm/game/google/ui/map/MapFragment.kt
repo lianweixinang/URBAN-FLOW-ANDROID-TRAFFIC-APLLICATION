@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.annotation.MainThread
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -32,9 +33,7 @@ import ntutifm.game.google.R
 import ntutifm.game.google.databinding.FragmentMapBinding
 import ntutifm.game.google.entity.MyItem
 import ntutifm.game.google.entity.MyItemReader
-import ntutifm.game.google.net.City
-import ntutifm.game.google.net.Parking
-import ntutifm.game.google.net.RetrofitManager
+import ntutifm.game.google.net.*
 import ntutifm.game.google.ui.home.HomeFragment
 import ntutifm.game.google.ui.search.SearchFragment
 import org.json.JSONException
@@ -42,10 +41,13 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.InputStream
+import java.util.ArrayList
+
+var mClusterManager:ClusterManager<MyItem>? = null
 
 class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
-    ActivityCompat.OnRequestPermissionsResultCallback {
+    ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack {
     private var permissionDenied = false
     private lateinit var map: GoogleMap
     internal var mCurrLocationMarker: Marker? = null
@@ -54,7 +56,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     private var _binding: FragmentMapBinding? = null
     private lateinit var mLocationRequest: LocationRequest
     private val binding get() = _binding!!
-    private var mClusterManager:ClusterManager<MyItem>? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -312,7 +314,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         mClusterManager = ClusterManager(context, map)
         map.setOnCameraIdleListener(mClusterManager)
 
-        readItems()
+        ApiManager(this).execute(this, ApiProcessor().getParking)
         mClusterManager?.setOnClusterItemClickListener { item ->
             false
         }
@@ -340,5 +342,11 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
             }
         })
     }
+
+    override fun onSuccess(successData: ArrayList<String>){}
+
+    override fun onError(errorCode: Int, errorData: ArrayList<String>){}
+
+    override fun doInBackground(result: Int, successData: ArrayList<String>){}
 
 }

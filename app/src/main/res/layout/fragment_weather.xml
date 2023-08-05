@@ -1,45 +1,238 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<TableLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_oil"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_height="match_parent"
+    android:background="#808080"
+    android:id="@+id/wetherText"
+    android:collapseColumns="*" >
+
+    <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context="ntutifm.game.google.ui.oil.WeatherFragment">
-        <LinearLayout
-            android:layout_width="match_parent"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        tools:ignore="UselessParent">
+        <TextView
+            android:id="@+id/day_1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0">
+            android:text="今日"
+            android:layout_span="1"
+            android:textColor="#ffffff"
+            android:layout_marginRight="10dp"
+            android:textSize = "20sp" />
+        <TextView
+            android:id="@+id/day_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="周二"
+            android:layout_span="1"
+            android:textColor="#ffffff"
+            android:layout_marginRight="10dp"
+            android:textSize = "20sp" />
+        <TextView
+            android:id="@+id/day_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="周三"
+            android:layout_span="1"
+            android:textColor="#ffffff"
+            android:layout_marginRight="10dp"
+            android:textSize = "20sp" />
+        <TextView
+            android:id="@+id/day_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="周四"
+            android:layout_span="1"
+            android:textColor="#ffffff"
+            android:layout_marginRight="10dp"
+            android:textSize = "20sp" />
+        <TextView
+            android:id="@+id/day_5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="周五"
+            android:layout_span="1"
+            android:textColor="#ffffff"
+            android:layout_marginRight="10dp"
+            android:textSize = "20sp" />
+        <TextView
+            android:id="@+id/day_6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="周六"
+            android:layout_span="1"
+            android:textColor="#ffffff"
+            android:layout_marginRight="10dp"
+            android:textSize = "20sp" />
+        <TextView
+            android:id="@+id/day_7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="周日"
+            android:textColor="#ffffff"
+            android:layout_span="1"
+            android:textSize = "20sp" />
+            />
+    </TableRow>
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="5dp"
+        tools:ignore="UselessParent">
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="344dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="20dp"
-                app:cardBackgroundColor="#532525"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="20dp"
-                app:cardMaxElevation="20dp"
-                app:contentPadding="10dp">
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="3dp"
+            app:srcCompat="@drawable/cloudy" />
 
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="承德路 X 市民大道"
-                    android:textColor="#000000"
-                    android:textSize="15sp" />
+        <ImageView
+            android:layout_width="40dp"
+            android:viewportHeight="24"
+            android:viewportWidth="24"
+            android:layout_height="40dp"
+            android:padding="3dp"
+            app:srcCompat="@drawable/heavy_rain" />
 
-            </androidx.cardview.widget.CardView>
-        </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout></FrameLayout>
+        <ImageView
+            android:layout_width="40dp"
+            android:viewportHeight="24"
+            android:viewportWidth="24"
+            android:layout_height="40dp"
+            android:padding="3dp"
+            app:srcCompat="@drawable/storm" />
+
+        <ImageView
+            android:layout_width="40dp"
+            android:viewportHeight="24"
+            android:viewportWidth="24"
+            android:layout_height="40dp"
+            android:padding="3dp"
+            app:srcCompat="@drawable/sun" />
+        <ImageView
+            android:layout_width="40dp"
+            android:viewportHeight="24"
+            android:viewportWidth="24"
+            android:layout_height="40dp"
+            android:padding="3dp"
+            app:srcCompat="@drawable/sun" />
+        <ImageView
+            android:layout_width="40dp"
+            android:viewportHeight="24"
+            android:viewportWidth="24"
+            android:layout_height="40dp"
+            android:padding="3dp"
+            app:srcCompat="@drawable/sun" />
+        <ImageView
+            android:layout_width="40dp"
+            android:viewportHeight="24"
+            android:viewportWidth="24"
+            android:layout_height="40dp"
+            android:padding="3dp"
+            app:srcCompat="@drawable/sun" />
+    </TableRow>
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        tools:ignore="UselessParent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30℃"
+            android:layout_gravity="center"
+            android:layout_span="1"
+            android:textColor="#ffffff"
+            android:textSize = "17sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30℃"
+            android:layout_gravity="center"
+            android:layout_span="1"
+            android:textColor="#ffffff"
+            android:textSize = "17sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30℃"
+            android:layout_gravity="center"
+            android:layout_span="1"
+            android:textColor="#ffffff"
+            android:textSize = "17sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30℃"
+            android:layout_gravity="center"
+            android:layout_span="1"
+            android:textColor="#ffffff"
+            android:textSize = "17sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30℃"
+            android:layout_gravity="center"
+            android:layout_span="1"
+            android:textColor="#ffffff"
+            android:textSize = "17sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30℃"
+            android:layout_gravity="center"
+            android:layout_span="1"
+            android:textColor="#ffffff"
+            android:textSize = "17sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30℃"
+            android:layout_gravity="center"
+            android:layout_span="1"
+            android:textColor="#ffffff"
+            android:textSize = "17sp" />
+        />
+    </TableRow>
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="20dp"
+        tools:ignore="UselessParent">
+        <TextView
+            android:text="目前位置"
+            android:textSize="30dp"
+            android:layout_span="7"
+            android:textColor="#ffffff"
+            android:layout_gravity="center" />
+    </TableRow>
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="10dp"
+        tools:ignore="UselessParent">
+        <TextView
+            android:text="18℃"
+            android:textSize="35dp"
+            android:layout_span="7"
+            android:textColor="#ffffff"
+            android:layout_gravity="center" />
+    </TableRow>
+    <TableRow>
+
+    </TableRow>
+</TableLayout>

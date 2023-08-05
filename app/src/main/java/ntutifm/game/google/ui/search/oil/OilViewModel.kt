@@ -1,4 +1,4 @@
-package ntutifm.game.google.ui.oil
+package ntutifm.game.google.ui.search.oil
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

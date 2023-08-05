@@ -328,9 +328,8 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
                 response: Response<List<Parking>>?
             ) {
                 if(response?.body()!= null){
-                    for (item in response?.body()!!){
-                        //val position: LatLng = item.latLng
-                        //mClusterManager?.addItem(MyItem(position.latitude , position.longitude))
+                    for (item in response.body()!!){
+                        mClusterManager?.addItem(MyItem(item.lat, item.lng))
                     }
                 }else{
                     Log.d("parkingName", "Null")

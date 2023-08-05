@@ -2,30 +2,25 @@ package ntutifm.game.google.net;
 
 import android.util.Log;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.annotations.SerializedName;
 
 public class Parking {
 
-    private String parkingName;
-
-    private Double parkingLng;
-
-    private Double parkingLat;
-
-
-    public Parking(String CarParkName, Double PositionLat, Double PositionLon) {
-        this.parkingName = "xxxx";
-        Log.e("xxxx",PositionLat.toString()+PositionLon.toString());
-        this.parkingLng = 12.11;
-        this.parkingLat = 12.11;
-    }
+    @SerializedName("CarParkName")
+    private String parkingName ="NAME";
+    @SerializedName("PositionLat")
+    private Double parkingLat=11.2;
+    @SerializedName("PositionLon")
+    private Double parkingLng=11.2;
 
     public String getParkingName() {
-        return "XXXX";
+        return this.parkingName;
     }
-
-    public LatLng getLatLng() {
-        Log.e("xxxx",parkingName);
-        return new LatLng(112.1, 112.1);}
+    public Double getLat() {
+        return this.parkingLat;
+    }
+    public Double getLng() {
+        return this.parkingLng;
+    }
 
 }

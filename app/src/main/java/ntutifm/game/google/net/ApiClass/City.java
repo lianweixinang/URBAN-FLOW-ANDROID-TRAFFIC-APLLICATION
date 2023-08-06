@@ -1,12 +1,19 @@
 package ntutifm.game.google.net.ApiClass;
 
-public class City {
+import com.google.gson.annotations.SerializedName;
 
+public class City {
+    @SerializedName("CityID")
     private String cityID;
+    @SerializedName("CityName")
     private String cityName;
+    @SerializedName("CityCode")
     private String cityCode;
+    @SerializedName("City")
     private String city;
+    @SerializedName("CountryID")
     private String countryID;
+    @SerializedName("Version")
     private String version;
 
     public City(String CityID, String CityName, String  CityCode,
@@ -20,12 +27,27 @@ public class City {
     }
 
     public String getCityID() {
-        return cityID;
+        return this.cityID;
+    }
+    public String getCityName() {
+        return this.cityName;
+    }
+    public String getCityCode() {
+        return this.cityCode;
+    }
+    public String getCity() {
+        return this.city;
+    }
+    public String getCountryID() {
+        return this.countryID;
+    }
+    public String getVersion() {
+        return this.version;
     }
 
-    public String getCityName() {
-        return cityName;
-    }
+
+
+
 
     //public LatLng getLatLng() {return LatLng(this.City)}
 

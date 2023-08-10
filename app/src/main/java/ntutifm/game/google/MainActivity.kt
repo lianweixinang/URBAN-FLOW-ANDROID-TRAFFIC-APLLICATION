@@ -8,11 +8,15 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import ntutifm.game.google.databinding.ActivityMainBinding
+import ntutifm.game.google.global.AppUtil
+import ntutifm.game.google.global.AppUtil.Companion.popBackStack
 import ntutifm.game.google.net.ApiClass.City
 import ntutifm.game.google.net.RetrofitManager
 import ntutifm.game.google.ui.home.HomeFragment

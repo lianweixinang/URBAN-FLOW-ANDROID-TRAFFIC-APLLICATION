@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
@@ -55,6 +56,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     private val viewModel : MapViewModel by lazy {
         ViewModelProvider(this)[MapViewModel::class.java]
     }
+    private var latLng : LatLng? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -74,6 +76,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         binding.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
         AppUtil.showTopToast(context,"HI")
         //AppUtil.showDialog("Hello", activity)
+        //binding.videoView.setVideoURI(Uri.parse("https://cctv.bote.gov.taipei:8501/MJPEG/031"))
     }
 
     /** 收藏切換 */
@@ -119,6 +122,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         initMark()
         setLocationInitBtn()
     }
+
 
     @SuppressLint("UseRequireInsteadOfGet")
     private fun setLocationInitBtn(){
@@ -206,31 +210,20 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     private var mLocationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             val locationList = locationResult.locations
-            Log.d("pppp3", "hi")
             if (locationList.isNotEmpty()) {
                 val location = locationList.last()
-                Log.i("MapsActivity", "Location: " + location.latitude + " " + location.longitude)
                 mLastLocation = location
                 if (mCurrLocationMarker != null) {
                     mCurrLocationMarker?.remove()
                 }
-
-                val latLng = LatLng(location.latitude, location.longitude)
-                val markerOptions = MarkerOptions()
-                markerOptions.position(latLng)
-                markerOptions.title("Current Position")
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
-                mCurrLocationMarker = map.addMarker(markerOptions)
-
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+                latLng = LatLng(location.latitude, location.longitude)
             }
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng!!, 15f))
         }
     }
 
 
     override fun onMyLocationButtonClick(): Boolean {
-        Toast.makeText(activity, "MyLocation button clicked!!!", Toast.LENGTH_SHORT)
-            .show()
         moveToCurrentLocation()
         return false
     }
@@ -241,11 +234,13 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         mLocationRequest.interval = 120000 // two minute interval
         mLocationRequest.fastestInterval = 120000
         mLocationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-        Log.d("pppp", permissionDenied.toString())
         if(!permissionDenied){
             mFusedLocationClient?.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper())
         }else{
             enableMyLocation()
+        }
+        if(latLng != null) {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng!!, 15f))
         }
     }
 

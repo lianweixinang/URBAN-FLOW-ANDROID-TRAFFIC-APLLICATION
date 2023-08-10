@@ -10,7 +10,10 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import ntutifm.game.google.databinding.FragmentHomeBinding
+import ntutifm.game.google.global.AppUtil
+import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.isOpen
+import ntutifm.game.google.ui.map.favoriteFlag
 import ntutifm.game.google.ui.search.SearchFragment
 
 
@@ -29,19 +32,27 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val search: ImageView = binding.searchBtn
-        search.setOnClickListener {
-            isOpen.value = true
-            Log.e("mmm", isOpen.value.toString())
-            val fragment = SearchFragment()
-            val transaction = parentFragmentManager?.beginTransaction()
-            transaction?.replace(ntutifm.game.google.R.id.fragment_home, fragment)
-            transaction?.commit()
-        }
-        val favorite: ImageView = binding.favoriteBtn
-        favorite.setOnClickListener {
+        binding.searchBtn.setOnClickListener(searchBtnListener)
+        binding.favoriteBtn.setOnClickListener(favoriteBtnListener)
+    }
 
+    private val favoriteBtnListener = View.OnClickListener {
+        binding.favoriteBtn.apply {
+            if(favoriteFlag?.value == true){
+                this.setImageResource(ntutifm.game.google.R.drawable.ic_baseline_star_24)
+            }else{
+                this.setImageResource(ntutifm.game.google.R.drawable.ic_baseline_star_25)
+            }
+            (favoriteFlag?.value).also { favoriteFlag?.value = it?.not() }
         }
+
+    }
+
+    /** 開啟搜尋欄 */
+    private val searchBtnListener = View.OnClickListener {
+        isOpen.value = true
+        MyLog.e(isOpen.value.toString())
+        AppUtil.startFragment(parentFragmentManager, ntutifm.game.google.R.id.fragment_home, SearchFragment())
     }
 
     override fun onDestroyView() {

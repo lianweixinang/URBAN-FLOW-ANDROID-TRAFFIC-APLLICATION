@@ -42,7 +42,7 @@ class SearchFragment : Fragment() {
 
     private fun searchViewInit(){
         binding.searchView.apply {
-            this.requestFocus()
+            //this.requestFocus()
             this.onActionViewExpanded()
             this.setOnQueryTextListener(queryTextListener)
         }

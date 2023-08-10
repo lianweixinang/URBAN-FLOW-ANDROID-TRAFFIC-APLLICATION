@@ -31,11 +31,14 @@ import ntutifm.game.google.*
 import ntutifm.game.google.R
 import ntutifm.game.google.databinding.FragmentMapBinding
 import ntutifm.game.google.entity.MyItem
+import ntutifm.game.google.global.AppUtil
+import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.*
 import ntutifm.game.google.ui.home.HomeFragment
 import ntutifm.game.google.ui.search.SearchFragment
 
 var mClusterManager:ClusterManager<MyItem>? = null
+var favoriteFlag:MutableLiveData<Boolean>? = null
 
 class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
@@ -52,8 +55,6 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     private val viewModel : MapViewModel by lazy {
         ViewModelProvider(this)[MapViewModel::class.java]
     }
-    private val favoriteFlag = MutableLiveData(false) //到時候用viewModel給值
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -67,34 +68,32 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
-
+        favoriteFlag = MutableLiveData(false) //到時候用viewModel給值
         binding.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
         binding.bg.setOnClickListener(backBtnListener)
         binding.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
-
+        AppUtil.showTopToast(context,"HI")
+        //AppUtil.showDialog("Hello", activity)
     }
 
     /** 收藏切換 */
     private val favoriteBtnListener = View.OnClickListener {
         binding.fragmentHome.favoriteBtn.apply {
-            if(favoriteFlag.value == true){
+            if(favoriteFlag?.value == true){
                 this.setImageResource(R.drawable.ic_baseline_star_24)
             }else{
                 this.setImageResource(R.drawable.ic_baseline_star_25)
             }
-            (favoriteFlag.value).also { favoriteFlag.value = it?.not() }
+            (favoriteFlag?.value).also { favoriteFlag?.value = it?.not() }
         }
 
     }
 
     /** 關閉搜尋欄 */
     private val backBtnListener = View.OnClickListener {
-        Log.e("mmm",isOpen.value.toString())
+        MyLog.e(isOpen.value.toString())
         if(isOpen.value == true){
-            val fragment = HomeFragment()
-            val transaction = parentFragmentManager?.beginTransaction()
-            transaction?.replace(R.id.fragment_home, fragment)
-            transaction?.commit()
+            AppUtil.popBackStack(parentFragmentManager)
         }
         isOpen.value = false
 
@@ -103,14 +102,11 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     /** 開啟搜尋欄 */
     private val searchBtnListener = View.OnClickListener {
         isOpen.value = true
-        Log.e("mmm",isOpen.value.toString())
-        val fragment = SearchFragment()
-        val transaction = parentFragmentManager?.beginTransaction()
-        transaction?.replace(R.id.fragment_home, fragment)
-        transaction?.commit()
+        MyLog.e(isOpen.value.toString())
+        AppUtil.startFragment(parentFragmentManager, R.id.fragment_home, SearchFragment())
     }
 
-
+    /** 設置地圖 */
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.isTrafficEnabled = true
@@ -118,7 +114,6 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         map.uiSettings.isMyLocationButtonEnabled = true
         map.setOnMyLocationButtonClickListener(this)
         map.setOnMyLocationClickListener(this)
-        map.setMinZoomPreference(15f)
         enableMyLocation()
         moveToCurrentLocation()
         initMark()
@@ -227,7 +222,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
                 mCurrLocationMarker = map.addMarker(markerOptions)
 
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11.0F))
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
             }
         }
     }

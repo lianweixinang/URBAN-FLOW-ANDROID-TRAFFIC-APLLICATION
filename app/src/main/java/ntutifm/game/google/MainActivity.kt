@@ -1,5 +1,6 @@
 package ntutifm.game.google
 
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -9,6 +10,8 @@ import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.navigation.NavigationView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import ntutifm.game.google.databinding.ActivityMainBinding
 import ntutifm.game.google.net.ApiClass.City
 import ntutifm.game.google.net.RetrofitManager
@@ -119,27 +122,25 @@ open class MainActivity : AppCompatActivity(),
         navigationView.setNavigationItemSelectedListener(this)
     }
 
-//    @Override
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.nav_run -> {
-//                val intent = Intent(this, SecondActivity::class.java)
-//                startActivity(intent)
-//            }
-//            else -> {
-//            }
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
     companion object {
-        /**
-         * Request code for location permission request.
-         *
-         * @see .onRequestPermissionsResult
-         */
         const val LOCATION_PERMISSION_REQUEST_CODE = 1
+        val applicationScope = CoroutineScope(SupervisorJob())
+        private const val TAG = "MPlusApplication"
+        private val activityStatus: MutableList<String> = ArrayList()
+
+        //判斷當前Activity是否在前景
+        @JvmStatic
+        val isMainActivityForeground: Boolean
+            get() = isActivityForeground(MainActivity::class.java)
+
+
+        @JvmStatic
+        fun isActivityForeground(activityClass: Class<out Activity?>): Boolean {
+            return activityStatus.contains(activityClass.name)
+        }
     }
 }
 class MyActivity : MainActivity() {
+
     val context = this@MyActivity
 }

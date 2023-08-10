@@ -10,14 +10,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.Toast
-import androidx.annotation.MainThread
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -32,91 +31,102 @@ import ntutifm.game.google.*
 import ntutifm.game.google.R
 import ntutifm.game.google.databinding.FragmentMapBinding
 import ntutifm.game.google.entity.MyItem
-import ntutifm.game.google.entity.MyItemReader
 import ntutifm.game.google.net.*
 import ntutifm.game.google.ui.home.HomeFragment
 import ntutifm.game.google.ui.search.SearchFragment
-import org.json.JSONException
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.io.InputStream
-import java.util.ArrayList
 
 var mClusterManager:ClusterManager<MyItem>? = null
 
 class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
     ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack {
-    private var permissionDenied = false
-    private lateinit var map: GoogleMap
-    internal var mCurrLocationMarker: Marker? = null
-    internal var mFusedLocationClient: FusedLocationProviderClient? = null
+
+    internal var mCurrLocationMarker : Marker? = null
     internal var mLastLocation : Location? = null
-    private var _binding: FragmentMapBinding? = null
-    private lateinit var mLocationRequest: LocationRequest
+    private var _binding : FragmentMapBinding? = null
     private val binding get() = _binding!!
+    private var mFusedLocationClient : FusedLocationProviderClient? = null
+    private var permissionDenied = false
+    private lateinit var map : GoogleMap
+    private lateinit var mLocationRequest : LocationRequest
+    private val viewModel : MapViewModel by lazy {
+        ViewModelProvider(this)[MapViewModel::class.java]
+    }
+    private val favoriteFlag = MutableLiveData(false) //到時候用viewModel給值
 
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
-        var idx = 0
-        val search: ImageView = binding.fragmentHome.searchBtn
-        search.setOnClickListener {
-            isOpen.value = true
-            Log.e("mmm",isOpen.value.toString())
-            val fragment = SearchFragment()
+
+        binding.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
+        binding.bg.setOnClickListener(backBtnListener)
+        binding.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
+
+    }
+
+    /** 收藏切換 */
+    private val favoriteBtnListener = View.OnClickListener {
+        binding.fragmentHome.favoriteBtn.apply {
+            if(favoriteFlag.value == true){
+                this.setImageResource(R.drawable.ic_baseline_star_24)
+            }else{
+                this.setImageResource(R.drawable.ic_baseline_star_25)
+            }
+            (favoriteFlag.value).also { favoriteFlag.value = it?.not() }
+        }
+
+    }
+
+    /** 關閉搜尋欄 */
+    private val backBtnListener = View.OnClickListener {
+        Log.e("mmm",isOpen.value.toString())
+        if(isOpen.value == true){
+            val fragment = HomeFragment()
             val transaction = parentFragmentManager?.beginTransaction()
             transaction?.replace(R.id.fragment_home, fragment)
             transaction?.commit()
         }
-        binding.bg.setOnClickListener {
-            Log.e("mmm",isOpen.value.toString())
-            if(isOpen.value == true){
-                val fragment = HomeFragment()
-                val transaction = parentFragmentManager?.beginTransaction()
-                transaction?.replace(R.id.fragment_home, fragment)
-                transaction?.commit()
-            }
-            isOpen.value = false
-        }
-        val favorite: ImageView = binding.fragmentHome.favoriteBtn
-        favorite.setOnClickListener {
-            if(idx ==0){
-                favorite.setImageResource(android.R.drawable.star_big_on)
-                idx = 1
-            }else{
-                favorite.setImageResource(android.R.drawable.star_big_off)
-                idx = 0
-            }
-        }
+        isOpen.value = false
 
-        val root: View = binding.root
-        return root
+    }
+
+    /** 開啟搜尋欄 */
+    private val searchBtnListener = View.OnClickListener {
+        isOpen.value = true
+        Log.e("mmm",isOpen.value.toString())
+        val fragment = SearchFragment()
+        val transaction = parentFragmentManager?.beginTransaction()
+        transaction?.replace(R.id.fragment_home, fragment)
+        transaction?.commit()
     }
 
 
-    @SuppressLint("UseRequireInsteadOfGet")
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        map.isTrafficEnabled =true
-        enableMyLocation()
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!)
-//        val sydney = LatLng(-34.0, 151.0)
-//
-//        map.addMarker(MarkerOptions()
-//            .position(sydney)
-//            .title("Marker in Sydney"))
-//        map.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        map.isTrafficEnabled = true
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         map.uiSettings.isMyLocationButtonEnabled = true
+        map.setOnMyLocationButtonClickListener(this)
+        map.setOnMyLocationClickListener(this)
+        map.setMinZoomPreference(15f)
+        enableMyLocation()
+        moveToCurrentLocation()
         initMark()
+        setLocationInitBtn()
+    }
+
+    @SuppressLint("UseRequireInsteadOfGet")
+    private fun setLocationInitBtn(){
         if (childFragmentManager
                 .findFragmentById(R.id.map)!=null && childFragmentManager
                 .findFragmentById(R.id.map)!!.view!!.findViewById<View>("1".toInt()) != null) {
@@ -127,12 +137,8 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
 
             rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0)
             rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
-            rlp.setMargins(0, 0, 30, 30)
-            map.setOnMyLocationButtonClickListener(this)
-            map.setOnMyLocationClickListener(this)
-
+            rlp.setMargins(0, 0, 30, 800)
         }
-
     }
     private fun drawMarker(map: GoogleMap, location: Location) {
         if (map != null) {
@@ -144,6 +150,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(gps, 12f))
         }
     }
+
     @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
 
@@ -201,7 +208,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     }
 
 
-    internal var mLocationCallback: LocationCallback = object : LocationCallback() {
+    private var mLocationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             val locationList = locationResult.locations
             Log.d("pppp3", "hi")
@@ -225,10 +232,16 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         }
     }
 
-    @SuppressLint("MissingPermission")
+
     override fun onMyLocationButtonClick(): Boolean {
         Toast.makeText(activity, "MyLocation button clicked!!!", Toast.LENGTH_SHORT)
             .show()
+        moveToCurrentLocation()
+        return false
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun moveToCurrentLocation(){
         mLocationRequest = LocationRequest()
         mLocationRequest.interval = 120000 // two minute interval
         mLocationRequest.fastestInterval = 120000
@@ -239,7 +252,6 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         }else{
             enableMyLocation()
         }
-        return false
     }
 
     override fun onMyLocationClick(location: Location) {

@@ -16,27 +16,23 @@ import ntutifm.game.google.ui.search.SearchFragment
 
 class HomeFragment : Fragment() {
 
-    private var _binding: FragmentHomeBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
+    private var _binding : FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private val viewModel : HomeViewModel by lazy{
+        ViewModelProvider(this)[HomeViewModel::class.java]
+    }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
-        var idx = 0
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        val root: View = binding.root
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val search: ImageView = binding.searchBtn
         search.setOnClickListener {
             isOpen.value = true
-            Log.e("mmm",isOpen.value.toString())
+            Log.e("mmm", isOpen.value.toString())
             val fragment = SearchFragment()
             val transaction = parentFragmentManager?.beginTransaction()
             transaction?.replace(ntutifm.game.google.R.id.fragment_home, fragment)
@@ -44,15 +40,8 @@ class HomeFragment : Fragment() {
         }
         val favorite: ImageView = binding.favoriteBtn
         favorite.setOnClickListener {
-            if(idx ==0){
-                favorite.setImageResource(R.drawable.star_big_on)
-                idx = 1
-            }else{
-                favorite.setImageResource(R.drawable.star_big_off)
-                idx = 0
-            }
+
         }
-        return root
     }
 
     override fun onDestroyView() {

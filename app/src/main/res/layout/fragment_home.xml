@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto "
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_home"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context="ntutifm.game.google.ui.home.WeatherFragment">
+    tools:context="ntutifm.game.google.ui.home.HomeFragment">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -69,4 +63,4 @@
 
             </androidx.cardview.widget.CardView>
         </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout></FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

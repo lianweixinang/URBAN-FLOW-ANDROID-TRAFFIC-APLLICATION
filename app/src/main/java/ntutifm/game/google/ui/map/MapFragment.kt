@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Location
-import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
@@ -23,10 +22,11 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.maps.android.clustering.ClusterManager
 import ntutifm.game.google.*
 import ntutifm.game.google.R
@@ -35,8 +35,8 @@ import ntutifm.game.google.entity.MyItem
 import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.*
-import ntutifm.game.google.ui.home.HomeFragment
 import ntutifm.game.google.ui.search.SearchFragment
+
 
 var mClusterManager:ClusterManager<MyItem>? = null
 var favoriteFlag:MutableLiveData<Boolean>? = null
@@ -59,7 +59,8 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     private var latLng : LatLng? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
+    ): View {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -74,9 +75,13 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         binding.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
         binding.bg.setOnClickListener(backBtnListener)
         binding.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
-        AppUtil.showTopToast(context,"HI")
+        AppUtil.showTopToast(context, "HI")
         //AppUtil.showDialog("Hello", activity)
         //binding.videoView.setVideoURI(Uri.parse("https://cctv.bote.gov.taipei:8501/MJPEG/031"))
+        val bottomSheet: View = binding.bg
+        val behavior = BottomSheetBehavior.from(bottomSheet)
+        behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+
     }
 
     /** 收藏切換 */

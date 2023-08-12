@@ -7,40 +7,40 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_main">
 
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:id="@+id/map"
-            android:layout_width="match_parent"
-            android:layout_centerVertical="true"
-            android:layout_height="match_parent"
-            tools:layout="@layout/fragment_map"
-            tools:context=".MainActivity"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:context=".MainActivity"
+        tools:layout="@layout/fragment_map" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/coordinatorLayout"
         android:layout_width="match_parent"
         android:layout_height="700dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintStart_toStartOf="parent">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/bg"
-            app:layout_behavior="@string/bottom_sheet_behavior"
-            app:behavior_hideable="false"
-            app:behavior_peekHeight="350dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:behavior_hideable="false"
+            app:behavior_peekHeight="350dp"
             app:cardBackgroundColor="#575757"
             app:cardCornerRadius="10dp"
             app:cardElevation="20dp"
             app:cardMaxElevation="20dp"
             app:contentPadding="10dp"
+            app:layout_behavior="@string/bottom_sheet_behavior"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -53,33 +53,44 @@
                     android:id='@+id/videoView'
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
-                    app:cardCornerRadius="10dp"
                     android:layout_marginTop="60dp"
-                    app:srcCompat="@drawable/rcc"
+                    app:cardCornerRadius="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf='@+id/imageView'/>
-            <ImageView
-                android:id='@+id/imageView'
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                app:cardCornerRadius="10dp"
-                android:layout_marginTop="15dp"
-                app:srcCompat="@drawable/rcc"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf='@+id/imageView'
+                    app:srcCompat="@drawable/rcc" />
+
+                <ImageView
+                    android:id='@+id/imageView'
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="15dp"
+                    app:cardCornerRadius="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/rcc" />
 
 
                 <ImageView
                     android:id='@+id/imageView2'
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
+                    android:layout_height="200dp"
                     app:cardCornerRadius="10dp"
-                    app:srcCompat="@drawable/rcc"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf='@+id/imageView'/>
+                    app:layout_constraintTop_toBottomOf='@+id/imageView'
+                    app:srcCompat="@drawable/speed" />
+                <ImageView
+                    android:id='@+id/imageView3'
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    app:cardCornerRadius="10dp"
+                    android:layout_marginTop="40dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf='@+id/imageView2'
+                    app:srcCompat="@drawable/distance" />
 
 
                 <include
@@ -87,8 +98,7 @@
                     layout="@layout/fragment_home"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-                </include>
+                    app:layout_constraintTop_toTopOf="parent"></include>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.cardview.widget.CardView>

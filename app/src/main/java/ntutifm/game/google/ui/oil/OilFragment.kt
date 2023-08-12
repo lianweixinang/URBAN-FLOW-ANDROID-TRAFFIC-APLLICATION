@@ -23,19 +23,17 @@ class OilFragment : Fragment() {
         _binding = FragmentOilBinding.inflate(inflater, container, false)
         return binding.root
     }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        oilListInit()
-    }
-
-    private fun oilListInit() {
-        val textView1: TextView = binding.t1
-        val textView2: TextView = binding.t2
-        viewModel.text.observe(viewLifecycleOwner) {
-            textView1.text = it
-            textView2.text = it
-        }
-    }
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
+//        oilListInit()
+//    }
+//
+//    private fun oilListInit() {
+//        val textView1: TextView = binding.t1
+//        viewModel.text.observe(viewLifecycleOwner) {
+//            textView1.text = it
+//        }
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -142,7 +142,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
 
             rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0)
             rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
-            rlp.setMargins(0, 0, 30, 800)
+            rlp.setMargins(0, 0, 30, 1000)
         }
     }
     private fun drawMarker(map: GoogleMap, location: Location) {

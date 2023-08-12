@@ -20,6 +20,10 @@ class ApiManager constructor(
     constructor(
         callBack: ApiCallBack?
     ) : this(ApiProcessor::class.java, callBack, null)
+    constructor(
+        callBack: ApiCallBack?,
+        data:String
+    ) : this(ApiProcessor::class.java, callBack, data)
 
     private var successData: ArrayList<String> = ArrayList(3)
     private var errorData: ArrayList<String> = ArrayList(3)

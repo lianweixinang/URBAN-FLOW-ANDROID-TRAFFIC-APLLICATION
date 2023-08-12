@@ -26,7 +26,7 @@ class SearchAdaptor(var mList: List<SearchData>) :
     }
 
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
-        holder.logo.setImageResource(mList[position].logo)
+        holder.logo.setImageResource(R.drawable.ic_baseline_search_25)
         holder.titleTv.text = mList[position].title
 
     }

@@ -81,6 +81,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         val bottomSheet: View = binding.bg
         val behavior = BottomSheetBehavior.from(bottomSheet)
         behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+        ApiManager(this,"600334A").execute(this, ApiProcessor().getCityRoadSpeed)
 
     }
 

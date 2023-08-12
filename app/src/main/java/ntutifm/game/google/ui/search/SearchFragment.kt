@@ -14,11 +14,14 @@ import ntutifm.game.google.R
 import ntutifm.game.google.databinding.FragmentSearchBinding
 import ntutifm.game.google.entity.SearchAdaptor
 import ntutifm.game.google.entity.SearchData
+import ntutifm.game.google.net.ApiCallBack
+import ntutifm.game.google.net.ApiManager
+import ntutifm.game.google.net.ApiProcessor
 import java.util.*
 import kotlin.collections.ArrayList
 
-
-class SearchFragment : Fragment() {
+val filteredList: MutableList<SearchData> = mutableListOf()
+class SearchFragment : Fragment(), ApiCallBack {
 
     private var _binding : FragmentSearchBinding? = null
     private val binding get() = _binding!!
@@ -52,10 +55,7 @@ class SearchFragment : Fragment() {
         recycleView = binding.recycleView
         recycleView?.setHasFixedSize(true)
         recycleView?.layoutManager = LinearLayoutManager(MyActivity().context)
-        for(road in viewModel.text){
-            itemList.add(SearchData(road.value!!, R.drawable.rcc))
-        }
-        adapter = SearchAdaptor(itemList)
+        adapter = SearchAdaptor(filteredList)
         recycleView?.adapter = adapter
     }
 
@@ -66,27 +66,30 @@ class SearchFragment : Fragment() {
         }
 
         override fun onQueryTextChange(newText: String?): Boolean {
-            //filterList(newText)
+            filterList(newText)
             return true
         }
     }
 
     private fun filterList(newText: String?) {
-        val filteredList: List<SearchData> =ArrayList<SearchData>()
-        if (newText != null) {
-            val filteredList = ArrayList<SearchData>()
-            for(i in itemList){
-                if (i.title.lowercase(Locale.ROOT).contains(newText)) {
-                    filteredList.add(i)
-                }
-            }
-
-            if (filteredList.isEmpty()) {
-                Toast.makeText(MyActivity().context, "No Data found", Toast.LENGTH_SHORT).show()
-            } else {
-                adapter?.setFilteredList(filteredList)
-            }
+        if(newText!="" && newText!= null) {
+            ApiManager(this, newText).execute(this, ApiProcessor().getCityRoadId)
+            adapter?.setFilteredList(filteredList)
+        }else{
+            filteredList.removeAll(filteredList)
         }
+    }
+
+    override fun onSuccess(successData: java.util.ArrayList<String>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onError(errorCode: Int, errorData: java.util.ArrayList<String>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun doInBackground(result: Int, successData: java.util.ArrayList<String>) {
+        TODO("Not yet implemented")
     }
 
     override fun onDestroyView() {

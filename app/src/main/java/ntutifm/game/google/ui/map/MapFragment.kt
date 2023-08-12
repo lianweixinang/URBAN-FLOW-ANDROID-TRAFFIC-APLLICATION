@@ -12,8 +12,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
@@ -40,7 +42,7 @@ import ntutifm.game.google.ui.search.SearchFragment
 
 var mClusterManager:ClusterManager<MyItem>? = null
 var favoriteFlag:MutableLiveData<Boolean>? = null
-
+var behavior:BottomSheetBehavior<View>? = null
 class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
     ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack {
@@ -79,9 +81,20 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         //AppUtil.showDialog("Hello", activity)
         //binding.videoView.setVideoURI(Uri.parse("https://cctv.bote.gov.taipei:8501/MJPEG/031"))
         val bottomSheet: View = binding.bg
-        val behavior = BottomSheetBehavior.from(bottomSheet)
-        behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
-        ApiManager(this,"600334A").execute(this, ApiProcessor().getCityRoadSpeed)
+        behavior = BottomSheetBehavior.from(bottomSheet)
+        behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+        behavior?.addBottomSheetCallback(object : BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                binding.imageView.isVisible = true
+                binding.videoView.isVisible = false
+                binding.imageView2.isVisible = newState == BottomSheetBehavior.STATE_EXPANDED
+                binding.imageView3.isVisible = newState == BottomSheetBehavior.STATE_EXPANDED
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                // Do something when the bottom sheet is sliding
+            }
+        })
 
     }
 

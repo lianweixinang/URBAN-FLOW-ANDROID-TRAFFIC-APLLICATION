@@ -2,13 +2,18 @@ package ntutifm.game.google.net
 
 import android.content.Context
 import android.util.Log
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import ntutifm.game.google.MyActivity
 import ntutifm.game.google.entity.MyItem
 import ntutifm.game.google.entity.SearchData
+import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.net.ApiClass.CityRoad
 import ntutifm.game.google.net.ApiClass.CitySpeed
 import ntutifm.game.google.net.ApiClass.Parking
+import ntutifm.game.google.ui.map.behavior
 import ntutifm.game.google.ui.map.mClusterManager
 import ntutifm.game.google.ui.search.filteredList
+import ntutifm.game.google.ui.search.speedData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -71,7 +76,8 @@ public class ApiProcessor {
             ) {
                 if(response?.body()!= null){
                     for (item in response.body()!!){
-                        Log.d("RoadSpeed", item.avgSpeed.toString())
+                        behavior?.state = BottomSheetBehavior.STATE_EXPANDED
+                        speedData.add(item.direction+item.volume.toString()+item.avgSpeed.toString())
                     }
                 }else{
                     Log.d("RoadSpeed", "Null")

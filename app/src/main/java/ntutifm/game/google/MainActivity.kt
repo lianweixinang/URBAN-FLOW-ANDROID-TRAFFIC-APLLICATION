@@ -74,53 +74,31 @@ open class MainActivity : AppCompatActivity(),
         return true
     }
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        var fragment:Fragment
         when (item.itemId) {
              R.id.nav_home -> {
-                 fragment = HomeFragment()
-                 val transaction = supportFragmentManager.beginTransaction()
-                 transaction?.replace(R.id.fragment_main, fragment)
-                 transaction?.commit()
+                 AppUtil.startFragment(supportFragmentManager, R.id.fragment_main, HomeFragment())
             }
             R.id.nav_search -> {
-                fragment = SearchFragment() //新視窗
-                val transaction = supportFragmentManager.beginTransaction()
-                transaction?.replace(R.id.fragment_main, fragment)
-                transaction?.commit()
+                AppUtil.startFragment(supportFragmentManager, R.id.fragment_main, SearchFragment())
             }
             R.id.nav_map -> {
-                val fragment = MapFragment()
-                val transaction = supportFragmentManager.beginTransaction()
-                transaction?.replace(R.id.fragment_main, fragment)
-                transaction?.commit()
+                AppUtil.startFragment(supportFragmentManager, R.id.fragment_main, MapFragment())
             }
             R.id.nav_oil -> {
-                val fragment = OilFragment()
-                val transaction = supportFragmentManager.beginTransaction()
-                transaction?.replace(R.id.fragment_main, fragment)
-                transaction?.commit()
+                AppUtil.startFragment(supportFragmentManager, R.id.fragment_main, OilFragment())
             }
             R.id.nav_weather -> {
-                val fragment = WeatherFragment()
-                val transaction = supportFragmentManager.beginTransaction()
-                transaction?.replace(R.id.fragment_main, fragment)
-                transaction?.commit()
+                AppUtil.startFragment(supportFragmentManager, R.id.fragment_main, WeatherFragment())
             }
             R.id.nav_route -> {
-                val fragment = RouteFragment()
-                val transaction = supportFragmentManager.beginTransaction()
-                transaction?.replace(R.id.fragment_main, fragment)
-                transaction?.commit()
+                AppUtil.startFragment(supportFragmentManager, R.id.fragment_main, RouteFragment())
             }
-
         }
 
-        //close navigation drawer
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
-    //            R.id.nav_run -> {val intent = Intent(this, SecondActivity::class.java)
-    //                startActivity(intent)}
+
     private fun setNavigationViewListener() {
         val navigationView = findViewById<NavigationView>(R.id.nav_view) as NavigationView
         navigationView.setNavigationItemSelectedListener(this)

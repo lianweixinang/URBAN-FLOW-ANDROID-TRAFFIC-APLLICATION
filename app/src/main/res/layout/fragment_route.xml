@@ -88,7 +88,7 @@
                         android:gravity="center"
                         android:layout_below="@id/t1"
                         android:layout_marginLeft="10dp"
-                        android:text="起點: 至 終點:"
+                        android:text="起點: 至 目的地:"
                         android:textColor="#000000"
                         android:textSize="15sp" />
 
@@ -142,7 +142,7 @@
             </androidx.cardview.widget.CardView>
             <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="180dp"
             android:layout_marginTop="20dp"
             app:cardCornerRadius="15dp"
             app:cardBackgroundColor="#FFA042">
@@ -181,6 +181,14 @@
                     android:text="市民大道北向"
                     android:textColor="#000000"
                     android:textSize="15sp" />
+
+                <ImageView
+                    android:id='@+id/monitor'
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/camtxt2"
+                    app:cardCornerRadius="10dp"
+                    app:srcCompat="@drawable/rcc" />
 
 
 

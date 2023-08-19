@@ -88,15 +88,17 @@
                             android:textSize="50dp"
                             android:textStyle="bold"
                             android:layout_marginLeft="5dp" />
+
                         <TextView
                             android:id="@+id/t2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="130dp"
                             android:text="+1.5"
                             android:textColor="#ffff"
                             android:textSize="50dp"
-                            android:textStyle="bold"
-                            android:layout_marginLeft="130dp" />
+                            android:textStyle="bold" />
+
                         <TextView
                             android:id="@+id/t3"
                             android:layout_width="wrap_content"

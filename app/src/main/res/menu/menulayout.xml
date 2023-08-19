@@ -16,6 +16,9 @@
             android:id="@+id/nav_weather"
             android:title="天氣" />
         <item
+            android:id="@+id/nav_notification"
+            android:title="即時路況通知" />
+        <item
             android:id="@+id/nav_search"
             android:title="設定"/>
         <item

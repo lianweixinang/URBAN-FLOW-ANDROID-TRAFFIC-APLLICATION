@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context="ntutifm.game.google.ui.oil.OilFragment">
+        tools:context="ntutifm.game.google.ui.oil.NotificationFragment">
         <LinearLayout
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -24,14 +24,14 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="20dp"
                 app:cardCornerRadius="15dp"
-                app:cardBackgroundColor="#FFA042">
+                app:cardBackgroundColor="#45AAE2">
                 <TextView
                     android:id="@+id/t0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="目前油價"
+                    android:text="油價資訊"
                     android:textColor="#ffff"
-                    android:textSize="30dp"
+                    android:textSize="25dp"
                     android:textStyle="bold"
                     android:layout_gravity="center"/>
             </androidx.cardview.widget.CardView>
@@ -40,44 +40,54 @@
                 android:layout_height="300dp"
                 android:layout_marginTop="20dp"
                 app:cardCornerRadius="15dp"
-                app:cardBackgroundColor="#FFA042">
+                app:cardBackgroundColor="#EFEFEF">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="#FFA042"
+                    android:background="#EFEFEF"
                     android:padding="5dp">
                     <ImageView
                         android:id='@+id/image92'
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
+                        android:layout_height="80dp"
                         android:layout_marginTop="35dp"
-                        android:layout_marginRight="250dp"
+                        android:layout_marginRight="300dp"
                         app:cardCornerRadius="10dp"
-                        app:srcCompat="@drawable/_2" />
+                        app:srcCompat="@drawable/group_223" />
 
                     <ImageView
                         android:id='@+id/image95'
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
+                        android:layout_height="80dp"
                         app:cardCornerRadius="10dp"
                         android:layout_marginTop="35dp"
+                        android:layout_marginRight="100dp"
                         app:srcCompat="@drawable/_5" />
 
                     <ImageView
                         android:id='@+id/image98'
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
+                        android:layout_height="80dp"
                         android:layout_marginTop="35dp"
-                        android:layout_marginLeft="250dp"
+                        android:layout_marginLeft="100dp"
                         app:cardCornerRadius="10dp"
-                        app:srcCompat="@drawable/_8" />
+                        app:srcCompat="@drawable/group_222" />
+
+                    <ImageView
+                        android:id='@+id/dieselicon'
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:layout_marginTop="35dp"
+                        android:layout_marginLeft="300dp"
+                        app:cardCornerRadius="10dp"
+                        app:srcCompat="@drawable/group_224" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="100dp"
                         android:layout_marginTop="150dp"
-                        android:background="#E91E63"
+                        android:background="#B7B7B7"
                         android:padding="5dp">
                         <TextView
                             android:id="@+id/t1"
@@ -117,7 +127,7 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="20dp"
                 app:cardCornerRadius="15dp"
-                app:cardBackgroundColor="#FFA042">
+                app:cardBackgroundColor="#45AAE2">
                 <TextView
                     android:id="@+id/t4"
                     android:layout_width="wrap_content"
@@ -125,7 +135,7 @@
                     android:text="下周油價"
                     android:layout_gravity="center"
                     android:textColor="#ffff"
-                    android:textSize="30dp"
+                    android:textSize="25dp"
                     android:textStyle="bold" />
             </androidx.cardview.widget.CardView>
             <androidx.cardview.widget.CardView
@@ -137,38 +147,48 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="#FFA042"
+                    android:background="#EFEFEF"
                     android:padding="10dp">
                     <ImageView
-                        android:id='@+id/image92_1'
+                        android:id='@+id/image922'
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
+                        android:layout_height="80dp"
                         android:layout_marginTop="35dp"
-                        android:layout_marginRight="250dp"
+                        android:layout_marginRight="300dp"
                         app:cardCornerRadius="10dp"
-                        app:srcCompat="@drawable/_2" />
+                        app:srcCompat="@drawable/group_223" />
 
                     <ImageView
-                        android:id='@+id/image95_1'
+                        android:id='@+id/image952'
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
+                        android:layout_height="80dp"
                         app:cardCornerRadius="10dp"
                         android:layout_marginTop="35dp"
+                        android:layout_marginRight="100dp"
                         app:srcCompat="@drawable/_5" />
 
                     <ImageView
-                        android:id='@+id/image98_1'
+                        android:id='@+id/image982'
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
+                        android:layout_height="80dp"
                         android:layout_marginTop="35dp"
-                        android:layout_marginLeft="250dp"
+                        android:layout_marginLeft="100dp"
                         app:cardCornerRadius="10dp"
-                        app:srcCompat="@drawable/_8" />
+                        app:srcCompat="@drawable/group_222" />
+
+                    <ImageView
+                        android:id='@+id/dieselicon2'
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:layout_marginTop="35dp"
+                        android:layout_marginLeft="300dp"
+                        app:cardCornerRadius="10dp"
+                        app:srcCompat="@drawable/group_224" />
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="100dp"
                         android:layout_marginTop="150dp"
-                        android:background="#E91E63"
+                        android:background="#B7B7B7"
                         android:padding="5dp">
                         <TextView
                             android:id="@+id/t5"

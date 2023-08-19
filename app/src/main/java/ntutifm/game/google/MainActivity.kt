@@ -7,20 +7,17 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import ntutifm.game.google.databinding.ActivityMainBinding
 import ntutifm.game.google.global.AppUtil
-import ntutifm.game.google.global.AppUtil.Companion.popBackStack
 import ntutifm.game.google.net.ApiClass.City
 import ntutifm.game.google.net.RetrofitManager
 import ntutifm.game.google.ui.home.HomeFragment
 import ntutifm.game.google.ui.map.MapFragment
+import ntutifm.game.google.ui.oil.NotificationFragment
 import ntutifm.game.google.ui.oil.OilFragment
 import ntutifm.game.google.ui.route.RouteFragment
 import ntutifm.game.google.ui.search.SearchFragment
@@ -92,6 +89,9 @@ open class MainActivity : AppCompatActivity(),
             }
             R.id.nav_route -> {
                 AppUtil.startFragment(supportFragmentManager, R.id.fragment_main, RouteFragment())
+            }
+            R.id.nav_notification -> {
+                AppUtil.startFragment(supportFragmentManager, R.id.fragment_main, NotificationFragment())
             }
         }
 

@@ -17,8 +17,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -30,14 +33,18 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.maps.android.clustering.ClusterManager
+import kotlinx.coroutines.launch
 import ntutifm.game.google.*
 import ntutifm.game.google.R
 import ntutifm.game.google.databinding.FragmentMapBinding
 import ntutifm.game.google.entity.MyItem
+import ntutifm.game.google.entity.SyncBottomBar
+import ntutifm.game.google.entity.SyncBottomBar.state
 import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.*
 import ntutifm.game.google.ui.search.SearchFragment
+import ntutifm.game.google.ui.search.speedData
 
 
 var mClusterManager:ClusterManager<MyItem>? = null
@@ -77,9 +84,22 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         binding.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
         binding.bg.setOnClickListener(backBtnListener)
         binding.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
-        AppUtil.showTopToast(context, "HI")
+        bottomSheetInit()
+        viewModel.speedLists.observe(viewLifecycleOwner){
+            MyLog.e("changeSpeed")
+            binding.cars.text = it[0].volume.toString()
+            binding.cars2.text = it[1].volume.toString()
+            if(it.size>1) {
+                binding.speed.text = it[0].avgSpeed.toString()
+                binding.speed2.text = it[1].avgSpeed.toString()
+            }
+        }
+        //AppUtil.showTopToast(context, "HI")
         //AppUtil.showDialog("Hello", activity)
         //binding.videoView.setVideoURI(Uri.parse("https://cctv.bote.gov.taipei:8501/MJPEG/031"))
+
+    }
+    private fun bottomSheetInit(){
         val bottomSheet: View = binding.bg
         behavior = BottomSheetBehavior.from(bottomSheet)
         behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
@@ -87,7 +107,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 binding.imageView.isVisible = true
                 binding.videoView.isVisible = false
-                binding.imageView2.isVisible = newState == BottomSheetBehavior.STATE_EXPANDED
+                binding.trafficFlow.isVisible = newState == BottomSheetBehavior.STATE_EXPANDED
                 binding.imageView3.isVisible = newState == BottomSheetBehavior.STATE_EXPANDED
             }
 
@@ -95,7 +115,16 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
                 // Do something when the bottom sheet is sliding
             }
         })
-
+        state.observe(viewLifecycleOwner) { state: SyncBottomBar.State? ->
+            when (state) {
+                is SyncBottomBar.State.Open -> {
+                    behavior?.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+                is SyncBottomBar.State.Close -> {
+                    behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+                }
+            }
+        }
     }
 
     /** 收藏切換 */

@@ -8,6 +8,10 @@ public class CityRoad {
     private String roadId ="ID";
     @SerializedName("RoadName")
     private String roadName="NAME";
+    public CityRoad(String id, String name){
+        this.roadId = id;
+        this.roadName = name;
+    }
 
 
     public String getRoadName() {

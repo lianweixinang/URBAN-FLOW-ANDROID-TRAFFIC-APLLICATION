@@ -7,12 +7,14 @@ import ntutifm.game.google.MyActivity
 import ntutifm.game.google.entity.MyItem
 import ntutifm.game.google.entity.SearchData
 import ntutifm.game.google.global.AppUtil
+import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiClass.CityRoad
 import ntutifm.game.google.net.ApiClass.CitySpeed
 import ntutifm.game.google.net.ApiClass.Parking
 import ntutifm.game.google.ui.map.behavior
 import ntutifm.game.google.ui.map.mClusterManager
-import ntutifm.game.google.ui.search.filteredList
+import ntutifm.game.google.ui.search.SearchViewModel
+import ntutifm.game.google.ui.search.searchList
 import ntutifm.game.google.ui.search.speedData
 import retrofit2.Call
 import retrofit2.Callback
@@ -52,11 +54,11 @@ public class ApiProcessor {
                 call: Call<List<CityRoad>>?,
                 response: Response<List<CityRoad>>?
             ) {
-                filteredList.removeAll(filteredList)
                 if(response?.body()!= null){
-                    for (item in response.body()!!){
-                        filteredList.add(SearchData(item.roadName,item.roadId))
-                    }
+                    MyLog.d("SearchStart")
+                    SearchViewModel().updateSearch(response.body()!!)
+                    searchList.clear()
+                    searchList.addAll(response.body()!!)
                 }else{
                     Log.d("RoadName", "Null")
                 }
@@ -75,10 +77,8 @@ public class ApiProcessor {
                 response: Response<List<CitySpeed>>?
             ) {
                 if(response?.body()!= null){
-                    for (item in response.body()!!){
-                        behavior?.state = BottomSheetBehavior.STATE_EXPANDED
-                        speedData.add(item.direction+item.volume.toString()+item.avgSpeed.toString())
-                    }
+                    speedData.clear()
+                    speedData.addAll(response.body()!!)
                 }else{
                     Log.d("RoadSpeed", "Null")
                 }

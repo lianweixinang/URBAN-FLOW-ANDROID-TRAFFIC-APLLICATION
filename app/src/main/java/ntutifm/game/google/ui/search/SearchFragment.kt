@@ -1,37 +1,41 @@
 package ntutifm.game.google.ui.search
 
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ntutifm.game.google.MyActivity
-import ntutifm.game.google.R
 import ntutifm.game.google.databinding.FragmentSearchBinding
 import ntutifm.game.google.entity.SearchAdaptor
 import ntutifm.game.google.entity.SearchData
+import ntutifm.game.google.entity.SyncBottomBar
 import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiCallBack
+import ntutifm.game.google.net.ApiClass.CityRoad
+import ntutifm.game.google.net.ApiClass.CitySpeed
 import ntutifm.game.google.net.ApiManager
 import ntutifm.game.google.net.ApiProcessor
-import java.util.*
-import kotlin.collections.ArrayList
-val speedData :MutableList<String> = mutableListOf()
-val filteredList: MutableList<SearchData> = mutableListOf()
+import ntutifm.game.google.ui.map.MapViewModel
+
+val speedData :MutableList<CitySpeed> = mutableListOf()
+val searchList: MutableList<CityRoad> = mutableListOf()
 class SearchFragment : Fragment(), ApiCallBack {
 
     private var _binding : FragmentSearchBinding? = null
     private val binding get() = _binding!!
     private var recycleView : RecyclerView? = null
-    private var adapter : SearchAdaptor? = null
+    private val mapViewModel : MapViewModel by lazy {
+        ViewModelProvider(this)[MapViewModel::class.java]}
     private val viewModel : SearchViewModel by lazy {
         ViewModelProvider(this)[SearchViewModel::class.java]
     }
@@ -59,7 +63,7 @@ class SearchFragment : Fragment(), ApiCallBack {
         recycleView = binding.recycleView
         recycleView?.setHasFixedSize(true)
         recycleView?.layoutManager = LinearLayoutManager(MyActivity().context)
-        recycleView?.adapter = SearchAdaptor(filteredList, itemOnClickListener)
+        recycleView?.adapter = SearchAdaptor(searchList, itemOnClickListener)
     }
 
     /** 當文字變化 */
@@ -77,21 +81,22 @@ class SearchFragment : Fragment(), ApiCallBack {
 
     private fun filterList(newText: String?) {
         if(newText!="" && newText!= null) {
-            ApiManager(this, newText).execute(this, ApiProcessor().getCityRoadId)
-            adapter?.setFilteredList(filteredList)
+            viewModel.filterSearch(this, newText,this)
         }else{
-            filteredList.removeAll(filteredList)
+            searchList.removeAll(searchList)
         }
     }
 
     private val itemOnClickListener = View.OnClickListener {
         try {
-            val searchData = it.tag as SearchData
-            MyLog.d(searchData.id)
-            ApiManager(this, searchData.id).execute(this, ApiProcessor().getCityRoadSpeed)
+            val searchData = it.tag as CityRoad
+            MyLog.d(searchData.roadId)
+            ApiManager(this, searchData.roadId).execute(this, ApiProcessor().getCityRoadSpeed)
             binding.searchView.setQuery("", false)
-            filteredList.removeAll(filteredList)
-            adapter?.setFilteredList(filteredList)
+            searchList.removeAll(searchList)
+            mapViewModel.updateSpeed(speedData)
+            MainScope().launch(Dispatchers.Main){SyncBottomBar.updateState(SyncBottomBar.State.Open)}
+            AppUtil.popBackStack(parentFragmentManager)
             //AppUtil.showDialog("路段為${searchData.title}\n${speedData}", activity)
         } catch (e: Exception) {
             MyLog.e(e.toString())

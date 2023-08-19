@@ -9,8 +9,9 @@ import com.google.android.material.card.MaterialCardView
 import ntutifm.game.google.R
 import ntutifm.game.google.databinding.FragmentWeatherBinding
 import ntutifm.game.google.databinding.SearchItemBinding
+import ntutifm.game.google.net.ApiClass.CityRoad
 
-class SearchAdaptor(private var mList: List<SearchData>, private val itemOnClickListener: View.OnClickListener) :
+class SearchAdaptor(private var mList: List<CityRoad>?, private val itemOnClickListener: View.OnClickListener) :
     RecyclerView.Adapter<SearchAdaptor.SearchViewHolder>() {
 
     inner class SearchViewHolder(binding: SearchItemBinding): RecyclerView.ViewHolder(binding.root){
@@ -19,7 +20,7 @@ class SearchAdaptor(private var mList: List<SearchData>, private val itemOnClick
         val root : MaterialCardView = itemView.findViewById(R.id.root)
     }
 
-    fun setFilteredList(mList: List<SearchData>){
+    fun setFilteredList(mList: List<CityRoad>){
         this.mList = mList
         notifyDataSetChanged()
     }
@@ -32,12 +33,12 @@ class SearchAdaptor(private var mList: List<SearchData>, private val itemOnClick
 
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
         holder.logo.setImageResource(R.drawable.ic_baseline_search_25)
-        holder.title.text = mList[position].title
+        holder.title.text = mList?.get(position)?.roadName ?: ""
         holder.root.setOnClickListener(itemOnClickListener)
-        holder.root.tag = mList[position]
+        holder.root.tag = mList?.get(position) ?: ""
     }
 
     override fun getItemCount(): Int {
-        return mList.size
+        return mList?.size ?: 0
     }
 }

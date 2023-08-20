@@ -1,8 +1,10 @@
 package ntutifm.game.google.entity
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
@@ -11,13 +13,14 @@ import ntutifm.game.google.databinding.FragmentWeatherBinding
 import ntutifm.game.google.databinding.SearchItemBinding
 import ntutifm.game.google.net.ApiClass.CityRoad
 
-class SearchAdaptor(private var mList: List<CityRoad>?, private val itemOnClickListener: View.OnClickListener) :
+class SearchAdaptor(private var mList: List<CityRoad>?, private val itemOnClickListener: View.OnClickListener,  private val deleteListener: View.OnClickListener) :
     RecyclerView.Adapter<SearchAdaptor.SearchViewHolder>() {
 
     inner class SearchViewHolder(binding: SearchItemBinding): RecyclerView.ViewHolder(binding.root){
         val logo : ImageView = itemView.findViewById(R.id.logoIv)
         val title : TextView = itemView.findViewById(R.id.titleTv)
         val root : MaterialCardView = itemView.findViewById(R.id.root)
+        val delete : ImageView = itemView.findViewById(R.id.delete)
     }
 
     fun setFilteredList(mList: List<CityRoad>){
@@ -34,8 +37,17 @@ class SearchAdaptor(private var mList: List<CityRoad>?, private val itemOnClickL
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
         holder.logo.setImageResource(R.drawable.ic_baseline_search_25)
         holder.title.text = mList?.get(position)?.roadName ?: ""
-        holder.root.setOnClickListener(itemOnClickListener)
-        holder.root.tag = mList?.get(position) ?: ""
+        holder.title.tag = mList?.get(position) ?: ""
+        holder.delete.tag = mList?.get(position) ?: ""
+        holder.title.setOnClickListener(itemOnClickListener)
+//        holder.root.setOnTouchListener { view, motionEvent ->
+//                when(motionEvent.action){
+//                    MotionEvent.ACTION_DOWN ->view.parent.requestDisallowInterceptTouchEvent(false)
+//                    MotionEvent.ACTION_UP ->view.parent.requestDisallowInterceptTouchEvent(true)
+//                }
+//                return@setOnTouchListener false
+//            }
+        holder.delete.setOnClickListener (deleteListener)
     }
 
     override fun getItemCount(): Int {

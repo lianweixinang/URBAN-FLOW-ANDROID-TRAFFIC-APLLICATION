@@ -1,9 +1,11 @@
 package ntutifm.game.google.ui.search
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -20,6 +22,9 @@ import ntutifm.game.google.entity.SearchData
 import ntutifm.game.google.entity.SyncBottomBar
 import ntutifm.game.google.entity.SyncRoad
 import ntutifm.game.google.entity.SyncSpeed
+import ntutifm.game.google.entity.dbAddHistory
+import ntutifm.game.google.entity.dbDeleteHistory
+import ntutifm.game.google.entity.dbDisplayHistory
 import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiCallBack
@@ -41,6 +46,7 @@ class SearchFragment : Fragment(), ApiCallBack {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         searchViewInit()
@@ -55,11 +61,12 @@ class SearchFragment : Fragment(), ApiCallBack {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun searchListInit(){
         recycleView = binding.recycleView
         recycleView?.setHasFixedSize(true)
         recycleView?.layoutManager = LinearLayoutManager(MyActivity().context)
-        adaptor = SearchAdaptor(SyncRoad.searchLists.value, itemOnClickListener)
+        adaptor = SearchAdaptor(dbDisplayHistory(requireActivity()), itemOnClickListener, deleteListener)
         recycleView?.adapter = adaptor
         SyncRoad.searchLists.observe(viewLifecycleOwner){
             adaptor?.setFilteredList(it)
@@ -80,14 +87,19 @@ class SearchFragment : Fragment(), ApiCallBack {
     }
 
     private fun filterList(newText: String?) {
-        if(newText!= null) {
+        if(newText!= "" && newText!= null) {
             SyncRoad.filterSearch(this, newText, this)
+        }else{
+            adaptor?.setFilteredList(dbDisplayHistory(requireActivity()))
         }
+
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private val itemOnClickListener = View.OnClickListener {
         try {
             val searchData = it.tag as CityRoad
+            dbAddHistory(searchData, requireActivity())
             MyLog.d(searchData.roadName)
             SyncSpeed.getCityRoadSpeed(this,searchData.roadId,this)
             binding.searchView.setQuery("", false)
@@ -95,6 +107,15 @@ class SearchFragment : Fragment(), ApiCallBack {
             AppUtil.showTopToast(requireActivity(),"搜尋中...")
 
 
+        } catch (e: Exception) {
+            MyLog.e(e.toString())
+        }
+    }
+    private val deleteListener = View.OnClickListener {
+        try {
+            val searchData = it.tag as CityRoad
+            dbDeleteHistory(searchData.roadName, requireActivity())
+            adaptor?.setFilteredList(dbDisplayHistory(requireActivity()))
         } catch (e: Exception) {
             MyLog.e(e.toString())
         }

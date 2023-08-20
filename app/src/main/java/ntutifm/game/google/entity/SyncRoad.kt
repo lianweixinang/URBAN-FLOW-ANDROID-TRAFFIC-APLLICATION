@@ -1,5 +1,6 @@
 package ntutifm.game.google.entity
 
+import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

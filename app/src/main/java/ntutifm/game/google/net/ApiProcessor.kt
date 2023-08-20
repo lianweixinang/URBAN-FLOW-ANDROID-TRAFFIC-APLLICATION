@@ -18,7 +18,7 @@ public class ApiProcessor {
     public val getParking = "getParking"
     public val getCityRoadId = "getCityRoadId"
     public val getCityRoadSpeed = "getCityRoadSpeed"
-    public fun getParking(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
+    fun getParking(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
         val myAPIService = RetrofitManager.getInstance().api
         val call: Call<List<Parking>>? = myAPIService.parkingList
         call!!.enqueue(object : Callback<List<Parking>> {
@@ -39,7 +39,7 @@ public class ApiProcessor {
             }
         })
     }
-    public fun getCityRoadId(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
+    fun getCityRoadId(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
         val myAPIService = RetrofitManager.getInstance().api
         MyLog.d(successData.toString())
         val call: Call<List<CityRoad>>? = myAPIService.getRoadId(successData[1])
@@ -60,7 +60,7 @@ public class ApiProcessor {
             }
         })
     }
-    public fun getCityRoadSpeed(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
+    fun getCityRoadSpeed(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
         val myAPIService = RetrofitManager.getInstance().api
         val call: Call<List<CitySpeed>>? = myAPIService.getRoadSpeed(successData[1])
         call!!.enqueue(object : Callback<List<CitySpeed>> {

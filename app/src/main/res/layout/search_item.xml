@@ -6,32 +6,43 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <LinearLayout
+        android:id="@+id/searchItemBox"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="35dp"
         android:padding="8dp">
+
         <ImageView
             android:id="@+id/logoIv"
-            android:layout_width="14dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
             android:src="@drawable/ic_baseline_star_24" />
 
         <TextView
             android:id="@+id/titleTv"
-            android:layout_width="wrap_content"
+            android:layout_width="323dp"
             android:layout_height="match_parent"
+            android:paddingLeft="10dp"
             android:text="Language"
             android:textColor="@color/black"
             android:textSize="8sp"
             android:textStyle="bold"
-            android:paddingLeft="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.199"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/delete"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_baseline_cancel_24"
+            app:layout_constraintBottom_toBottomOf="@+id/searchItemBox"
+            app:layout_constraintEnd_toEndOf="@+id/searchItemBox"
+            app:layout_constraintTop_toTopOf="@+id/searchItemBox" />
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

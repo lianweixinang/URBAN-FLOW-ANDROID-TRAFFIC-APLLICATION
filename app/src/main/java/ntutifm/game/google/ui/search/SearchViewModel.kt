@@ -27,19 +27,15 @@ class SearchViewModel : ViewModel() {
     val searchLists: LiveData<List<CityRoad>> = _searchLists
     private val _search = MutableLiveData<String>("xxx")
     val search: LiveData<String> = _search
-
     fun filterSearch(callBack: ApiCallBack?, data: String, fragment:Fragment){
         ApiManager(callBack, data).execute(fragment, ApiProcessor().getCityRoadId)
     }
     fun clearSearch(){
         _searchLists.postValue(listOf<CityRoad>())
     }
-    @MainThread
-    fun updateSearch(data:List<CityRoad>){
-        viewModelScope.launch(Dispatchers.Main) {
-            _searchLists.postValue(data)
-        }
 
+    fun updateSearch(data:List<CityRoad>){
+        _searchLists.postValue(data)
     }
     fun update(){
         viewModelScope.launch(Dispatchers.Main) {

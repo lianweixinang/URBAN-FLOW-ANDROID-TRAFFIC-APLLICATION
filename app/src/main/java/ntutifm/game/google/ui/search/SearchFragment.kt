@@ -18,6 +18,8 @@ import ntutifm.game.google.databinding.FragmentSearchBinding
 import ntutifm.game.google.entity.SearchAdaptor
 import ntutifm.game.google.entity.SearchData
 import ntutifm.game.google.entity.SyncBottomBar
+import ntutifm.game.google.entity.SyncRoad
+import ntutifm.game.google.entity.SyncSpeed
 import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiCallBack
@@ -27,18 +29,12 @@ import ntutifm.game.google.net.ApiManager
 import ntutifm.game.google.net.ApiProcessor
 import ntutifm.game.google.ui.map.MapViewModel
 
-val speedData :MutableList<CitySpeed> = mutableListOf()
-val searchList: MutableList<CityRoad> = mutableListOf()
 class SearchFragment : Fragment(), ApiCallBack {
 
     private var _binding : FragmentSearchBinding? = null
     private val binding get() = _binding!!
     private var recycleView : RecyclerView? = null
-    private val mapViewModel : MapViewModel by lazy {
-        ViewModelProvider(this)[MapViewModel::class.java]}
-    private val viewModel : SearchViewModel by lazy {
-        ViewModelProvider(this)[SearchViewModel::class.java]
-    }
+    private var adaptor : SearchAdaptor? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
@@ -63,7 +59,11 @@ class SearchFragment : Fragment(), ApiCallBack {
         recycleView = binding.recycleView
         recycleView?.setHasFixedSize(true)
         recycleView?.layoutManager = LinearLayoutManager(MyActivity().context)
-        recycleView?.adapter = SearchAdaptor(searchList, itemOnClickListener)
+        adaptor = SearchAdaptor(SyncRoad.searchLists.value, itemOnClickListener)
+        recycleView?.adapter = adaptor
+        SyncRoad.searchLists.observe(viewLifecycleOwner){
+            adaptor?.setFilteredList(it)
+        }
     }
 
     /** 當文字變化 */
@@ -80,24 +80,21 @@ class SearchFragment : Fragment(), ApiCallBack {
     }
 
     private fun filterList(newText: String?) {
-        if(newText!="" && newText!= null) {
-            viewModel.filterSearch(this, newText,this)
-        }else{
-            searchList.removeAll(searchList)
+        if(newText!= null) {
+            SyncRoad.filterSearch(this, newText, this)
         }
     }
 
     private val itemOnClickListener = View.OnClickListener {
         try {
             val searchData = it.tag as CityRoad
-            MyLog.d(searchData.roadId)
-            ApiManager(this, searchData.roadId).execute(this, ApiProcessor().getCityRoadSpeed)
+            MyLog.d(searchData.roadName)
+            SyncSpeed.getCityRoadSpeed(this,searchData.roadId,this)
             binding.searchView.setQuery("", false)
-            searchList.removeAll(searchList)
-            mapViewModel.updateSpeed(speedData)
-            MainScope().launch(Dispatchers.Main){SyncBottomBar.updateState(SyncBottomBar.State.Open)}
             AppUtil.popBackStack(parentFragmentManager)
-            //AppUtil.showDialog("路段為${searchData.title}\n${speedData}", activity)
+            AppUtil.showTopToast(requireActivity(),"搜尋中...")
+
+
         } catch (e: Exception) {
             MyLog.e(e.toString())
         }
@@ -105,15 +102,15 @@ class SearchFragment : Fragment(), ApiCallBack {
 
 
     override fun onSuccess(successData: java.util.ArrayList<String>) {
-        TODO("Not yet implemented")
+        MyLog.e("onSuccess")
     }
 
     override fun onError(errorCode: Int, errorData: java.util.ArrayList<String>) {
-        TODO("Not yet implemented")
+        MyLog.e("onError")
     }
 
     override fun doInBackground(result: Int, successData: java.util.ArrayList<String>) {
-        TODO("Not yet implemented")
+        MyLog.e("doInBackground")
     }
 
     override fun onDestroyView() {

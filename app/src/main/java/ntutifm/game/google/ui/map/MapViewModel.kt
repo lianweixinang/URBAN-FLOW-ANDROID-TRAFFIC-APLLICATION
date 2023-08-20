@@ -19,6 +19,5 @@ class MapViewModel : ViewModel() {
     fun updateSpeed(data:MutableList<CitySpeed>){
         MyLog.e("updateSpeed")
         _speedLists.postValue(data)
-        speedLists.value?.get(0)?.let { MyLog.e(it.direction) }
     }
 }

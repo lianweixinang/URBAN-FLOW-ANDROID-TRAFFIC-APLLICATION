@@ -33,6 +33,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.maps.android.clustering.ClusterManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import ntutifm.game.google.*
 import ntutifm.game.google.R
@@ -40,11 +42,12 @@ import ntutifm.game.google.databinding.FragmentMapBinding
 import ntutifm.game.google.entity.MyItem
 import ntutifm.game.google.entity.SyncBottomBar
 import ntutifm.game.google.entity.SyncBottomBar.state
+import ntutifm.game.google.entity.SyncSpeed
 import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.*
 import ntutifm.game.google.ui.search.SearchFragment
-import ntutifm.game.google.ui.search.speedData
+import kotlin.math.roundToInt
 
 
 var mClusterManager:ClusterManager<MyItem>? = null
@@ -63,7 +66,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     private lateinit var map : GoogleMap
     private lateinit var mLocationRequest : LocationRequest
     private val viewModel : MapViewModel by lazy {
-        ViewModelProvider(this)[MapViewModel::class.java]
+        ViewModelProvider(requireActivity())[MapViewModel::class.java]
     }
     private var latLng : LatLng? = null
 
@@ -85,15 +88,25 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         binding.bg.setOnClickListener(backBtnListener)
         binding.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
         bottomSheetInit()
-        viewModel.speedLists.observe(viewLifecycleOwner){
-            MyLog.e("changeSpeed")
-            binding.cars.text = it[0].volume.toString()
-            binding.cars2.text = it[1].volume.toString()
-            if(it.size>1) {
-                binding.speed.text = it[0].avgSpeed.toString()
-                binding.speed2.text = it[1].avgSpeed.toString()
+        SyncSpeed.speedLists.observe(viewLifecycleOwner){
+            MyLog.e("updateSpeedEnd")
+            if(it.isNotEmpty()) {
+                MyLog.e("changeSpeed"+it[0].volume+" "+it[0].avgSpeed)
+                binding.cars.text = it[0].volume.toString() + " Cars"
+                binding.speed.text = it[0].avgSpeed.roundToInt().toString() + " km/h"
+                if (it.size > 1) {
+                    binding.cars2.text = it[1].volume.toString() + " Cars"
+                    binding.speed2.text = it[1].avgSpeed.roundToInt().toString() + " km/h"
+                }
+            }else{
+                binding.cars.text = "無資料"
+                binding.speed.text = "無資料"
+                binding.cars2.text = "無資料"
+                binding.speed2.text = "無資料"
             }
+            MainScope().launch(Dispatchers.Main){SyncBottomBar.updateState(SyncBottomBar.State.Open)}
         }
+
         //AppUtil.showTopToast(context, "HI")
         //AppUtil.showDialog("Hello", activity)
         //binding.videoView.setVideoURI(Uri.parse("https://cctv.bote.gov.taipei:8501/MJPEG/031"))

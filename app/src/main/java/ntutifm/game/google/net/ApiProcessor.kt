@@ -2,20 +2,14 @@ package ntutifm.game.google.net
 
 import android.content.Context
 import android.util.Log
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import ntutifm.game.google.MyActivity
 import ntutifm.game.google.entity.MyItem
-import ntutifm.game.google.entity.SearchData
-import ntutifm.game.google.global.AppUtil
+import ntutifm.game.google.entity.SyncRoad
+import ntutifm.game.google.entity.SyncSpeed
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiClass.CityRoad
 import ntutifm.game.google.net.ApiClass.CitySpeed
 import ntutifm.game.google.net.ApiClass.Parking
-import ntutifm.game.google.ui.map.behavior
 import ntutifm.game.google.ui.map.mClusterManager
-import ntutifm.game.google.ui.search.SearchViewModel
-import ntutifm.game.google.ui.search.searchList
-import ntutifm.game.google.ui.search.speedData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -24,7 +18,6 @@ public class ApiProcessor {
     public val getParking = "getParking"
     public val getCityRoadId = "getCityRoadId"
     public val getCityRoadSpeed = "getCityRoadSpeed"
-
     public fun getParking(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
         val myAPIService = RetrofitManager.getInstance().api
         val call: Call<List<Parking>>? = myAPIService.parkingList
@@ -48,6 +41,7 @@ public class ApiProcessor {
     }
     public fun getCityRoadId(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
         val myAPIService = RetrofitManager.getInstance().api
+        MyLog.d(successData.toString())
         val call: Call<List<CityRoad>>? = myAPIService.getRoadId(successData[1])
         call!!.enqueue(object : Callback<List<CityRoad>> {
             override fun onResponse(
@@ -56,9 +50,7 @@ public class ApiProcessor {
             ) {
                 if(response?.body()!= null){
                     MyLog.d("SearchStart")
-                    SearchViewModel().updateSearch(response.body()!!)
-                    searchList.clear()
-                    searchList.addAll(response.body()!!)
+                    SyncRoad.updateSearch(response.body()!!)
                 }else{
                     Log.d("RoadName", "Null")
                 }
@@ -77,8 +69,8 @@ public class ApiProcessor {
                 response: Response<List<CitySpeed>>?
             ) {
                 if(response?.body()!= null){
-                    speedData.clear()
-                    speedData.addAll(response.body()!!)
+                    MyLog.d(response?.body()!!.toString())
+                   SyncSpeed.updateSpeed(response?.body()!!)
                 }else{
                     Log.d("RoadSpeed", "Null")
                 }

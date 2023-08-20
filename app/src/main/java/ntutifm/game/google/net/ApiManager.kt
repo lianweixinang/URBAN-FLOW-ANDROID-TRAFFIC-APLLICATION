@@ -46,7 +46,7 @@ class ApiManager constructor(
 
     private suspend fun doInBackground(context: Context?, apiName: String): Int =
         withContext(Dispatchers.IO) {
-            var result: Int = 13
+            var result: Int = 77
             successData = ArrayList(3)
             errorData = ArrayList(3)
             successData.add(apiName)
@@ -61,12 +61,12 @@ class ApiManager constructor(
                 ArrayList::class.java,
                 ArrayList::class.java
             )
+
             if (method.name == apiName) {
-                result =
-                    method.invoke(apiClass.newInstance(), context, successData, errorData) as Int
+                method.invoke(apiClass.newInstance(), context, successData, errorData)
             }
 
-            if (result == 777) {
+            if (result == 77) {
                 callBack?.doInBackground(result, successData)
             }
             return@withContext result

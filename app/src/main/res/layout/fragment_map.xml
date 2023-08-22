@@ -74,13 +74,94 @@
                     app:srcCompat="@drawable/rcc" />
 
                 <androidx.cardview.widget.CardView
+                    android:id='@+id/direction'
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf='@+id/imageView'
+                    app:cardCornerRadius="15dp"
+                    app:cardBackgroundColor="#FFFFFF">
+
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#FFFFFF"
+                            android:padding="5dp">
+
+                            <ImageView
+                                android:id="@+id/directionIcon"
+                                android:layout_width="match_parent"
+                                android:layout_height="30dp"
+                                android:layout_marginTop="1dp"
+                                android:layout_marginRight="50dp"
+                                android:src='@drawable/baseline_swap_horiz_24'
+                                app:cardCornerRadius="10dp" />
+                            <TextView
+                                android:id="@+id/carDirection"
+                                android:layout_width="match_parent"
+                                android:layout_height="30dp"
+                                android:layout_marginTop="1dp"
+                                android:layout_marginLeft="180dp"
+                                android:text="東向"
+                                android:textColor="#4D4D4E"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+
+                        <ImageView
+                            android:id="@+id/position1"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginRight="250dp"
+                            android:src='@drawable/baseline_location_on_24'
+                            app:cardCornerRadius="10dp" />
+                        <TextView
+                            android:id="@+id/road1"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginLeft="80dp"
+                            android:text="承德路"
+                            android:textColor="#000000"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                        <ImageView
+                            android:id="@+id/position2"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginLeft="110dp"
+                            android:src='@drawable/baseline_location_on_24'
+                            app:cardCornerRadius="10dp" />
+                        <TextView
+                            android:id="@+id/road2"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginLeft="260dp"
+                            android:text="市民大道"
+                            android:textColor="#000000"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+
+                    </RelativeLayout>
+
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
                     android:id='@+id/trafficFlow'
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf='@+id/imageView'
+                    app:layout_constraintTop_toBottomOf='@+id/direction'
+                    android:layout_marginTop="20dp"
                     app:cardCornerRadius="15dp"
                     app:cardBackgroundColor="#FFFFFF">
 
@@ -175,7 +256,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     app:cardCornerRadius="10dp"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginTop="20dp"
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

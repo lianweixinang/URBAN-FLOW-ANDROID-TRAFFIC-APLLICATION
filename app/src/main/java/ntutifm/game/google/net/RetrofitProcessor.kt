@@ -1,7 +1,7 @@
 package ntutifm.game.google.net
 
-import android.content.Context
 import android.util.Log
+import ntutifm.game.google.net.ApiClass.Parking
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

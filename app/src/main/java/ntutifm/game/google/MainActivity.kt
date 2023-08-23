@@ -14,7 +14,7 @@ import ntutifm.game.google.net.City
 import ntutifm.game.google.net.RetrofitManager
 import ntutifm.game.google.ui.home.HomeFragment
 import ntutifm.game.google.ui.map.MapFragment
-import ntutifm.game.google.ui.search.oil.OilFragment
+import ntutifm.game.google.ui.oil.OilFragment
 import ntutifm.game.google.ui.route.RouteFragment
 import ntutifm.game.google.ui.search.SearchFragment
 import ntutifm.game.google.ui.weather.WeatherFragment

@@ -4,6 +4,9 @@
     tools:showIn="navigation_view">
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_map"
+            android:title="首頁"/>
+        <item
             android:id="@+id/nav_oil"
             android:title="油價資訊" />
         <item
@@ -13,8 +16,8 @@
             android:id="@+id/nav_weather"
             android:title="天氣" />
         <item
-            android:id="@+id/nav_map"
-            android:title="跳轉"/>
+            android:id="@+id/nav_notification"
+            android:title="即時路況通知" />
         <item
             android:id="@+id/nav_search"
             android:title="設定"/>

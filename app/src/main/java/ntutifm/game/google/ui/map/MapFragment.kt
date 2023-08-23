@@ -10,113 +10,183 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.Toast
-import androidx.annotation.MainThread
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.maps.android.clustering.ClusterManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import ntutifm.game.google.*
 import ntutifm.game.google.R
 import ntutifm.game.google.databinding.FragmentMapBinding
 import ntutifm.game.google.entity.MyItem
-import ntutifm.game.google.entity.MyItemReader
+import ntutifm.game.google.entity.SyncBottomBar
+import ntutifm.game.google.entity.SyncBottomBar.state
+import ntutifm.game.google.entity.SyncSpeed
+import ntutifm.game.google.global.AppUtil
+import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.*
-import ntutifm.game.google.ui.home.HomeFragment
 import ntutifm.game.google.ui.search.SearchFragment
-import org.json.JSONException
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.io.InputStream
-import java.util.ArrayList
+import kotlin.math.roundToInt
+
 
 var mClusterManager:ClusterManager<MyItem>? = null
-
+var favoriteFlag:MutableLiveData<Boolean>? = null
+var behavior:BottomSheetBehavior<View>? = null
 class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
     ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack {
-    private var permissionDenied = false
-    private lateinit var map: GoogleMap
-    internal var mCurrLocationMarker: Marker? = null
-    internal var mFusedLocationClient: FusedLocationProviderClient? = null
-    internal var mLastLocation : Location? = null
-    private var _binding: FragmentMapBinding? = null
-    private lateinit var mLocationRequest: LocationRequest
-    private val binding get() = _binding!!
 
+    internal var mCurrLocationMarker : Marker? = null
+    internal var mLastLocation : Location? = null
+    private var _binding : FragmentMapBinding? = null
+    private val binding get() = _binding!!
+    private var mFusedLocationClient : FusedLocationProviderClient? = null
+    private var permissionDenied = false
+    private lateinit var map : GoogleMap
+    private lateinit var mLocationRequest : LocationRequest
+    private val viewModel : MapViewModel by lazy {
+        ViewModelProvider(requireActivity())[MapViewModel::class.java]
+    }
+    private var latLng : LatLng? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
-        var idx = 0
-        val search: ImageView = binding.fragmentHome.searchBtn
-        search.setOnClickListener {
-            isOpen.value = true
-            Log.e("mmm",isOpen.value.toString())
-            val fragment = SearchFragment()
-            val transaction = parentFragmentManager?.beginTransaction()
-            transaction?.replace(R.id.fragment_home, fragment)
-            transaction?.commit()
-        }
-        binding.bg.setOnClickListener {
-            Log.e("mmm",isOpen.value.toString())
-            if(isOpen.value == true){
-                val fragment = HomeFragment()
-                val transaction = parentFragmentManager?.beginTransaction()
-                transaction?.replace(R.id.fragment_home, fragment)
-                transaction?.commit()
-            }
-            isOpen.value = false
-        }
-        val favorite: ImageView = binding.fragmentHome.favoriteBtn
-        favorite.setOnClickListener {
-            if(idx ==0){
-                favorite.setImageResource(android.R.drawable.star_big_on)
-                idx = 1
+        favoriteFlag = MutableLiveData(false) //到時候用viewModel給值
+        binding.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
+        binding.bg.setOnClickListener(backBtnListener)
+        binding.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
+        bottomSheetInit()
+        SyncSpeed.speedLists.observe(viewLifecycleOwner){
+            MyLog.e("updateSpeedEnd")
+            if(it.isNotEmpty()) {
+                MyLog.e("changeSpeed"+it[0].volume+" "+it[0].avgSpeed)
+                binding.cars.text = it[0].volume.toString() + " Cars"
+                binding.speed.text = it[0].avgSpeed.roundToInt().toString() + " km/h"
+                if (it.size > 1) {
+                    binding.cars2.text = it[1].volume.toString() + " Cars"
+                    binding.speed2.text = it[1].avgSpeed.roundToInt().toString() + " km/h"
+                }
             }else{
-                favorite.setImageResource(android.R.drawable.star_big_off)
-                idx = 0
+                binding.cars.text = "無資料"
+                binding.speed.text = "無資料"
+                binding.cars2.text = "無資料"
+                binding.speed2.text = "無資料"
             }
+            MainScope().launch(Dispatchers.Main){SyncBottomBar.updateState(SyncBottomBar.State.Open)}
         }
 
-        val root: View = binding.root
-        return root
+        //AppUtil.showTopToast(context, "HI")
+        //AppUtil.showDialog("Hello", activity)
+        //binding.videoView.setVideoURI(Uri.parse("https://cctv.bote.gov.taipei:8501/MJPEG/031"))
+
+    }
+    private fun bottomSheetInit(){
+        val bottomSheet: View = binding.bg
+        behavior = BottomSheetBehavior.from(bottomSheet)
+        behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+        behavior?.addBottomSheetCallback(object : BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                binding.imageView.isVisible = true
+                binding.videoView.isVisible = false
+                binding.trafficFlow.isVisible = newState == BottomSheetBehavior.STATE_EXPANDED
+                binding.imageView3.isVisible = newState == BottomSheetBehavior.STATE_EXPANDED
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                // Do something when the bottom sheet is sliding
+            }
+        })
+        state.observe(viewLifecycleOwner) { state: SyncBottomBar.State? ->
+            when (state) {
+                is SyncBottomBar.State.Open -> {
+                    behavior?.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+                is SyncBottomBar.State.Close -> {
+                    behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+                }
+            }
+        }
+    }
+
+    /** 收藏切換 */
+    private val favoriteBtnListener = View.OnClickListener {
+        binding.fragmentHome.favoriteBtn.apply {
+            if(favoriteFlag?.value == true){
+                this.setImageResource(R.drawable.ic_baseline_star_24)
+            }else{
+                this.setImageResource(R.drawable.ic_baseline_star_25)
+            }
+            (favoriteFlag?.value).also { favoriteFlag?.value = it?.not() }
+        }
+
+    }
+
+    /** 關閉搜尋欄 */
+    private val backBtnListener = View.OnClickListener {
+        MyLog.e(isOpen.value.toString())
+        if(isOpen.value == true){
+            AppUtil.popBackStack(parentFragmentManager)
+        }
+        isOpen.value = false
+
+    }
+
+    /** 開啟搜尋欄 */
+    private val searchBtnListener = View.OnClickListener {
+        isOpen.value = true
+        MyLog.e(isOpen.value.toString())
+        AppUtil.startFragment(parentFragmentManager, R.id.fragment_home, SearchFragment())
+    }
+
+    /** 設置地圖 */
+    override fun onMapReady(googleMap: GoogleMap) {
+        map = googleMap
+        map.isTrafficEnabled = true
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        map.uiSettings.isMyLocationButtonEnabled = true
+        map.setOnMyLocationButtonClickListener(this)
+        map.setOnMyLocationClickListener(this)
+        enableMyLocation()
+        moveToCurrentLocation()
+        initMark()
+        setLocationInitBtn()
     }
 
 
     @SuppressLint("UseRequireInsteadOfGet")
-    override fun onMapReady(googleMap: GoogleMap) {
-        map = googleMap
-        map.isTrafficEnabled =true
-        enableMyLocation()
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!)
-//        val sydney = LatLng(-34.0, 151.0)
-//
-//        map.addMarker(MarkerOptions()
-//            .position(sydney)
-//            .title("Marker in Sydney"))
-//        map.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-        map.uiSettings.isMyLocationButtonEnabled = true
-        initMark()
+    private fun setLocationInitBtn(){
         if (childFragmentManager
                 .findFragmentById(R.id.map)!=null && childFragmentManager
                 .findFragmentById(R.id.map)!!.view!!.findViewById<View>("1".toInt()) != null) {
@@ -127,12 +197,8 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
 
             rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0)
             rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
-            rlp.setMargins(0, 0, 30, 30)
-            map.setOnMyLocationButtonClickListener(this)
-            map.setOnMyLocationClickListener(this)
-
+            rlp.setMargins(0, 0, 30, 1000)
         }
-
     }
     private fun drawMarker(map: GoogleMap, location: Location) {
         if (map != null) {
@@ -144,6 +210,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(gps, 12f))
         }
     }
+
     @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
 
@@ -201,45 +268,41 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     }
 
 
-    internal var mLocationCallback: LocationCallback = object : LocationCallback() {
+    private var mLocationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             val locationList = locationResult.locations
-            Log.d("pppp3", "hi")
             if (locationList.isNotEmpty()) {
                 val location = locationList.last()
-                Log.i("MapsActivity", "Location: " + location.latitude + " " + location.longitude)
                 mLastLocation = location
                 if (mCurrLocationMarker != null) {
                     mCurrLocationMarker?.remove()
                 }
-
-                val latLng = LatLng(location.latitude, location.longitude)
-                val markerOptions = MarkerOptions()
-                markerOptions.position(latLng)
-                markerOptions.title("Current Position")
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
-                mCurrLocationMarker = map.addMarker(markerOptions)
-
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11.0F))
+                latLng = LatLng(location.latitude, location.longitude)
             }
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng!!, 15f))
         }
     }
 
-    @SuppressLint("MissingPermission")
+
     override fun onMyLocationButtonClick(): Boolean {
-        Toast.makeText(activity, "MyLocation button clicked!!!", Toast.LENGTH_SHORT)
-            .show()
+        moveToCurrentLocation()
+        return false
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun moveToCurrentLocation(){
         mLocationRequest = LocationRequest()
         mLocationRequest.interval = 120000 // two minute interval
         mLocationRequest.fastestInterval = 120000
         mLocationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-        Log.d("pppp", permissionDenied.toString())
         if(!permissionDenied){
             mFusedLocationClient?.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper())
         }else{
             enableMyLocation()
         }
-        return false
+        if(latLng != null) {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng!!, 15f))
+        }
     }
 
     override fun onMyLocationClick(location: Location) {
@@ -318,29 +381,6 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         mClusterManager?.setOnClusterItemClickListener { item ->
             false
         }
-    }
-
-    @Throws(JSONException::class)
-    private fun readItems() {
-        val myAPIService = RetrofitManager.getInstance().api
-        val call: Call<List<Parking>>? = myAPIService.parkingList
-        call!!.enqueue(object : Callback<List<Parking>> {
-            override fun onResponse(
-                call: Call<List<Parking>>?,
-                response: Response<List<Parking>>?
-            ) {
-                if(response?.body()!= null){
-                    for (item in response.body()!!){
-                        mClusterManager?.addItem(MyItem(item.lat, item.lng))
-                    }
-                }else{
-                    Log.d("parkingName", "Null")
-                }
-            }
-            override fun onFailure(call: Call<List<Parking>>?, t: Throwable?) {
-                Log.d("title", t.toString())
-            }
-        })
     }
 
     override fun onSuccess(successData: ArrayList<String>){}

@@ -1,4 +1,4 @@
-package ntutifm.game.google.net;
+package ntutifm.game.google.net.ApiClass;
 
 import android.util.Log;
 

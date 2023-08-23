@@ -12,30 +12,27 @@ import ntutifm.game.google.ui.weather.RouteViewModel
 
 class RouteFragment : Fragment() {
 
-    private var _binding:FragmentRouteBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
+    private var _binding : FragmentRouteBinding? = null
     private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val routeViewModel =
-            ViewModelProvider(this).get(RouteViewModel::class.java)
-
-        _binding =FragmentRouteBinding.inflate(inflater, container, false)
-
-        val root: View = binding.root
-        val textView: TextView = binding.textView
-        routeViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-
-        }
-        return root
+    private val viewModel : RouteViewModel by lazy{
+        ViewModelProvider(this)[RouteViewModel::class.java]
     }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentRouteBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
+//        textInit()
+//    }
+
+//    private fun textInit(){
+//       viewModel.text.observe(viewLifecycleOwner) {
+//            binding.textView.text = it
+//        }
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

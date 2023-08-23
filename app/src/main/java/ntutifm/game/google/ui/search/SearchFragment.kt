@@ -1,98 +1,137 @@
 package ntutifm.game.google.ui.search
 
-import android.content.ClipData.Item
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Adapter
-import android.widget.SearchView
-import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.ui.AppBarConfiguration
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ntutifm.game.google.MainActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ntutifm.game.google.MyActivity
-import ntutifm.game.google.R
 import ntutifm.game.google.databinding.FragmentSearchBinding
 import ntutifm.game.google.entity.SearchAdaptor
 import ntutifm.game.google.entity.SearchData
-import java.util.*
-import kotlin.collections.ArrayList
+import ntutifm.game.google.entity.SyncBottomBar
+import ntutifm.game.google.entity.SyncRoad
+import ntutifm.game.google.entity.SyncSpeed
+import ntutifm.game.google.entity.dbAddHistory
+import ntutifm.game.google.entity.dbDeleteHistory
+import ntutifm.game.google.entity.dbDisplayHistory
+import ntutifm.game.google.global.AppUtil
+import ntutifm.game.google.global.MyLog
+import ntutifm.game.google.net.ApiCallBack
+import ntutifm.game.google.net.ApiClass.CityRoad
+import ntutifm.game.google.net.ApiClass.CitySpeed
+import ntutifm.game.google.net.ApiManager
+import ntutifm.game.google.net.ApiProcessor
+import ntutifm.game.google.ui.map.MapViewModel
 
+class SearchFragment : Fragment(), ApiCallBack {
 
-class SearchFragment : Fragment() {
-
-    private var _binding: FragmentSearchBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
+    private var _binding : FragmentSearchBinding? = null
     private val binding get() = _binding!!
-    private lateinit var recyleview: RecyclerView
-    private var itemList =  ArrayList<SearchData>()
-    private lateinit var adapter: SearchAdaptor
-    private lateinit var searchview: androidx.appcompat.widget.SearchView
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        val ViewModel =
-            ViewModelProvider(this).get(SearchViewModel::class.java)
+    private var recycleView : RecyclerView? = null
+    private var adaptor : SearchAdaptor? = null
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-        searchview = binding.searchView
-        searchview.requestFocus()
-        searchview.onActionViewExpanded()
+        return binding.root
+    }
 
-        searchview.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        searchViewInit()
+        searchListInit()
+    }
 
-            override fun onQueryTextChange(newText: String?): Boolean {
-                //filterList(newText)
-                return true
-            }
-        })
-        recyleview = binding.recycleView
-        recyleview.setHasFixedSize(true)
-        recyleview.layoutManager = LinearLayoutManager(MyActivity().context)
-        itemList.add(SearchData("Java", R.drawable.rcc))
-        itemList.add(SearchData("Java1", R.drawable.rcc))
-        itemList.add(SearchData("Java2", R.drawable.rcc))
-        itemList.add(SearchData("Java3", R.drawable.rcc))
-        adapter = SearchAdaptor(itemList)
-        recyleview.adapter = adapter
-//        val btn8: ImageView = binding.cancel
-//        btn8.setOnClickListener {
-//            val fragment2 = HomeFragment()
-//            val transaction = getFragmentManager()?.beginTransaction()
-//            transaction?.replace(R.id.nav_host_fragment_content_main, fragment2)
-//            transaction?.commit()
-//        }
-        return root
+    private fun searchViewInit(){
+        binding.searchView.apply {
+            //this.requestFocus()
+            this.onActionViewExpanded()
+            this.setOnQueryTextListener(queryTextListener)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun searchListInit(){
+        recycleView = binding.recycleView
+        recycleView?.setHasFixedSize(true)
+        recycleView?.layoutManager = LinearLayoutManager(MyActivity().context)
+        adaptor = SearchAdaptor(dbDisplayHistory(requireActivity()), itemOnClickListener, deleteListener)
+        recycleView?.adapter = adaptor
+        SyncRoad.searchLists.observe(viewLifecycleOwner){
+            adaptor?.setFilteredList(it)
+        }
+    }
+
+    /** 當文字變化 */
+    private val queryTextListener = object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+        override fun onQueryTextSubmit(query: String?): Boolean {
+            filterList(query)
+            return false
+        }
+
+        override fun onQueryTextChange(newText: String?): Boolean {
+            filterList(newText)
+            return false
+        }
     }
 
     private fun filterList(newText: String?) {
-        val filteredList: List<SearchData> =ArrayList<SearchData>()
-        if (newText != null) {
-            val filteredList = ArrayList<SearchData>()
-            for(i in itemList){
-                if (i.title.lowercase(Locale.ROOT).contains(newText)) {
-                    filteredList.add(i)
-                }
-            }
-
-            if (filteredList.isEmpty()) {
-                Toast.makeText(MyActivity().context, "No Data found", Toast.LENGTH_SHORT).show()
-            } else {
-                adapter.setFilteredList(filteredList)
-            }
+        if(newText!= "" && newText!= null) {
+            SyncRoad.filterSearch(this, newText, this)
+        }else{
+            adaptor?.setFilteredList(dbDisplayHistory(requireActivity()))
         }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private val itemOnClickListener = View.OnClickListener {
+        try {
+            val searchData = it.tag as CityRoad
+            dbAddHistory(searchData, requireActivity())
+            MyLog.d(searchData.roadName)
+            SyncSpeed.getCityRoadSpeed(this,searchData.roadId,this)
+            binding.searchView.setQuery("", false)
+            AppUtil.popBackStack(parentFragmentManager)
+            AppUtil.showTopToast(requireActivity(),"搜尋中...")
+
+
+        } catch (e: Exception) {
+            MyLog.e(e.toString())
+        }
+    }
+    private val deleteListener = View.OnClickListener {
+        try {
+            val searchData = it.tag as CityRoad
+            dbDeleteHistory(searchData.roadName, requireActivity())
+            adaptor?.setFilteredList(dbDisplayHistory(requireActivity()))
+        } catch (e: Exception) {
+            MyLog.e(e.toString())
+        }
+    }
+
+
+    override fun onSuccess(successData: java.util.ArrayList<String>) {
+        MyLog.e("onSuccess")
+    }
+
+    override fun onError(errorCode: Int, errorData: java.util.ArrayList<String>) {
+        MyLog.e("onError")
+    }
+
+    override fun doInBackground(result: Int, successData: java.util.ArrayList<String>) {
+        MyLog.e("doInBackground")
     }
 
     override fun onDestroyView() {

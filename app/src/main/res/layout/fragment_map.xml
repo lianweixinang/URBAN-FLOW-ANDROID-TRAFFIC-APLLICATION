@@ -7,51 +7,275 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_main">
 
-    <FrameLayout
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <!--app:layout_constraintBottom_toTopOf="@+id/searchView"-->
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:context=".MainActivity"
+        tools:layout="@layout/fragment_map" />
 
-
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:id="@+id/map"
-            android:layout_width="match_parent"
-            android:layout_centerVertical="true"
-            android:layout_height="match_parent"
-            tools:layout="@layout/fragment_map"
-            tools:context=".MainActivity"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="700dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/bg"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_gravity="bottom"
+            android:layout_height="match_parent"
+            app:behavior_hideable="false"
+            app:behavior_peekHeight="350dp"
             app:cardBackgroundColor="#575757"
             app:cardCornerRadius="10dp"
             app:cardElevation="20dp"
             app:cardMaxElevation="20dp"
-            app:contentPadding="10dp">
+            app:contentPadding="10dp"
+            app:layout_behavior="@string/bottom_sheet_behavior"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-                <ImageView
+
+                <VideoView
+                    android:id='@+id/videoView'
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="180dp"
+                    android:layout_marginTop="60dp"
+                    android:visibility="gone"
                     app:cardCornerRadius="10dp"
-                    app:srcCompat="@drawable/rcc"
-                    />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf='@+id/imageView'
+                    app:srcCompat="@drawable/rcc" />
+
+                <ImageView
+                    android:id='@+id/imageView'
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="15dp"
+                    android:visibility="visible"
+                    app:cardCornerRadius="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/rcc" />
+
+                <androidx.cardview.widget.CardView
+                    android:id='@+id/direction'
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf='@+id/imageView'
+                    app:cardCornerRadius="15dp"
+                    app:cardBackgroundColor="#FFFFFF">
+
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#FFFFFF"
+                            android:padding="5dp">
+
+                            <ImageView
+                                android:id="@+id/directionIcon"
+                                android:layout_width="match_parent"
+                                android:layout_height="30dp"
+                                android:layout_marginTop="1dp"
+                                android:layout_marginRight="50dp"
+                                android:src='@drawable/baseline_swap_horiz_24'
+                                app:cardCornerRadius="10dp" />
+                            <TextView
+                                android:id="@+id/carDirection"
+                                android:layout_width="match_parent"
+                                android:layout_height="30dp"
+                                android:layout_marginTop="1dp"
+                                android:layout_marginLeft="180dp"
+                                android:text="東向"
+                                android:textColor="#4D4D4E"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+
+                        <ImageView
+                            android:id="@+id/position1"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginRight="250dp"
+                            android:src='@drawable/baseline_location_on_24'
+                            app:cardCornerRadius="10dp" />
+                        <TextView
+                            android:id="@+id/road1"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginLeft="80dp"
+                            android:text="承德路"
+                            android:textColor="#000000"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                        <ImageView
+                            android:id="@+id/position2"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginLeft="110dp"
+                            android:src='@drawable/baseline_location_on_24'
+                            app:cardCornerRadius="10dp" />
+                        <TextView
+                            android:id="@+id/road2"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginLeft="260dp"
+                            android:text="市民大道"
+                            android:textColor="#000000"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+
+                    </RelativeLayout>
+
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id='@+id/trafficFlow'
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf='@+id/direction'
+                    android:layout_marginTop="20dp"
+                    app:cardCornerRadius="15dp"
+                    app:cardBackgroundColor="#FFFFFF">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#FFFFFF"
+                        android:padding="5dp">
+                    <ImageView
+                        android:id="@+id/carsicon"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="35dp"
+                        android:layout_marginRight="300dp"
+                        android:src='@drawable/baseline_directions_car_24'
+                        app:cardCornerRadius="10dp" />
+                        <TextView
+                            android:id="@+id/cars"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="35dp"
+                            android:layout_marginLeft="70dp"
+                            android:text="83 Cars"
+                            android:textColor="#000000"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                        <ImageView
+                            android:id="@+id/carsicon2"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="35dp"
+                            android:layout_marginLeft="80dp"
+                            android:src='@drawable/baseline_directions_car_24'
+                            app:cardCornerRadius="10dp" />
+                        <TextView
+                            android:id="@+id/cars2"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="35dp"
+                            android:layout_marginLeft="260dp"
+                            android:text="56 Cars"
+                            android:textColor="#000000"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:id="@+id/speedicon"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="120dp"
+                            android:layout_marginRight="300dp"
+                            android:src='@drawable/baseline_speed_24'
+                            app:cardCornerRadius="10dp" />
+                        <TextView
+                            android:id="@+id/speed"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="120dp"
+                            android:layout_marginLeft="70dp"
+                            android:text="25 km/h"
+                            android:textColor="#000000"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                        <ImageView
+                            android:id="@+id/speedicon2"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="120dp"
+                            android:layout_marginLeft="80dp"
+                            android:src='@drawable/baseline_speed_24'
+                            app:cardCornerRadius="10dp" />
+                        <TextView
+                            android:id="@+id/speed2"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_marginTop="120dp"
+                            android:layout_marginLeft="260dp"
+                            android:text="31 km/h"
+                            android:textColor="#000000"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                    </RelativeLayout>
+
+
+                </androidx.cardview.widget.CardView>
+
+
+
+                <ImageView
+                    android:id='@+id/imageView3'
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    app:cardCornerRadius="10dp"
+                    android:layout_marginTop="20dp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf='@+id/trafficFlow'
+                    app:srcCompat="@drawable/distance" />
+
+
                 <include
                     android:id="@+id/fragment_home"
-                    layout="@layout/fragment_home"></include>
+                    layout="@layout/fragment_home"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"></include>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </RelativeLayout>
         </androidx.cardview.widget.CardView>
-    </FrameLayout>
+
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

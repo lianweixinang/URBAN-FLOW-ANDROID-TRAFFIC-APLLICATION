@@ -4,6 +4,7 @@ import java.util.List;
 
 import ntutifm.game.google.net.ApiClass.City;
 import ntutifm.game.google.net.ApiClass.CitySpeed;
+import ntutifm.game.google.net.ApiClass.Incident;
 import ntutifm.game.google.net.ApiClass.Parking;
 import ntutifm.game.google.net.ApiClass.CityRoad;
 import retrofit2.Call;
@@ -20,4 +21,6 @@ public interface MyAPIService {
     Call<List<CityRoad>> getRoadId(@Path("roadName") String roadName);
     @GET("citySpeed/{roadId}")
     Call<List<CitySpeed>> getRoadSpeed(@Path("roadId") String roadId);
+    @GET("incident")
+    Call<List<Incident>> getTitle(@Path("title") String title);
 }

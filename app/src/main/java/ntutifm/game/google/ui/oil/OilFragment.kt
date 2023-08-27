@@ -1,4 +1,4 @@
-package ntutifm.game.google.ui.search.oil
+package ntutifm.game.google.ui.oil
 
 import android.os.Bundle
 import android.view.LayoutInflater

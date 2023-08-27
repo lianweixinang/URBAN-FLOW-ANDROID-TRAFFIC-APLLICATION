@@ -22,5 +22,5 @@ public interface MyAPIService {
     @GET("citySpeed/{roadId}")
     Call<List<CitySpeed>> getRoadSpeed(@Path("roadId") String roadId);
     @GET("incident")
-    Call<List<Incident>> getTitle(@Path("title") String title);
+    Call<List<Incident>> getIncidentList();
 }

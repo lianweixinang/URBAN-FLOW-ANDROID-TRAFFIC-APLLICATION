@@ -43,97 +43,19 @@
                     android:textSize="20sp" />
 
             </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycleIncidentView"
                 android:layout_width="match_parent"
-                android:layout_height="140dp"
-                android:layout_marginTop="20dp"
-                app:cardCornerRadius="15dp"
-                app:cardBackgroundColor="#EFEFEF">
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="2dp"
+                android:layout_marginTop="2dp"
+                app:cardBackgroundColor="#000000"
+                app:cardElevation="20dp"
+                app:cardMaxElevation="20dp">
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#EFEFEF"
-                    android:padding="5dp">
-
-                    <TextView
-                        android:id="@+id/title1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="「山道猴子」雲林對車噪開出89罰單"
-                        android:textColor="#000000"
-                        android:textSize="18sp"
-                        android:textStyle="normal" />
-
-                    <TextView
-                        android:id="@+id/source1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/title1"
-                        android:layout_marginLeft="10dp"
-                        android:text="中時新聞網    2023-08-18 18:27"
-                        android:textColor="#4D4D4E"
-                        android:textSize="15sp" />
-
-                    <TextView
-                        android:id="@+id/content1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/source1"
-                        android:layout_marginLeft="10dp"
-                        android:text="動畫「山道猴子的一生」最近爆紅重機族跑山也受到關注，其中之一是車噪，暑假期間...."
-                        android:textColor="#4D4D4E"
-                        android:textSize="18sp" />
-
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="140dp"
-                android:layout_marginTop="20dp"
-                app:cardCornerRadius="15dp"
-                app:cardBackgroundColor="#EFEFEF">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#F5F5F5"
-                    android:padding="5dp">
-
-
-                    <TextView
-                        android:id="@+id/title2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="快訊/低壓雨區擴全台! 17縣市豪大雨2縣市雨最大"
-                        android:textColor="#000000"
-                        android:textSize="18sp"
-                        android:textStyle="normal" />
-
-                    <TextView
-                        android:id="@+id/source2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/title2"
-                        android:layout_marginLeft="10dp"
-                        android:text="ETtoday中時新聞雲    2023-08-18 05:29"
-                        android:textColor="#4D4D4E"
-                        android:textSize="15sp" />
-
-                    <TextView
-                        android:id="@+id/content2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/source2"
-                        android:layout_marginLeft="10dp"
-                        android:text="低壓帶影響，易有短延時強降雨，今(18日)苗栗縣及南投縣有局部大雨或豪雨發生...."
-                        android:textColor="#4D4D4E"
-                        android:textSize="18sp" />
-
-
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-
+            </androidx.recyclerview.widget.RecyclerView>
 
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout></FrameLayout>

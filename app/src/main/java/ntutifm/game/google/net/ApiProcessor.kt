@@ -3,11 +3,13 @@ package ntutifm.game.google.net
 import android.content.Context
 import android.util.Log
 import ntutifm.game.google.entity.MyItem
+import ntutifm.game.google.entity.SyncIncident
 import ntutifm.game.google.entity.SyncRoad
 import ntutifm.game.google.entity.SyncSpeed
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiClass.CityRoad
 import ntutifm.game.google.net.ApiClass.CitySpeed
+import ntutifm.game.google.net.ApiClass.Incident
 import ntutifm.game.google.net.ApiClass.Parking
 import ntutifm.game.google.ui.map.mClusterManager
 import retrofit2.Call
@@ -18,6 +20,8 @@ public class ApiProcessor {
     public val getParking = "getParking"
     public val getCityRoadId = "getCityRoadId"
     public val getCityRoadSpeed = "getCityRoadSpeed"
+    public val getIncident = "getIncident"
+
     fun getParking(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
         val myAPIService = RetrofitManager.getInstance().api
         val call: Call<List<Parking>>? = myAPIService.parkingList
@@ -77,6 +81,26 @@ public class ApiProcessor {
             }
             override fun onFailure(call: Call<List<CitySpeed>>?, t: Throwable?) {
                 Log.d("RoadSpeed", t.toString())
+            }
+        })
+    }
+        fun getIncident(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
+        val myAPIService = RetrofitManager.getInstance().api
+        val call: Call<List<Incident>>? = myAPIService.incidentList
+        call!!.enqueue(object : Callback<List<Incident>> {
+            override fun onResponse(
+                call: Call<List<Incident>>?,
+                response: Response<List<Incident>>?
+            ) {
+                if(response?.body()!= null){
+                    MyLog.d(response?.body()!!.toString())
+                    SyncIncident.updateIncident(response?.body()!!)
+                }else{
+                    Log.d("parkingName", "Null")
+                }
+            }
+            override fun onFailure(call: Call<List<Incident>>?, t: Throwable?) {
+                Log.d("Title", t.toString())
             }
         })
     }

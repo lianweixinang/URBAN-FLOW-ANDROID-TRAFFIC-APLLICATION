@@ -4,19 +4,19 @@ import com.google.gson.annotations.SerializedName;
 
 public class Incident {
 
-    @SerializedName("Type")
+    @SerializedName("type")
     private String type ="Type";
-    @SerializedName("Solved")
+    @SerializedName("solved")
     private String solved ="Solved";
-    @SerializedName("Edited_Time")
+    @SerializedName("edited_time")
     private String edited_time ="Edited_Time";
-    @SerializedName("Raise_Time")
+    @SerializedName("raise_time")
     private String raise_time ="Raise_Time";
-    @SerializedName("Auth")
+    @SerializedName("auth")
     private String auth ="Auth";
-    @SerializedName("Part")
+    @SerializedName("part")
     private String part ="Part";
-    @SerializedName("Title")
+    @SerializedName("title")
     private String title ="Title";
 
     public String getType() {
@@ -40,13 +40,5 @@ public class Incident {
     public String getTitle() {
         return this.title;
     }
-
-
-
-
-
-
-
-
 
 }

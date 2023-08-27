@@ -7,19 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import ntutifm.game.google.MyActivity
 import ntutifm.game.google.databinding.FragmentSearchBinding
-import ntutifm.game.google.entity.SearchAdaptor
-import ntutifm.game.google.entity.SearchData
-import ntutifm.game.google.entity.SyncBottomBar
+import ntutifm.game.google.entity.adaptor.SearchAdaptor
 import ntutifm.game.google.entity.SyncRoad
 import ntutifm.game.google.entity.SyncSpeed
 import ntutifm.game.google.entity.dbAddHistory
@@ -29,10 +21,6 @@ import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiCallBack
 import ntutifm.game.google.net.ApiClass.CityRoad
-import ntutifm.game.google.net.ApiClass.CitySpeed
-import ntutifm.game.google.net.ApiManager
-import ntutifm.game.google.net.ApiProcessor
-import ntutifm.game.google.ui.map.MapViewModel
 
 class SearchFragment : Fragment(), ApiCallBack {
 

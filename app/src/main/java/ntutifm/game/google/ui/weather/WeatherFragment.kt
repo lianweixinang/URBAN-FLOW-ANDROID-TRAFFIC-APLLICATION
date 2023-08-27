@@ -12,7 +12,7 @@ class WeatherFragment : Fragment() {
 
     private var _binding:FragmentWeatherBinding? = null
     private val binding get() = _binding!!
-    private val weatherViewModel :WeatherViewModel by lazy{
+    private val weatherViewModel : WeatherViewModel by lazy{
         ViewModelProvider(this)[WeatherViewModel::class.java]
     }
 
@@ -26,7 +26,7 @@ class WeatherFragment : Fragment() {
     }
     private fun weatherTextInit(){
         weatherViewModel.text.observe(viewLifecycleOwner) {
-            binding.textView.text = it
+            binding.position
         }
     }
     override fun onDestroyView() {

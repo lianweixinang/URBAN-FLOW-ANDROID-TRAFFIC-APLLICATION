@@ -6,9 +6,52 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#808080"
-    android:id="@+id/wetherText"
+    android:id="@+id/page"
     android:collapseColumns="*" >
-
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="30dp"
+        tools:ignore="UselessParent">
+        <TextView
+            android:id="@+id/position"
+            android:text="目前位置"
+            android:textSize="30dp"
+            android:layout_span="5"
+            android:textColor="#ffffff"
+            android:layout_gravity="center" />
+    </TableRow>
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="10dp"
+        tools:ignore="UselessParent">
+        <TextView
+            android:id="@+id/now_wether"
+            android:text="18℃"
+            android:textSize="35dp"
+            android:layout_span="5"
+            android:textColor="#ffffff"
+            android:layout_gravity="center" />
+    </TableRow>
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="5dp"
+        tools:ignore="UselessParent">
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_span="5"
+            android:padding="3dp"
+            app:srcCompat="@drawable/cloudy" />
+    </TableRow>
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,220 +62,51 @@
         <TextView
             android:id="@+id/day_1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="今日"
+            android:layout_height="match_parent"
+            android:text="12:00~13:00"
             android:layout_span="1"
             android:textColor="#ffffff"
             android:layout_marginRight="10dp"
+            android:layout_marginTop="6dp"
             android:textSize = "20sp" />
-        <TextView
-            android:id="@+id/day_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="周二"
-            android:layout_span="1"
-            android:textColor="#ffffff"
-            android:layout_marginRight="10dp"
-            android:textSize = "20sp" />
-        <TextView
-            android:id="@+id/day_3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="周三"
-            android:layout_span="1"
-            android:textColor="#ffffff"
-            android:layout_marginRight="10dp"
-            android:textSize = "20sp" />
-        <TextView
-            android:id="@+id/day_4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="周四"
-            android:layout_span="1"
-            android:textColor="#ffffff"
-            android:layout_marginRight="10dp"
-            android:textSize = "20sp" />
-        <TextView
-            android:id="@+id/day_5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="周五"
-            android:layout_span="1"
-            android:textColor="#ffffff"
-            android:layout_marginRight="10dp"
-            android:textSize = "20sp" />
-        <TextView
-            android:id="@+id/day_6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="周六"
-            android:layout_span="1"
-            android:textColor="#ffffff"
-            android:layout_marginRight="10dp"
-            android:textSize = "20sp" />
-        <TextView
-            android:id="@+id/day_7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="周日"
-            android:textColor="#ffffff"
-            android:layout_span="1"
-            android:textSize = "20sp" />
-            />
-    </TableRow>
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="5dp"
-        tools:ignore="UselessParent">
-
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:padding="3dp"
+            android:layout_marginLeft="10dp"
             app:srcCompat="@drawable/cloudy" />
+        <TextView
+            android:id="@+id/wethertext1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="30℃"
+            android:layout_span="1"
+            android:textColor="#ffffff"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="6dp"
+            android:textSize = "20sp" />
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="~"
+            android:layout_span="1"
+            android:textColor="#ffffff"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="6dp"
+            android:textSize = "20sp" />
+        <TextView
+            android:id="@+id/wethertext1_2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="33℃"
+            android:layout_span="1"
+            android:textColor="#ffffff"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="6dp"
+            android:textSize = "20sp" />
+    </TableRow>
 
-        <ImageView
-            android:layout_width="40dp"
-            android:viewportHeight="24"
-            android:viewportWidth="24"
-            android:layout_height="40dp"
-            android:padding="3dp"
-            app:srcCompat="@drawable/heavy_rain" />
-
-        <ImageView
-            android:layout_width="40dp"
-            android:viewportHeight="24"
-            android:viewportWidth="24"
-            android:layout_height="40dp"
-            android:padding="3dp"
-            app:srcCompat="@drawable/storm" />
-
-        <ImageView
-            android:layout_width="40dp"
-            android:viewportHeight="24"
-            android:viewportWidth="24"
-            android:layout_height="40dp"
-            android:padding="3dp"
-            app:srcCompat="@drawable/sun" />
-        <ImageView
-            android:layout_width="40dp"
-            android:viewportHeight="24"
-            android:viewportWidth="24"
-            android:layout_height="40dp"
-            android:padding="3dp"
-            app:srcCompat="@drawable/sun" />
-        <ImageView
-            android:layout_width="40dp"
-            android:viewportHeight="24"
-            android:viewportWidth="24"
-            android:layout_height="40dp"
-            android:padding="3dp"
-            app:srcCompat="@drawable/sun" />
-        <ImageView
-            android:layout_width="40dp"
-            android:viewportHeight="24"
-            android:viewportWidth="24"
-            android:layout_height="40dp"
-            android:padding="3dp"
-            app:srcCompat="@drawable/sun" />
-    </TableRow>
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        tools:ignore="UselessParent">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="30℃"
-            android:layout_gravity="center"
-            android:layout_span="1"
-            android:textColor="#ffffff"
-            android:textSize = "17sp" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="30℃"
-            android:layout_gravity="center"
-            android:layout_span="1"
-            android:textColor="#ffffff"
-            android:textSize = "17sp" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="30℃"
-            android:layout_gravity="center"
-            android:layout_span="1"
-            android:textColor="#ffffff"
-            android:textSize = "17sp" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="30℃"
-            android:layout_gravity="center"
-            android:layout_span="1"
-            android:textColor="#ffffff"
-            android:textSize = "17sp" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="30℃"
-            android:layout_gravity="center"
-            android:layout_span="1"
-            android:textColor="#ffffff"
-            android:textSize = "17sp" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="30℃"
-            android:layout_gravity="center"
-            android:layout_span="1"
-            android:textColor="#ffffff"
-            android:textSize = "17sp" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="30℃"
-            android:layout_gravity="center"
-            android:layout_span="1"
-            android:textColor="#ffffff"
-            android:textSize = "17sp" />
-        />
-    </TableRow>
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="20dp"
-        tools:ignore="UselessParent">
-        <TextView
-            android:text="目前位置"
-            android:textSize="30dp"
-            android:layout_span="7"
-            android:textColor="#ffffff"
-            android:layout_gravity="center" />
-    </TableRow>
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="10dp"
-        tools:ignore="UselessParent">
-        <TextView
-            android:text="18℃"
-            android:textSize="35dp"
-            android:layout_span="7"
-            android:textColor="#ffffff"
-            android:layout_gravity="center" />
-    </TableRow>
-    <TableRow>
-
-    </TableRow>
 </TableLayout>

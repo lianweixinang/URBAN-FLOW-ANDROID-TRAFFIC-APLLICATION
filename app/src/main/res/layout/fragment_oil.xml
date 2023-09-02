@@ -93,31 +93,40 @@
                             android:id="@+id/t1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="+0.5"
+                            android:text="28.5"
                             android:textColor="#ffff"
-                            android:textSize="50dp"
+                            android:textSize="32dp"
                             android:textStyle="bold"
-                            android:layout_marginLeft="5dp" />
+                            android:layout_marginLeft="10dp" />
 
                         <TextView
                             android:id="@+id/t2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="130dp"
-                            android:text="+1.5"
+                            android:layout_marginLeft="110dp"
+                            android:text="29.5"
                             android:textColor="#ffff"
-                            android:textSize="50dp"
+                            android:textSize="35dp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/t3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="+2.5"
+                            android:text="30.5"
                             android:textColor="#ffff"
-                            android:textSize="50dp"
+                            android:textSize="35dp"
                             android:textStyle="bold"
-                            android:layout_marginLeft="255dp" />
+                            android:layout_marginLeft="210dp" />
+                        <TextView
+                            android:id="@+id/t4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="31.5"
+                            android:textColor="#ffff"
+                            android:textSize="35dp"
+                            android:textStyle="bold"
+                            android:layout_marginLeft="300dp" />
                     </RelativeLayout>
                 </RelativeLayout>
 
@@ -129,7 +138,7 @@
                 app:cardCornerRadius="15dp"
                 app:cardBackgroundColor="#45AAE2">
                 <TextView
-                    android:id="@+id/t4"
+                    android:id="@+id/t5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="下周油價"
@@ -191,7 +200,7 @@
                         android:background="#B7B7B7"
                         android:padding="5dp">
                         <TextView
-                            android:id="@+id/t5"
+                            android:id="@+id/t6"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="+0.5"
@@ -200,7 +209,7 @@
                             android:textStyle="bold"
                             android:layout_marginLeft="5dp" />
                         <TextView
-                            android:id="@+id/t6"
+                            android:id="@+id/t7"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="+1.5"
@@ -209,7 +218,7 @@
                             android:textStyle="bold"
                             android:layout_marginLeft="130dp" />
                         <TextView
-                            android:id="@+id/t7"
+                            android:id="@+id/t8"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="+2.5"

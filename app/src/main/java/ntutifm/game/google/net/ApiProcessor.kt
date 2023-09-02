@@ -2,25 +2,22 @@ package ntutifm.game.google.net
 
 import android.content.Context
 import android.util.Log
-import ntutifm.game.google.entity.MyItem
-import ntutifm.game.google.entity.SyncIncident
-import ntutifm.game.google.entity.SyncRoad
-import ntutifm.game.google.entity.SyncSpeed
+import ntutifm.game.google.entity.*
+import ntutifm.game.google.entity.SyncOil
 import ntutifm.game.google.global.MyLog
-import ntutifm.game.google.net.ApiClass.CityRoad
-import ntutifm.game.google.net.ApiClass.CitySpeed
-import ntutifm.game.google.net.ApiClass.Incident
-import ntutifm.game.google.net.ApiClass.Parking
+import ntutifm.game.google.net.ApiClass.*
 import ntutifm.game.google.ui.map.mClusterManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 public class ApiProcessor {
+    companion object{
     public val getParking = "getParking"
     public val getCityRoadId = "getCityRoadId"
     public val getCityRoadSpeed = "getCityRoadSpeed"
     public val getIncident = "getIncident"
+    public val getOil = "getOil"}
 
     fun getParking(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
         val myAPIService = RetrofitManager.getInstance().api
@@ -100,6 +97,26 @@ public class ApiProcessor {
                 }
             }
             override fun onFailure(call: Call<List<Incident>>?, t: Throwable?) {
+                Log.d("Title", t.toString())
+            }
+        })
+    }
+    fun getOil(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
+        val myAPIService = RetrofitManager.getInstance().api
+        val call: Call<List<Oil>>? = myAPIService.oilList
+        call!!.enqueue(object : Callback<List<Oil>> {
+            override fun onResponse(
+                call: Call<List<Oil>>?,
+                response: Response<List<Oil>>?
+            ) {
+                if(response?.body()!= null){
+                    MyLog.d(response?.body()!!.toString())
+                    SyncOil.updateOil(response?.body()!!)
+                }else{
+                    Log.d("parkingName", "Null")
+                }
+            }
+            override fun onFailure(call: Call<List<Oil>>?, t: Throwable?) {
                 Log.d("Title", t.toString())
             }
         })

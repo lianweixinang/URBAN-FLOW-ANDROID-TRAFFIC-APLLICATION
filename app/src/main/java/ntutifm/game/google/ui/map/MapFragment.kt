@@ -377,7 +377,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         mClusterManager = ClusterManager(context, map)
         map.setOnCameraIdleListener(mClusterManager)
 
-        ApiManager(this).execute(this, ApiProcessor().getParking)
+        ApiManager(this).execute(this, ApiProcessor.getParking)
         mClusterManager?.setOnClusterItemClickListener { item ->
             false
         }

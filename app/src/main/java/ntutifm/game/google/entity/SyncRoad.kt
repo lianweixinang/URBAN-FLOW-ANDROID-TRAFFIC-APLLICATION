@@ -16,7 +16,7 @@ object SyncRoad {
     private val _searchLists = MutableLiveData<List<CityRoad>>()
     val searchLists: LiveData<List<CityRoad>> = _searchLists
     fun filterSearch(callBack: ApiCallBack?, data: String, fragment: Fragment){
-        ApiManager(callBack, data).execute(fragment, ApiProcessor().getCityRoadId)
+        ApiManager(callBack, data).execute(fragment, ApiProcessor.getCityRoadId)
     }
     fun clearSearch(){
         _searchLists.postValue(listOf<CityRoad>())

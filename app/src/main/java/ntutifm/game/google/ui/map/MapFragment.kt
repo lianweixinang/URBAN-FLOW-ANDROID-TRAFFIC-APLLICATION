@@ -4,24 +4,25 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Location
+import android.media.MediaCodecInfo
+import android.media.MediaPlayer
+import android.media.MediaPlayer.OnPreparedListener
+import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.MediaController
 import android.widget.RelativeLayout
 import android.widget.Toast
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -107,9 +108,17 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
             MainScope().launch(Dispatchers.Main){SyncBottomBar.updateState(SyncBottomBar.State.Open)}
         }
 
-        //AppUtil.showTopToast(context, "HI")
-        //AppUtil.showDialog("Hello", activity)
-        //binding.videoView.setVideoURI(Uri.parse("https://cctv.bote.gov.taipei:8501/MJPEG/031"))
+//        AppUtil.showTopToast(context, "HI")
+//        AppUtil.showDialog("Hello", activity)
+        val mediaController = MediaController(requireActivity())
+        mediaController.setAnchorView(binding.videoView)
+        binding.videoView.setMediaController(mediaController)
+        binding.videoView.apply {
+            this.setVideoURI(Uri.parse("https://cctvatis4.ntpc.gov.tw/C000232"))
+            this.start()
+            this.requestFocus();
+        }
+
 
     }
     private fun bottomSheetInit(){

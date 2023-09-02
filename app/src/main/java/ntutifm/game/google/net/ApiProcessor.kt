@@ -113,7 +113,7 @@ public class ApiProcessor {
                     MyLog.d(response?.body()!!.toString())
                     SyncOil.updateOil(response?.body()!!)
                 }else{
-                    Log.d("parkingName", "Null")
+                    MyLog.d("getOil")
                 }
             }
             override fun onFailure(call: Call<List<Oil>>?, t: Throwable?) {

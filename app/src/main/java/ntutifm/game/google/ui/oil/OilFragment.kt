@@ -40,7 +40,7 @@ class OilFragment : Fragment(), ApiCallBack {
         super.onViewCreated(view, savedInstanceState)
         oilListInit()
         SyncOil.oilLists.observe(viewLifecycleOwner){
-            MyLog.e("updateOil")
+            MyLog.e("oilUpdate")
             binding.t1.text=it[0].ninetwo
             binding.t2.text=it[0].ninefive
             binding.t3.text=it[0].nineeight

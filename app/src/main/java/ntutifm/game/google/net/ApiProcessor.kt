@@ -17,7 +17,9 @@ public class ApiProcessor {
     public val getCityRoadId = "getCityRoadId"
     public val getCityRoadSpeed = "getCityRoadSpeed"
     public val getIncident = "getIncident"
-    public val getOil = "getOil"}
+    public val getOil = "getOil"
+    public val getWeather = "getWeather"
+    }
 
     fun getParking(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
         val myAPIService = RetrofitManager.getInstance().api
@@ -120,5 +122,26 @@ public class ApiProcessor {
                 Log.d("Title", t.toString())
             }
         })
+
+        fun getWeather(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
+            val myAPIService = RetrofitManager.getInstance().api
+            val call: Call<List<Weather>>? = myAPIService.weatherList
+            call!!.enqueue(object : Callback<List<Weather>> {
+                override fun onResponse(
+                    call: Call<List<Weather>>?,
+                    response: Response<List<Weather>>?
+                ) {
+                    if(response?.body()!= null){
+                        MyLog.d(response?.body()!!.toString())
+                        SyncWeather.updateWeather(response?.body()!!)
+                    }else{
+                        MyLog.d("getWeather")
+                    }
+                }
+                override fun onFailure(call: Call<List<Weather>>?, t: Throwable?) {
+                    Log.d("Title", t.toString())
+                }
+            })
+        }
     }
 }

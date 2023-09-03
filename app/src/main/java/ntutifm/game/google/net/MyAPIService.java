@@ -8,6 +8,7 @@ import ntutifm.game.google.net.ApiClass.Incident;
 import ntutifm.game.google.net.ApiClass.Oil;
 import ntutifm.game.google.net.ApiClass.Parking;
 import ntutifm.game.google.net.ApiClass.CityRoad;
+import ntutifm.game.google.net.ApiClass.Weather;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -26,5 +27,7 @@ public interface MyAPIService {
     Call<List<Incident>> getIncidentList();
     @GET("oil")
     Call<List<Oil>> getOilList();
+    @GET("weather")
+    Call<List<Weather>> getWeatherList();
 
 }

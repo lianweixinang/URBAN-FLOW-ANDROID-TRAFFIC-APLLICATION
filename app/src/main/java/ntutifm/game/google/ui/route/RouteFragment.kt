@@ -23,16 +23,16 @@ class RouteFragment : Fragment() {
         return binding.root
     }
 
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        super.onViewCreated(view, savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 //        textInit()
-//    }
+    }
 
-//    private fun textInit(){
-//       viewModel.text.observe(viewLifecycleOwner) {
-//            binding.textView.text = it
-//        }
-//    }
+    private fun textInit(){
+       viewModel.text.observe(viewLifecycleOwner) {
+            binding.textView.text = it
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

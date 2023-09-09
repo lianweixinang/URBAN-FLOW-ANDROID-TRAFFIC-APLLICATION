@@ -11,137 +11,147 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-public class ApiProcessor {
-    companion object{
-    public val getParking = "getParking"
-    public val getCityRoadId = "getCityRoadId"
-    public val getCityRoadSpeed = "getCityRoadSpeed"
-    public val getIncident = "getIncident"
-    public val getOil = "getOil"
-    public val getWeather = "getWeather"
+class ApiProcessor {
+    companion object {
+        const val getParking = "getParking"
+        const val getCityRoadId = "getCityRoadId"
+        const val getCityRoadSpeed = "getCityRoadSpeed"
+        const val getIncident = "getIncident"
+        const val getOil = "getOil"
+        const val getWeather = "getWeather"
     }
 
-    fun getParking(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
+    fun getParking(c: Context, successData: ArrayList<String>, errorData: ArrayList<String>) {
         val myAPIService = RetrofitManager.getInstance().api
         val call: Call<List<Parking>>? = myAPIService.parkingList
         call!!.enqueue(object : Callback<List<Parking>> {
             override fun onResponse(
                 call: Call<List<Parking>>?,
-                response: Response<List<Parking>>?
+                response: Response<List<Parking>>?,
             ) {
-                if(response?.body()!= null){
-                    for (item in response.body()!!){
+                if (response?.body() != null) {
+                    for (item in response.body()!!) {
                         mClusterManager?.addItem(MyItem(item.lat, item.lng)) //要傳參數嗎
                     }
-                }else{
+                } else {
                     Log.d("parkingName", "Null")
                 }
             }
+
             override fun onFailure(call: Call<List<Parking>>?, t: Throwable?) {
                 Log.d("ParkTitle", t.toString())
             }
         })
     }
-    fun getCityRoadId(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
+
+    fun getCityRoadId(c: Context, successData: ArrayList<String>, errorData: ArrayList<String>) {
         val myAPIService = RetrofitManager.getInstance().api
         MyLog.d(successData.toString())
         val call: Call<List<CityRoad>>? = myAPIService.getRoadId(successData[1])
         call!!.enqueue(object : Callback<List<CityRoad>> {
             override fun onResponse(
                 call: Call<List<CityRoad>>?,
-                response: Response<List<CityRoad>>?
+                response: Response<List<CityRoad>>?,
             ) {
-                if(response?.body()!= null){
+                if (response?.body() != null) {
                     MyLog.d("SearchStart")
                     SyncRoad.updateSearch(response.body()!!)
-                }else{
+                } else {
                     Log.d("RoadName", "Null")
                 }
             }
+
             override fun onFailure(call: Call<List<CityRoad>>?, t: Throwable?) {
                 Log.d("RoadName", t.toString())
             }
         })
     }
-    fun getCityRoadSpeed(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
+
+    fun getCityRoadSpeed(c: Context, successData: ArrayList<String>, errorData: ArrayList<String>) {
         val myAPIService = RetrofitManager.getInstance().api
         val call: Call<List<CitySpeed>>? = myAPIService.getRoadSpeed(successData[1])
         call!!.enqueue(object : Callback<List<CitySpeed>> {
             override fun onResponse(
                 call: Call<List<CitySpeed>>?,
-                response: Response<List<CitySpeed>>?
+                response: Response<List<CitySpeed>>?,
             ) {
-                if(response?.body()!= null){
+                if (response?.body() != null) {
                     MyLog.d(response?.body()!!.toString())
-                   SyncSpeed.updateSpeed(response?.body()!!)
-                }else{
+                    SyncSpeed.updateSpeed(response?.body()!!)
+                } else {
                     Log.d("RoadSpeed", "Null")
                 }
             }
+
             override fun onFailure(call: Call<List<CitySpeed>>?, t: Throwable?) {
                 Log.d("RoadSpeed", t.toString())
             }
         })
     }
-        fun getIncident(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
+
+    fun getIncident(c: Context, successData: ArrayList<String>, errorData: ArrayList<String>) {
         val myAPIService = RetrofitManager.getInstance().api
         val call: Call<List<Incident>>? = myAPIService.incidentList
         call!!.enqueue(object : Callback<List<Incident>> {
             override fun onResponse(
                 call: Call<List<Incident>>?,
-                response: Response<List<Incident>>?
+                response: Response<List<Incident>>?,
             ) {
-                if(response?.body()!= null){
+                if (response?.body() != null) {
                     MyLog.d(response?.body()!!.toString())
                     SyncIncident.updateIncident(response?.body()!!)
-                }else{
+                } else {
                     Log.d("parkingName", "Null")
                 }
             }
+
             override fun onFailure(call: Call<List<Incident>>?, t: Throwable?) {
                 Log.d("Title", t.toString())
             }
         })
     }
-    fun getOil(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
+
+    fun getOil(c: Context, successData: ArrayList<String>, errorData: ArrayList<String>) {
         val myAPIService = RetrofitManager.getInstance().api
         val call: Call<List<Oil>>? = myAPIService.oilList
         call!!.enqueue(object : Callback<List<Oil>> {
             override fun onResponse(
                 call: Call<List<Oil>>?,
-                response: Response<List<Oil>>?
+                response: Response<List<Oil>>?,
             ) {
-                if(response?.body()!= null){
+                if (response?.body() != null) {
                     MyLog.d(response?.body()!!.toString())
                     SyncOil.updateOil(response?.body()!!)
-                }else{
+                } else {
                     MyLog.d("getOil")
                 }
             }
+
             override fun onFailure(call: Call<List<Oil>>?, t: Throwable?) {
                 Log.d("Title", t.toString())
             }
         })
+    }
+    fun getWeather(c: Context, successData: ArrayList<String>, errorData: ArrayList<String>) {
+        val myAPIService = RetrofitManager.getInstance().api
+        val call: Call<List<Weather>>? = myAPIService.weatherList
+        call!!.enqueue(object : Callback<List<Weather>> {
+            override fun onResponse(
+                call: Call<List<Weather>>?,
+                response: Response<List<Weather>>?,
+            ) {
+                if (response?.body() != null) {
+                    MyLog.d("startWeatherApi")
+                    MyLog.d(response?.body()!!.toString())
+                    SyncWeather.updateWeather(response?.body()!!)
+                } else {
+                    MyLog.d("getWeatherZero")
+                }
+            }
 
-        fun getWeather(c: Context, successData:ArrayList<String> , errorData:ArrayList<String>){
-            val myAPIService = RetrofitManager.getInstance().api
-            val call: Call<List<Weather>>? = myAPIService.weatherList
-            call!!.enqueue(object : Callback<List<Weather>> {
-                override fun onResponse(
-                    call: Call<List<Weather>>?,
-                    response: Response<List<Weather>>?
-                ) {
-                    if(response?.body()!= null){
-                        MyLog.d(response?.body()!!.toString())
-                        SyncWeather.updateWeather(response?.body()!!)
-                    }else{
-                        MyLog.d("getWeather")
-                    }
-                }
-                override fun onFailure(call: Call<List<Weather>>?, t: Throwable?) {
-                    Log.d("Title", t.toString())
-                }
-            })
-        }
+            override fun onFailure(call: Call<List<Weather>>?, t: Throwable?) {
+                Log.d("Title", t.toString())
+            }
+        })
     }
 }

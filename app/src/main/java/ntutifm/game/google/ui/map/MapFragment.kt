@@ -66,9 +66,6 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     private var permissionDenied = false
     private lateinit var map : GoogleMap
     private lateinit var mLocationRequest : LocationRequest
-    private val viewModel : MapViewModel by lazy {
-        ViewModelProvider(requireActivity())[MapViewModel::class.java]
-    }
     private var latLng : LatLng? = null
 
     override fun onCreateView(
@@ -110,14 +107,9 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
 
 //        AppUtil.showTopToast(context, "HI")
 //        AppUtil.showDialog("Hello", activity)
-        val mediaController = MediaController(requireActivity())
-        mediaController.setAnchorView(binding.videoView)
-        binding.videoView.setMediaController(mediaController)
-        binding.videoView.apply {
-            this.setVideoURI(Uri.parse("https://cctvatis4.ntpc.gov.tw/C000232"))
-            this.start()
-            this.requestFocus();
-        }
+
+        binding.webView.getSettings().setJavaScriptEnabled(true);
+        binding.webView.loadUrl("https://cctvatis4.ntpc.gov.tw/C000232");
 
 
     }
@@ -127,8 +119,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
         behavior?.addBottomSheetCallback(object : BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                binding.imageView.isVisible = true
-                binding.videoView.isVisible = false
+                binding.webView.isVisible = true
                 binding.trafficFlow.isVisible = newState == BottomSheetBehavior.STATE_EXPANDED
                 binding.imageView3.isVisible = newState == BottomSheetBehavior.STATE_EXPANDED
             }

@@ -15,16 +15,16 @@ object SyncWeather {
     private val _searchLists = MutableLiveData<List<Weather>>()
     val weatherLists: LiveData<List<Weather>> = _searchLists
     fun weatherDataApi(callBack: ApiCallBack, fragment: Fragment){
+        MyLog.e("StartCallWeatherApi")
         ApiManager( callBack).execute(fragment, ApiProcessor.getWeather)
-        MyLog.e("StartUpdateWeather")
     }
     fun clearSearch(){
         _searchLists.postValue(listOf<Weather>())
     }
 
     fun updateWeather(data:List<Weather>){
-        _searchLists.postValue(data)
         MyLog.e("UpdateWeather")
+        _searchLists.postValue(data)
     }
 
 

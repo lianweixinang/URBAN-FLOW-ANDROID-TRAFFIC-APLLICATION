@@ -43,6 +43,7 @@ import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.*
 import ntutifm.game.google.ui.search.SearchFragment
+import ntutifm.game.google.ui.weather.WeatherFragment
 import kotlin.math.roundToInt
 
 
@@ -80,6 +81,8 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         binding.fragmentMap.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
         binding.fragmentMap.bg.setOnClickListener(backBtnListener)
         binding.fragmentMap.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
+        binding.fragmentMap.menuButton.setOnClickListener(menuButtonListener)
+        binding.fragmentMap.weatherButton.setOnClickListener(weatherButtonListener)
         bottomSheetInit()
         SyncSpeed.speedLists.observe(viewLifecycleOwner){
             MyLog.e("updateSpeedEnd")
@@ -102,14 +105,9 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
 
 //        AppUtil.showTopToast(context, "HI")
 //        AppUtil.showDialog("Hello", activity)
-
         binding.fragmentMap.webView.getSettings().setJavaScriptEnabled(true);
         binding.fragmentMap.webView.loadUrl("https://cctvatis4.ntpc.gov.tw/C000232")
 
-    }
-    fun openDrawer(){
-        MyLog.d("openDrawer")
-        binding.drawerLayout1.openDrawer(GravityCompat.START)
     }
     private fun bottomSheetInit(){
         val bottomSheet: View = binding.fragmentMap.bg
@@ -136,6 +134,13 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
                 }
             }
         }
+    }
+    private val menuButtonListener = View.OnClickListener {
+        MyLog.d("openDrawer")
+        binding.drawerLayout1.openDrawer(GravityCompat.START)
+        }
+    private val weatherButtonListener = View.OnClickListener {
+        AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, WeatherFragment())
     }
 
     /** 收藏切換 */

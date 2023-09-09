@@ -8,21 +8,21 @@
     android:layout_height="wrap_content">
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="220dp"
         android:layout_marginTop="20dp"
         app:cardCornerRadius="15dp"
-        app:cardBackgroundColor="#EFEFEF">
+        app:cardBackgroundColor="#FFFFFF">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#EFEFEF"
+            android:layout_height="220dp"
+            android:background="#FFFFFF"
             android:padding="5dp">
             <ImageView
                 android:id='@+id/image92'
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:layout_marginTop="35dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginRight="300dp"
                 app:cardCornerRadius="10dp"
                 app:srcCompat="@drawable/group_223" />
@@ -32,7 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 app:cardCornerRadius="10dp"
-                android:layout_marginTop="35dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginRight="100dp"
                 app:srcCompat="@drawable/_5" />
 
@@ -40,7 +40,7 @@
                 android:id='@+id/image98'
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:layout_marginTop="35dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginLeft="100dp"
                 app:cardCornerRadius="10dp"
                 app:srcCompat="@drawable/group_222" />
@@ -49,23 +49,23 @@
                 android:id='@+id/dieselicon'
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:layout_marginTop="35dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginLeft="300dp"
                 app:cardCornerRadius="10dp"
                 app:srcCompat="@drawable/group_224" />
 
             <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginTop="150dp"
-                android:background="#B7B7B7"
+                android:layout_width="400dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="110dp"
+                android:background="#FFFFFF"
                 android:padding="5dp">
                 <TextView
                     android:id="@+id/t1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="28.5"
-                    android:textColor="#ffff"
+                    android:text="30.0"
+                    android:textColor="#6C6A61"
                     android:textSize="35dp"
                     android:textStyle="bold"
                     android:layout_marginLeft="10dp" />
@@ -75,8 +75,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="110dp"
-                    android:text="29.5"
-                    android:textColor="#ffff"
+                    android:text="30.0"
+                    android:textColor="#6C6A61"
                     android:textSize="35dp"
                     android:textStyle="bold" />
 
@@ -84,8 +84,8 @@
                     android:id="@+id/t3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="30.5"
-                    android:textColor="#ffff"
+                    android:text="30.0"
+                    android:textColor="#6C6A61"
                     android:textSize="35dp"
                     android:textStyle="bold"
                     android:layout_marginLeft="210dp" />
@@ -93,11 +93,11 @@
                     android:id="@+id/t4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="31.5"
-                    android:textColor="#ffff"
+                    android:text="30.0"
+                    android:textColor="#6C6A61"
                     android:textSize="35dp"
                     android:textStyle="bold"
-                    android:layout_marginLeft="300dp" />
+                    android:layout_marginLeft="310dp" />
             </RelativeLayout>
         </RelativeLayout>
 

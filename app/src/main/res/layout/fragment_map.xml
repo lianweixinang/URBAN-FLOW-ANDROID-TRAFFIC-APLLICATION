@@ -39,7 +39,7 @@
                 android:layout_height="match_parent"
                 app:behavior_hideable="false"
                 app:behavior_peekHeight="350dp"
-                app:cardBackgroundColor="#575757"
+                app:cardBackgroundColor="#F0F0F0"
                 app:cardCornerRadius="10dp"
                 app:cardElevation="20dp"
                 app:cardMaxElevation="20dp"
@@ -54,11 +54,11 @@
                     android:layout_height="match_parent">
 
                     <include
-                        android:id="@+id/fragment_home"
+                        android:id="@+id/fragmentHome"
                         layout="@layout/fragment_home"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"></include>
+                        app:layout_constraintTop_toTopOf="parent"/>
 
                     <WebView
                         android:id="@+id/webView"

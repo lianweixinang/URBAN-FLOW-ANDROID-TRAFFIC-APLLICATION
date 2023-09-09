@@ -49,7 +49,7 @@ class HomeFragment : Fragment() {
     private val searchBtnListener = View.OnClickListener {
         isOpen.value = true
         MyLog.e(isOpen.value.toString())
-        AppUtil.startFragment(parentFragmentManager, ntutifm.game.google.R.id.fragment_home, SearchFragment())
+        AppUtil.startFragment(parentFragmentManager, ntutifm.game.google.R.id.fragmentHome, SearchFragment())
     }
 
     override fun onDestroyView() {

@@ -165,7 +165,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     private val searchBtnListener = View.OnClickListener {
         isOpen.value = true
         MyLog.e(isOpen.value.toString())
-        AppUtil.startFragment(parentFragmentManager, R.id.fragment_home, SearchFragment())
+        AppUtil.startFragment(parentFragmentManager, R.id.fragmentHome, SearchFragment())
     }
 
     /** 設置地圖 */

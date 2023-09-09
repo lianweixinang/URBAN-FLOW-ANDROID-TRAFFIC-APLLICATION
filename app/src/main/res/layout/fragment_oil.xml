@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_oil"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:background="#EDEFF4">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,34 +25,42 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="20dp"
                 app:cardCornerRadius="15dp"
-                app:cardBackgroundColor="#45AAE2">
+                app:cardBackgroundColor="#FFFFFF">
+                <ImageView
+                    android:id="@+id/gasIcon1"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="125dp"
+                    android:layout_marginTop="5dp"
+                    android:src='@drawable/baseline_local_gas_station_24'
+                    app:cardCornerRadius="10dp" />
                 <TextView
                     android:id="@+id/t0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="油價資訊"
-                    android:textColor="#ffff"
+                    android:layout_marginLeft="10dp"
+                    android:text="本週油價"
+                    android:textColor="#000000"
                     android:textSize="25dp"
-                    android:textStyle="bold"
                     android:layout_gravity="center"/>
             </androidx.cardview.widget.CardView>
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="220dp"
                 android:layout_marginTop="20dp"
                 app:cardCornerRadius="15dp"
-                app:cardBackgroundColor="#EFEFEF">
+                app:cardBackgroundColor="#FFFFFF">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#EFEFEF"
+                    android:layout_height="220dp"
+                    android:background="#FFFFFF"
                     android:padding="5dp">
                     <ImageView
                         android:id='@+id/image92'
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
-                        android:layout_marginTop="35dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginRight="300dp"
                         app:cardCornerRadius="10dp"
                         app:srcCompat="@drawable/group_223" />
@@ -61,7 +70,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
                         app:cardCornerRadius="10dp"
-                        android:layout_marginTop="35dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginRight="100dp"
                         app:srcCompat="@drawable/_5" />
 
@@ -69,7 +78,7 @@
                         android:id='@+id/image98'
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
-                        android:layout_marginTop="35dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginLeft="100dp"
                         app:cardCornerRadius="10dp"
                         app:srcCompat="@drawable/group_222" />
@@ -78,24 +87,24 @@
                         android:id='@+id/dieselicon'
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
-                        android:layout_marginTop="35dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginLeft="300dp"
                         app:cardCornerRadius="10dp"
                         app:srcCompat="@drawable/group_224" />
 
                     <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:layout_marginTop="150dp"
-                        android:background="#B7B7B7"
+                        android:layout_width="400dp"
+                        android:layout_height="80dp"
+                        android:layout_marginTop="110dp"
+                        android:background="#FFFFFF"
                         android:padding="5dp">
                         <TextView
                             android:id="@+id/t1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="28.5"
-                            android:textColor="#ffff"
-                            android:textSize="32dp"
+                            android:textColor="#6C6A61"
+                            android:textSize="35dp"
                             android:textStyle="bold"
                             android:layout_marginLeft="10dp" />
 
@@ -105,7 +114,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="110dp"
                             android:text="29.5"
-                            android:textColor="#ffff"
+                            android:textColor="#6C6A61"
                             android:textSize="35dp"
                             android:textStyle="bold" />
 
@@ -114,7 +123,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="30.5"
-                            android:textColor="#ffff"
+                            android:textColor="#6C6A61"
                             android:textSize="35dp"
                             android:textStyle="bold"
                             android:layout_marginLeft="210dp" />
@@ -123,10 +132,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="31.5"
-                            android:textColor="#ffff"
+                            android:textColor="#6C6A61"
                             android:textSize="35dp"
                             android:textStyle="bold"
-                            android:layout_marginLeft="300dp" />
+                            android:layout_marginLeft="310dp" />
                     </RelativeLayout>
                 </RelativeLayout>
 
@@ -136,33 +145,41 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="20dp"
                 app:cardCornerRadius="15dp"
-                app:cardBackgroundColor="#45AAE2">
+                app:cardBackgroundColor="#FFFFFF">
+                <ImageView
+                    android:id="@+id/gasIcon2"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="125dp"
+                    android:layout_marginTop="5dp"
+                    android:src='@drawable/baseline_local_gas_station_24'
+                    app:cardCornerRadius="10dp" />
                 <TextView
                     android:id="@+id/t5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="下周油價"
+                    android:layout_marginLeft="10dp"
+                    android:text="下週油價"
                     android:layout_gravity="center"
-                    android:textColor="#ffff"
-                    android:textSize="25dp"
-                    android:textStyle="bold" />
+                    android:textColor="#000000"
+                    android:textSize="25dp" />
             </androidx.cardview.widget.CardView>
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="260dp"
                 android:layout_marginTop="20dp"
                 app:cardCornerRadius="15dp">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#EFEFEF"
+                    android:layout_height="260dp"
+                    android:background="#FFFFFF"
                     android:padding="10dp">
                     <ImageView
                         android:id='@+id/image922'
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
-                        android:layout_marginTop="35dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginRight="300dp"
                         app:cardCornerRadius="10dp"
                         app:srcCompat="@drawable/group_223" />
@@ -172,7 +189,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
                         app:cardCornerRadius="10dp"
-                        android:layout_marginTop="35dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginRight="100dp"
                         app:srcCompat="@drawable/_5" />
 
@@ -180,7 +197,7 @@
                         android:id='@+id/image982'
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
-                        android:layout_marginTop="35dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginLeft="100dp"
                         app:cardCornerRadius="10dp"
                         app:srcCompat="@drawable/group_222" />
@@ -189,43 +206,97 @@
                         android:id='@+id/dieselicon2'
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
-                        android:layout_marginTop="35dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginLeft="300dp"
                         app:cardCornerRadius="10dp"
                         app:srcCompat="@drawable/group_224" />
                     <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:layout_marginTop="150dp"
-                        android:background="#B7B7B7"
+                        android:layout_height="80dp"
+                        android:layout_marginTop="110dp"
+                        android:background="#FFFFFF"
                         android:padding="5dp">
                         <TextView
                             android:id="@+id/t6"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="+0.5"
-                            android:textColor="#ffff"
-                            android:textSize="50dp"
+                            android:textColor="#6C6A61"
+                            android:textSize="35dp"
                             android:textStyle="bold"
-                            android:layout_marginLeft="5dp" />
+                            android:layout_marginLeft="10dp" />
                         <TextView
                             android:id="@+id/t7"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="+1.5"
-                            android:textColor="#ffff"
-                            android:textSize="50dp"
+                            android:textColor="#6C6A61"
+                            android:textSize="35dp"
                             android:textStyle="bold"
-                            android:layout_marginLeft="130dp" />
+                            android:layout_marginLeft="110dp" />
                         <TextView
                             android:id="@+id/t8"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="+2.5"
-                            android:textColor="#ffff"
-                            android:textSize="50dp"
+                            android:textColor="#6C6A61"
+                            android:textSize="35dp"
                             android:textStyle="bold"
-                            android:layout_marginLeft="255dp" />
+                            android:layout_marginLeft="210dp" />
+                        <TextView
+                            android:id="@+id/t9"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="+2.5"
+                            android:textColor="#6C6A61"
+                            android:textSize="35dp"
+                            android:textStyle="bold"
+                            android:layout_marginLeft="310dp" />
+                    </RelativeLayout>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:layout_marginTop="160dp"
+                        android:background="#FFFFFF"
+                        android:padding="5dp">
+                        <TextView
+                            android:id="@+id/t10"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="+0.5"
+                            android:textColor="#145DA0"
+                            android:textSize="25dp"
+                            android:textStyle="bold"
+                            android:layout_marginLeft="10dp" />
+                        <TextView
+                            android:id="@+id/t11"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="+1.5"
+                            android:textColor="#145DA0"
+                            android:textSize="25dp"
+                            android:textStyle="bold"
+                            android:layout_marginLeft="110dp" />
+                        <TextView
+                            android:id="@+id/t12"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="+2.5"
+                            android:textColor="#145DA0"
+                            android:textSize="25dp"
+                            android:textStyle="bold"
+                            android:layout_marginLeft="210dp" />
+                        <TextView
+                            android:id="@+id/t13"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+
+                            android:text="+2.5"
+                            android:textColor="#145DA0"
+                            android:textSize="25dp"
+                            android:textStyle="bold"
+                            android:layout_marginLeft="310dp" />
                     </RelativeLayout>
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>

@@ -1,93 +1,412 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#808080"
-    android:id="@+id/weather_page"
-    android:collapseColumns="*" >
-    <TableRow
+    android:background="#F0F0F0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical">
+
+    <TableLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginTop="30dp"
-        android:gravity="center"
-        tools:ignore="UselessParent">
-        <TextView
-            android:id="@+id/position"
-            android:text="目前位置"
-            android:textSize="30dp"
-            android:layout_span="3"
-            android:textColor="#ffffff"
-            android:layout_gravity="center" />
-    </TableRow>
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:gravity="center"
-        android:layout_marginTop="10dp"
-        tools:ignore="UselessParent">
-        <TextView
-            android:id="@+id/now_weather"
-            android:text="18℃"
-            android:textSize="35dp"
-            android:layout_span="3"
-            android:textColor="#ffffff"
-            android:layout_gravity="center" />
-    </TableRow>
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="5dp"
-        android:gravity="center"
-        tools:ignore="UselessParent">
-        <ImageView
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_span="3"
-            android:padding="3dp"
-            app:srcCompat="@drawable/cloudy" />
-    </TableRow>
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:gravity="center"
-        tools:ignore="UselessParent">
-        <TextView
-            android:id="@+id/time_1"
-            android:layout_width="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:background="#F0F0F0"
+        android:id="@+id/weather_page"
+        android:collapseColumns="*" >
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            tools:ignore="UselessParent">
+            <TextView
+                android:id="@+id/position"
+                android:text="目前位置"
+                android:textSize="35dp"
+                android:layout_span="4"
+                android:textColor="#3C3C3C"
+                android:layout_gravity="center" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="12:00~13:00"
-            android:textColor="#ffffff"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="6dp"
-            android:textSize = "20sp" />
-        <ImageView
-            android:id="@+id/now_pic"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="10dp"
-            app:srcCompat="@drawable/cloudy" />
-        <TextView
-            android:id="@+id/weather_text1"
-            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            tools:ignore="UselessParent">
+            <TextView
+                android:id="@+id/now_weather"
+                android:layout_width="wrap_content"
+                android:text="36℃"
+                android:textSize="30dp"
+                android:gravity="center"
+                android:textColor="#3C3C3C" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            tools:ignore="UselessParent">
+            <ImageView
+                android:layout_width="170dp"
+                android:layout_height="170dp"
+                android:layout_span="4"
+                android:padding="3dp"
+                app:srcCompat="@drawable/cloudy" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="30℃"
-            android:textColor="#ffffff"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="6dp"
-            android:textSize = "20sp" />
-    </TableRow>
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            tools:ignore="UselessParent">
+            <TextView
+                android:id="@+id/now_weather_text"
+                android:text="晴時多雲"
+                android:textSize="20dp"
+                android:gravity="center"
+                android:textColor="#3C3C3C" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/shape_top_corner_no_bottom_line"
+            android:gravity="center"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            tools:ignore="UselessParent">
+            <TextView
+                android:id="@+id/time_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="12:00~15:00"
+                android:textColor="#3C3C3C"
+                android:layout_marginRight="10dp"
+                android:gravity="center"
+                android:textSize = "22sp" />
+            <ImageView
+                android:id="@+id/pic_1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
 
-</TableLayout>
+                android:layout_marginLeft="10dp"
+                app:srcCompat="@drawable/cloudy" />
+            <TextView
+                android:id="@+id/rain_text1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="10%"
+                android:textColor="#0080FF"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:textSize = "20sp" />
+            <TextView
+                android:id="@+id/weather_text1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="35℃"
+                android:textColor="#3C3C3C"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:textSize = "20sp" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_no_corner_without_bottom"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:gravity="center">
+            <TextView
+                android:id="@+id/time_2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="15:00~18:00"
+                android:textColor="#3C3C3C"
+                android:layout_marginRight="10dp"
+                android:textSize = "22sp"
+                android:gravity="center"    />
+            <ImageView
+                android:id="@+id/pic2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                app:srcCompat="@drawable/cloudy" />
+            <TextView
+                android:id="@+id/rain_text2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="10%"
+                android:textColor="#0080FF"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:textSize = "20sp" />
+            <TextView
+                android:id="@+id/weather_text2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="33℃"
+                android:textColor="#3C3C3C"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:textSize = "20sp" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_no_corner_without_bottom"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:gravity="center"
+            tools:ignore="UselessParent">
+            <TextView
+                android:id="@+id/time_3"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="18:00~21:00"
+                android:textColor="#3C3C3C"
+                android:layout_marginRight="10dp"
+                android:gravity="center"
+                android:textSize = "22sp" />
+            <ImageView
+                android:id="@+id/pic3"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                app:srcCompat="@drawable/night" />
+            <TextView
+                android:id="@+id/rain_text3"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="0%"
+                android:textColor="#0080FF"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:textSize = "20sp" />
+            <TextView
+                android:id="@+id/weather_text3"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="30℃"
+                android:textColor="#3C3C3C"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:textSize = "20sp" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_no_corner_without_bottom"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:gravity="center"
+            tools:ignore="UselessParent">
+            <TextView
+                android:id="@+id/time_4"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="21:00~00:00"
+                android:textColor="#3C3C3C"
+                android:layout_marginRight="10dp"
+                android:gravity="center"
+                android:textSize = "22sp" />
+            <ImageView
+                android:id="@+id/pic4"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                app:srcCompat="@drawable/storm" />
+            <TextView
+                android:id="@+id/rain_text4"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="80%"
+                android:textColor="#0080FF"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:textSize = "20sp" />
+            <TextView
+                android:id="@+id/weather_text4"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="25℃"
+                android:textColor="#3C3C3C"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:textSize = "20sp" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_no_corner_without_bottom"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:gravity="center"
+            tools:ignore="UselessParent">
+            <TextView
+                android:id="@+id/time_5"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="00:00~03:00"
+                android:textColor="#3C3C3C"
+                android:layout_marginRight="10dp"
+                android:gravity="center"
+                android:textSize = "22sp" />
+            <ImageView
+                android:id="@+id/pic5"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                app:srcCompat="@drawable/night_heavy_rain" />
+            <TextView
+                android:id="@+id/rain_text5"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="50%"
+                android:textColor="#0080FF"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:textSize = "20sp" />
+            <TextView
+                android:id="@+id/weather_text5"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="23℃"
+                android:textColor="#3C3C3C"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:textSize = "20sp" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_no_corner_without_bottom"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:gravity="center"
+            tools:ignore="UselessParent">
+            <TextView
+                android:id="@+id/time_6"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="03:00~06:00"
+                android:textColor="#3C3C3C"
+                android:layout_marginRight="10dp"
+                android:gravity="center"
+                android:textSize = "22sp" />
+            <ImageView
+                android:id="@+id/pic6"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                app:srcCompat="@drawable/night" />
+            <TextView
+                android:id="@+id/rain_text6"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="20%"
+                android:textColor="#0080FF"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:textSize = "20sp" />
+            <TextView
+                android:id="@+id/weather_text6"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="26℃"
+                android:textColor="#3C3C3C"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:textSize = "20sp" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_bottom_corner_no_top_line"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:gravity="center"
+            tools:ignore="UselessParent">
+            <TextView
+                android:id="@+id/time_7"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="06:00~09:00"
+                android:textColor="#3C3C3C"
+                android:layout_marginRight="10dp"
+                android:gravity="center"
+                android:textSize = "22sp" />
+            <ImageView
+                android:id="@+id/pic7"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                app:srcCompat="@drawable/cloudy" />
+            <TextView
+                android:id="@+id/rain_text7"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="0%"
+                android:textColor="#0080FF"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:textSize = "20sp" />
+            <TextView
+                android:id="@+id/weather_text7"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="29℃"
+                android:textColor="#3C3C3C"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:textSize = "20sp" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_bottom_corner_no_top_line"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:gravity="center"
+            tools:ignore="UselessParent">
+            <TextView
+                android:id="@+id/time_8"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="09:00~12:00"
+                android:textColor="#3C3C3C"
+                android:layout_marginRight="10dp"
+                android:gravity="center"
+                android:textSize = "22sp" />
+            <ImageView
+                android:id="@+id/pic8"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                app:srcCompat="@drawable/cloudy" />
+            <TextView
+                android:id="@+id/rain_text8"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="10%"
+                android:textColor="#0080FF"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:textSize = "20sp" />
+            <TextView
+                android:id="@+id/weather_text8"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="29℃"
+                android:textColor="#3C3C3C"
+                android:layout_marginLeft="15dp"
+                android:gravity="center"
+                android:textSize = "20sp" />
+        </TableRow>
+    </TableLayout>
+</LinearLayout>

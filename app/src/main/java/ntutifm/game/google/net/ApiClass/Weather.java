@@ -11,17 +11,17 @@ public class Weather {
     private String weatherDescription ="WeatherDescription";
 
     //降雨機率 per12h
-    @SerializedName("PoP12h1")
-    private String pop12h1 ="PoP12h1";
+    @SerializedName("PoP6h1")
+    private String pop6h1 ="PoP6h1";
 
-    @SerializedName("PoP12h2")
-    private String pop12h2 ="PoP12h2";
+    @SerializedName("PoP6h2")
+    private String pop6h2 ="PoP6h2";
 
-    @SerializedName("PoP12h3")
-    private String pop12h3 ="PoP12h3";
+    @SerializedName("PoP6h3")
+    private String pop6h3 ="PoP6h3";
 
-    @SerializedName("PoP12h4")
-    private String pop12h4 ="PoP12h4";
+    @SerializedName("PoP6h4")
+    private String pop6h4 ="PoP6h4";
 
     @SerializedName("Wx1")
     private String wx1 ="Wx1";
@@ -47,7 +47,7 @@ public class Weather {
     @SerializedName("Wx8")
     private String wx8 ="Wx8";
 
-    //Temperature
+    //Temperature per 3hr
     @SerializedName("T1")
     private String t1 ="T1";
 
@@ -81,17 +81,17 @@ public class Weather {
     public String getWeatherDescription() {
         return this.weatherDescription;
     }
-    public String getPop12h1() {
-        return this.pop12h1;
+    public String getPop6h1() {
+        return this.pop6h1;
     }
-    public String getPop12h2() {
-        return this.pop12h2;
+    public String getPop6h2() {
+        return this.pop6h2;
     }
-    public String getPop12h3() {
-        return this.pop12h3;
+    public String getPop6h3() {
+        return this.pop6h3;
     }
-    public String getPop12h4() {
-        return this.pop12h4;
+    public String getPop6h4() {
+        return this.pop6h4;
     }
     public String getWx1() {
         return this.wx1;

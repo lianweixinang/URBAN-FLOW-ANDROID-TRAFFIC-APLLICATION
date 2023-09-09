@@ -2,7 +2,6 @@ package ntutifm.game.google
 
 import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -13,18 +12,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import ntutifm.game.google.databinding.ActivityMainBinding
 import ntutifm.game.google.global.AppUtil
-import ntutifm.game.google.net.ApiClass.City
-import ntutifm.game.google.net.RetrofitManager
-import ntutifm.game.google.ui.home.HomeFragment
 import ntutifm.game.google.ui.map.MapFragment
 import ntutifm.game.google.ui.notification.NotificationFragment
 import ntutifm.game.google.ui.oil.OilFragment
 import ntutifm.game.google.ui.route.RouteFragment
-import ntutifm.game.google.ui.search.SearchFragment
 import ntutifm.game.google.ui.weather.WeatherFragment
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 val isOpen: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
 
@@ -48,12 +40,6 @@ open class MainActivity : AppCompatActivity(),
     }
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-             R.id.nav_home -> {
-                 AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, HomeFragment())
-            }
-            R.id.nav_search -> {
-                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, SearchFragment())
-            }
             R.id.nav_map -> {
                 AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, MapFragment())
             }

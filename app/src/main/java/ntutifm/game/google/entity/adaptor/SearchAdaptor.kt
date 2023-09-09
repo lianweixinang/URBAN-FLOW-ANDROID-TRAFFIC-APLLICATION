@@ -34,7 +34,7 @@ class SearchAdaptor(private var mList: List<CityRoad>?, private val itemOnClickL
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
         holder.logo.setImageResource(R.drawable.ic_baseline_search_25)
         holder.title.text = mList?.get(position)?.roadName ?: ""
-        holder.title.tag = mList?.get(position) ?: ""
+        holder.title.tag = mList?.get(position) ?: "22"
         holder.delete.tag = mList?.get(position) ?: ""
         holder.title.setOnClickListener(itemOnClickListener)
 //        holder.root.setOnTouchListener { view, motionEvent ->

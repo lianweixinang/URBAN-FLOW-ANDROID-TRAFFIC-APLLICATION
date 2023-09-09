@@ -3,16 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:showIn="@layout/activity_main">
 
-        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
+        <fragment xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
@@ -29,7 +27,7 @@
             android:layout_height="50dp"
             android:src="@drawable/group_225"
             android:layout_marginTop="5dp"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:id="@+id/menuButton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
@@ -38,7 +36,7 @@
             android:layout_height="50dp"
             android:src="@drawable/sun"
             android:layout_marginTop="65dp"
-            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:id="@+id/weatherButton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
@@ -76,6 +74,13 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"/>
+                    <include
+                        android:id="@+id/fragmentSearch"
+                        layout="@layout/fragment_search"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <WebView
                         android:id="@+id/webView"
@@ -109,7 +114,7 @@
                                 android:id="@+id/directionIcon"
                                 android:layout_width="match_parent"
                                 android:layout_height="30dp"
-                                android:layout_marginRight="50dp"
+                                android:layout_marginEnd="50dp"
                                 android:src='@drawable/baseline_swap_horiz_24'
                                 app:cardCornerRadius="10dp" />
 
@@ -117,7 +122,7 @@
                                 android:id="@+id/carDirection"
                                 android:layout_width="match_parent"
                                 android:layout_height="30dp"
-                                android:layout_marginLeft="180dp"
+                                android:layout_marginStart="180dp"
                                 android:layout_marginTop="1dp"
                                 android:text="東向"
                                 android:textColor="#4D4D4E"
@@ -130,7 +135,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="30dp"
                                 android:layout_marginTop="20dp"
-                                android:layout_marginRight="250dp"
+                                android:layout_marginEnd="250dp"
                                 android:src='@drawable/baseline_location_on_24'
                                 app:cardCornerRadius="10dp" />
 
@@ -138,7 +143,7 @@
                                 android:id="@+id/road1"
                                 android:layout_width="match_parent"
                                 android:layout_height="30dp"
-                                android:layout_marginLeft="80dp"
+                                android:layout_marginStart="80dp"
                                 android:layout_marginTop="20dp"
                                 android:text="承德路"
                                 android:textColor="#000000"
@@ -149,7 +154,7 @@
                                 android:id="@+id/position2"
                                 android:layout_width="match_parent"
                                 android:layout_height="30dp"
-                                android:layout_marginLeft="110dp"
+                                android:layout_marginStart="110dp"
                                 android:layout_marginTop="20dp"
                                 android:src='@drawable/baseline_location_on_24'
                                 app:cardCornerRadius="10dp" />
@@ -158,7 +163,7 @@
                                 android:id="@+id/road2"
                                 android:layout_width="match_parent"
                                 android:layout_height="30dp"
-                                android:layout_marginLeft="260dp"
+                                android:layout_marginStart="260dp"
                                 android:layout_marginTop="20dp"
                                 android:text="市民大道"
                                 android:textColor="#000000"
@@ -194,7 +199,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="30dp"
                                 android:layout_marginTop="35dp"
-                                android:layout_marginRight="300dp"
+                                android:layout_marginEnd="300dp"
                                 android:src='@drawable/baseline_directions_car_24'
                                 app:cardCornerRadius="10dp" />
 
@@ -213,7 +218,7 @@
                                 android:id="@+id/carsicon2"
                                 android:layout_width="match_parent"
                                 android:layout_height="30dp"
-                                android:layout_marginLeft="80dp"
+                                android:layout_marginStart="80dp"
                                 android:layout_marginTop="35dp"
                                 android:src='@drawable/baseline_directions_car_24'
                                 app:cardCornerRadius="10dp" />
@@ -222,7 +227,7 @@
                                 android:id="@+id/cars2"
                                 android:layout_width="match_parent"
                                 android:layout_height="30dp"
-                                android:layout_marginLeft="260dp"
+                                android:layout_marginStart="260dp"
                                 android:layout_marginTop="35dp"
                                 android:text="56 Cars"
                                 android:textColor="#000000"
@@ -234,7 +239,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="30dp"
                                 android:layout_marginTop="120dp"
-                                android:layout_marginRight="300dp"
+                                android:layout_marginEnd="300dp"
                                 android:src='@drawable/baseline_speed_24'
                                 app:cardCornerRadius="10dp" />
 
@@ -242,7 +247,7 @@
                                 android:id="@+id/speed"
                                 android:layout_width="match_parent"
                                 android:layout_height="30dp"
-                                android:layout_marginLeft="70dp"
+                                android:layout_marginStart="70dp"
                                 android:layout_marginTop="120dp"
                                 android:text="25 km/h"
                                 android:textColor="#000000"
@@ -253,7 +258,7 @@
                                 android:id="@+id/speedicon2"
                                 android:layout_width="match_parent"
                                 android:layout_height="30dp"
-                                android:layout_marginLeft="80dp"
+                                android:layout_marginStart="80dp"
                                 android:layout_marginTop="120dp"
                                 android:src='@drawable/baseline_speed_24'
                                 app:cardCornerRadius="10dp" />
@@ -262,7 +267,7 @@
                                 android:id="@+id/speed2"
                                 android:layout_width="match_parent"
                                 android:layout_height="30dp"
-                                android:layout_marginLeft="260dp"
+                                android:layout_marginStart="260dp"
                                 android:layout_marginTop="120dp"
                                 android:text="31 km/h"
                                 android:textColor="#000000"
@@ -294,6 +299,12 @@
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-
+        <LinearLayout
+            android:id="@+id/cover"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"
+            app:layout_constraintTop_toTopOf="parent"
+            android:orientation="horizontal" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

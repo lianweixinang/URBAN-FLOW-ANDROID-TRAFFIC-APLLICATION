@@ -19,6 +19,7 @@ object SyncSpeed {
         _speedLists.postValue(data)
     }
     fun getCityRoadSpeed(callBack: ApiCallBack?, data: String, fragment: Fragment){
+        MyLog.e("startUpdateSpeed")
         ApiManager(callBack, data).execute(fragment, ApiProcessor.getCityRoadSpeed)
     }
 }

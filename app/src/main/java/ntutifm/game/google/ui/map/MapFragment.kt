@@ -4,20 +4,25 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -28,6 +33,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
+import com.google.android.material.navigation.NavigationView
 import com.google.maps.android.clustering.ClusterManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -38,11 +44,19 @@ import ntutifm.game.google.databinding.ActivityMainBinding
 import ntutifm.game.google.entity.MyItem
 import ntutifm.game.google.entity.SyncBottomBar
 import ntutifm.game.google.entity.SyncBottomBar.state
+import ntutifm.game.google.entity.SyncRoad
 import ntutifm.game.google.entity.SyncSpeed
+import ntutifm.game.google.entity.adaptor.SearchAdaptor
+import ntutifm.game.google.entity.dbAddHistory
+import ntutifm.game.google.entity.dbDeleteHistory
+import ntutifm.game.google.entity.dbDisplayHistory
 import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.*
-import ntutifm.game.google.ui.search.SearchFragment
+import ntutifm.game.google.net.ApiClass.CityRoad
+import ntutifm.game.google.ui.notification.NotificationFragment
+import ntutifm.game.google.ui.oil.OilFragment
+import ntutifm.game.google.ui.route.RouteFragment
 import ntutifm.game.google.ui.weather.WeatherFragment
 import kotlin.math.roundToInt
 
@@ -52,7 +66,8 @@ var favoriteFlag:MutableLiveData<Boolean>? = null
 var behavior:BottomSheetBehavior<View>? = null
 class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
-    ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack {
+    ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack,
+    NavigationView.OnNavigationItemSelectedListener {
 
     internal var mCurrLocationMarker : Marker? = null
     internal var mLastLocation : Location? = null
@@ -63,6 +78,8 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     private lateinit var map : GoogleMap
     private lateinit var mLocationRequest : LocationRequest
     private var latLng : LatLng? = null
+    private var recycleView : RecyclerView? = null
+    private var adaptor : SearchAdaptor? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
@@ -71,9 +88,10 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.fragmentMap.cover.visibility = View.GONE
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
@@ -84,6 +102,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         binding.fragmentMap.menuButton.setOnClickListener(menuButtonListener)
         binding.fragmentMap.weatherButton.setOnClickListener(weatherButtonListener)
         bottomSheetInit()
+        setNavigationViewListener()
         SyncSpeed.speedLists.observe(viewLifecycleOwner){
             MyLog.e("updateSpeedEnd")
             if(it.isNotEmpty()) {
@@ -102,7 +121,11 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
             }
             MainScope().launch(Dispatchers.Main){SyncBottomBar.updateState(SyncBottomBar.State.Open)}
         }
-
+        binding.fragmentMap.fragmentHome.textContainer.setOnClickListener(searchBtnListener)
+        binding.fragmentMap.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
+        binding.fragmentMap.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
+        searchViewInit()
+        searchListInit()
 //        AppUtil.showTopToast(context, "HI")
 //        AppUtil.showDialog("Hello", activity)
         binding.fragmentMap.webView.getSettings().setJavaScriptEnabled(true);
@@ -115,9 +138,17 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
         behavior?.addBottomSheetCallback(object : BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                binding.fragmentMap.webView.isVisible = true
-                binding.fragmentMap.trafficFlow.isVisible = newState == BottomSheetBehavior.STATE_EXPANDED
-                binding.fragmentMap.imageView3.isVisible = newState == BottomSheetBehavior.STATE_EXPANDED
+                if(binding.fragmentMap.fragmentSearch.root.visibility == View.GONE) {
+                    binding.fragmentMap.webView.isVisible = true
+                    binding.fragmentMap.trafficFlow.isVisible =
+                        newState == BottomSheetBehavior.STATE_EXPANDED
+                    binding.fragmentMap.imageView3.isVisible =
+                        newState == BottomSheetBehavior.STATE_EXPANDED
+                }else{
+                    binding.fragmentMap.webView.isVisible = false
+                    binding.fragmentMap.trafficFlow.isVisible = false
+                    binding.fragmentMap.imageView3.isVisible = false
+                }
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
@@ -160,7 +191,11 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     private val backBtnListener = View.OnClickListener {
         MyLog.e(isOpen.value.toString())
         if(isOpen.value == true){
-            AppUtil.popBackStack(parentFragmentManager)
+            binding.fragmentMap.fragmentSearch.root.visibility = View.GONE
+            binding.fragmentMap.fragmentHome.root.visibility = View.VISIBLE
+            binding.fragmentMap.webView.visibility = View.VISIBLE
+            binding.fragmentMap.carDirection.visibility = View.VISIBLE
+            binding.fragmentMap.trafficFlow.visibility = View.VISIBLE
         }
         isOpen.value = false
 
@@ -170,7 +205,15 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     private val searchBtnListener = View.OnClickListener {
         isOpen.value = true
         MyLog.e(isOpen.value.toString())
-        AppUtil.startFragment(parentFragmentManager, R.id.fragmentHome, SearchFragment())
+        binding.fragmentMap.fragmentSearch.root.visibility = View.VISIBLE
+        binding.fragmentMap.fragmentHome.root.visibility = View.GONE
+        binding.fragmentMap.webView.visibility = View.GONE
+        binding.fragmentMap.carDirection.visibility = View.GONE
+        binding.fragmentMap.trafficFlow.visibility = View.GONE
+        binding.fragmentMap.fragmentSearch.searchView.apply {
+            this.requestFocus()
+            this.onActionViewExpanded()
+        }
     }
 
     /** 設置地圖 */
@@ -187,7 +230,70 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         setLocationInitBtn()
     }
 
+    private fun searchViewInit(){
+        binding.fragmentMap.fragmentSearch.searchView.setOnQueryTextListener(queryTextListener)
+    }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun searchListInit(){
+        recycleView = binding.fragmentMap.fragmentSearch.recycleView
+        recycleView?.setHasFixedSize(true)
+        recycleView?.layoutManager = LinearLayoutManager(MyActivity().context)
+        adaptor = SearchAdaptor(dbDisplayHistory(requireActivity()), itemOnClickListener, deleteListener)
+        recycleView?.adapter = adaptor
+        SyncRoad.searchLists.observe(viewLifecycleOwner){
+            adaptor?.setFilteredList(it)
+        }
+    }
+
+    /** 當文字變化 */
+    private val queryTextListener = object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+        override fun onQueryTextSubmit(query: String?): Boolean {
+            filterList(query)
+            return false
+        }
+
+        override fun onQueryTextChange(newText: String?): Boolean {
+            filterList(newText)
+            return false
+        }
+    }
+
+    private fun filterList(newText: String?) {
+        MyLog.e("textChange")
+        if(newText!= "" && newText!= null) {
+            SyncRoad.filterSearch(this, newText, this)
+        }else{
+            adaptor?.setFilteredList(dbDisplayHistory(requireActivity()))
+        }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private val itemOnClickListener = View.OnClickListener {
+        try {
+            val searchData = it.tag as CityRoad
+            dbAddHistory(searchData, requireActivity())
+            MyLog.d(searchData.roadName)
+            MyLog.d(searchData.roadId)
+            SyncSpeed.getCityRoadSpeed(this,searchData.roadId,this)
+            binding.fragmentMap.fragmentSearch.searchView.setQuery("", false)
+            binding.fragmentMap.fragmentSearch.root.visibility = View.GONE
+            AppUtil.showTopToast(requireActivity(),"搜尋中...")
+
+        } catch (e: Exception) {
+            MyLog.e(e.toString())
+        }
+    }
+    private val deleteListener = View.OnClickListener {
+        try {
+            val searchData = it.tag as CityRoad
+            dbDeleteHistory(searchData.roadName, requireActivity())
+            adaptor?.setFilteredList(dbDisplayHistory(requireActivity()))
+        } catch (e: Exception) {
+            MyLog.e(e.toString())
+        }
+    }
     @SuppressLint("UseRequireInsteadOfGet")
     private fun setLocationInitBtn(){
         if (childFragmentManager
@@ -269,7 +375,32 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         super.onPause()
         mFusedLocationClient?.removeLocationUpdates(mLocationCallback)
     }
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.nav_map -> {
+                AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, MapFragment())
+            }
+            R.id.nav_oil -> {
+                AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, OilFragment())
+            }
+            R.id.nav_weather -> {
+                AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, WeatherFragment())
+            }
+            R.id.nav_route -> {
+                AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, RouteFragment())
+            }
+            R.id.nav_notification -> {
+                AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, NotificationFragment())
+            }
+        }
 
+        binding.drawerLayout1.closeDrawer(GravityCompat.START)
+        return true
+    }
+
+    private fun setNavigationViewListener() {
+        binding.navView.setNavigationItemSelectedListener(this)
+    }
 
     private var mLocationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {

@@ -76,6 +76,7 @@ class ApiProcessor {
                 response: Response<List<CitySpeed>>?,
             ) {
                 if (response?.body() != null) {
+                    MyLog.d("enterApi")
                     MyLog.d(response?.body()!!.toString())
                     SyncSpeed.updateSpeed(response?.body()!!)
                 } else {

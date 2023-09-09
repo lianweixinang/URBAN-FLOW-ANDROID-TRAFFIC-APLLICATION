@@ -4,25 +4,20 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Location
-import android.media.MediaCodecInfo
-import android.media.MediaPlayer
-import android.media.MediaPlayer.OnPreparedListener
-import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.MediaController
 import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -39,7 +34,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import ntutifm.game.google.*
 import ntutifm.game.google.R
-import ntutifm.game.google.databinding.FragmentMapBinding
+import ntutifm.game.google.databinding.ActivityMainBinding
 import ntutifm.game.google.entity.MyItem
 import ntutifm.game.google.entity.SyncBottomBar
 import ntutifm.game.google.entity.SyncBottomBar.state
@@ -60,7 +55,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
 
     internal var mCurrLocationMarker : Marker? = null
     internal var mLastLocation : Location? = null
-    private var _binding : FragmentMapBinding? = null
+    private var _binding : ActivityMainBinding? = null
     private val binding get() = _binding!!
     private var mFusedLocationClient : FusedLocationProviderClient? = null
     private var permissionDenied = false
@@ -71,7 +66,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
-        _binding = FragmentMapBinding.inflate(inflater, container, false)
+        _binding = ActivityMainBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -82,25 +77,25 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
             childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         favoriteFlag = MutableLiveData(false) //到時候用viewModel給值
-        binding.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
-        binding.bg.setOnClickListener(backBtnListener)
-        binding.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
+        binding.fragmentMap.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
+        binding.fragmentMap.bg.setOnClickListener(backBtnListener)
+        binding.fragmentMap.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
         bottomSheetInit()
         SyncSpeed.speedLists.observe(viewLifecycleOwner){
             MyLog.e("updateSpeedEnd")
             if(it.isNotEmpty()) {
                 MyLog.e("changeSpeed"+it[0].volume+" "+it[0].avgSpeed)
-                binding.cars.text = it[0].volume.toString() + " Cars"
-                binding.speed.text = it[0].avgSpeed.roundToInt().toString() + " km/h"
+                binding.fragmentMap.cars.text = it[0].volume.toString() + " Cars"
+                binding.fragmentMap.speed.text = it[0].avgSpeed.roundToInt().toString() + " km/h"
                 if (it.size > 1) {
-                    binding.cars2.text = it[1].volume.toString() + " Cars"
-                    binding.speed2.text = it[1].avgSpeed.roundToInt().toString() + " km/h"
+                    binding.fragmentMap.cars2.text = it[1].volume.toString() + " Cars"
+                    binding.fragmentMap.speed2.text = it[1].avgSpeed.roundToInt().toString() + " km/h"
                 }
             }else{
-                binding.cars.text = "無資料"
-                binding.speed.text = "無資料"
-                binding.cars2.text = "無資料"
-                binding.speed2.text = "無資料"
+                binding.fragmentMap.cars.text = "無資料"
+                binding.fragmentMap.speed.text = "無資料"
+                binding.fragmentMap.cars2.text = "無資料"
+                binding.fragmentMap.speed2.text = "無資料"
             }
             MainScope().launch(Dispatchers.Main){SyncBottomBar.updateState(SyncBottomBar.State.Open)}
         }
@@ -108,20 +103,23 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
 //        AppUtil.showTopToast(context, "HI")
 //        AppUtil.showDialog("Hello", activity)
 
-        binding.webView.getSettings().setJavaScriptEnabled(true);
-        binding.webView.loadUrl("https://cctvatis4.ntpc.gov.tw/C000232");
-
+        binding.fragmentMap.webView.getSettings().setJavaScriptEnabled(true);
+        binding.fragmentMap.webView.loadUrl("https://cctvatis4.ntpc.gov.tw/C000232")
 
     }
+    fun openDrawer(){
+        MyLog.d("openDrawer")
+        binding.drawerLayout1.openDrawer(GravityCompat.START)
+    }
     private fun bottomSheetInit(){
-        val bottomSheet: View = binding.bg
+        val bottomSheet: View = binding.fragmentMap.bg
         behavior = BottomSheetBehavior.from(bottomSheet)
         behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
         behavior?.addBottomSheetCallback(object : BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                binding.webView.isVisible = true
-                binding.trafficFlow.isVisible = newState == BottomSheetBehavior.STATE_EXPANDED
-                binding.imageView3.isVisible = newState == BottomSheetBehavior.STATE_EXPANDED
+                binding.fragmentMap.webView.isVisible = true
+                binding.fragmentMap.trafficFlow.isVisible = newState == BottomSheetBehavior.STATE_EXPANDED
+                binding.fragmentMap.imageView3.isVisible = newState == BottomSheetBehavior.STATE_EXPANDED
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
@@ -142,7 +140,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
 
     /** 收藏切換 */
     private val favoriteBtnListener = View.OnClickListener {
-        binding.fragmentHome.favoriteBtn.apply {
+        binding.fragmentMap.fragmentHome.favoriteBtn.apply {
             if(favoriteFlag?.value == true){
                 this.setImageResource(R.drawable.ic_baseline_star_24)
             }else{

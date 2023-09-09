@@ -37,34 +37,10 @@ open class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val fragment = MapFragment()
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction?.replace(R.id.fragment_main, fragment)
-        transaction?.commit()
         setNavigationViewListener()
-        //豬頭2
+        AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, MapFragment())
     }
 
-    fun api(){
-        val myAPIService = RetrofitManager.getInstance().api
-        val call: Call<List<City>>? = myAPIService.cityList
-        Log.d("cityName", "Null")
-        call!!.enqueue(object : Callback<List<City>> {
-            override fun onResponse(
-                call: Call<List<City>>?,
-                response: Response<List<City>>?
-            ) {
-                if(response?.body()!=null){
-                    Log.d("cityName", response?.body()!![0].cityName)
-                }else{
-                    Log.d("cityName", "Null")
-                }
-            }
-            override fun onFailure(call: Call<List<City>>?, t: Throwable?) {
-                Log.d("titlecity", t.toString())
-            }
-        })
-    }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menulayout, menu)
@@ -73,29 +49,29 @@ open class MainActivity : AppCompatActivity(),
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
              R.id.nav_home -> {
-                 AppUtil.startFragment(supportFragmentManager, R.id.fragment_main, HomeFragment())
+                 AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, HomeFragment())
             }
             R.id.nav_search -> {
-                AppUtil.startFragment(supportFragmentManager, R.id.fragment_main, SearchFragment())
+                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, SearchFragment())
             }
             R.id.nav_map -> {
-                AppUtil.startFragment(supportFragmentManager, R.id.fragment_main, MapFragment())
+                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, MapFragment())
             }
             R.id.nav_oil -> {
-                AppUtil.startFragment(supportFragmentManager, R.id.fragment_main, OilFragment())
+                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, OilFragment())
             }
             R.id.nav_weather -> {
-                AppUtil.startFragment(supportFragmentManager, R.id.fragment_main, WeatherFragment())
+                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, WeatherFragment())
             }
             R.id.nav_route -> {
-                AppUtil.startFragment(supportFragmentManager, R.id.fragment_main, RouteFragment())
+                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, RouteFragment())
             }
             R.id.nav_notification -> {
-                AppUtil.startFragment(supportFragmentManager, R.id.fragment_main, NotificationFragment())
+                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, NotificationFragment())
             }
         }
 
-        binding.drawerLayout.closeDrawer(GravityCompat.START)
+        binding.drawerLayout1.closeDrawer(GravityCompat.START)
         return true
     }
 

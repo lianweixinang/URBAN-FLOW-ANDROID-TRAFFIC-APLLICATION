@@ -267,7 +267,7 @@
                             android:textColor="#145DA0"
                             android:textSize="25dp"
                             android:textStyle="bold"
-                            android:layout_marginLeft="10dp" />
+                            android:layout_marginLeft="5dp" />
                         <TextView
                             android:id="@+id/t11"
                             android:layout_width="wrap_content"
@@ -276,7 +276,7 @@
                             android:textColor="#145DA0"
                             android:textSize="25dp"
                             android:textStyle="bold"
-                            android:layout_marginLeft="110dp" />
+                            android:layout_marginLeft="100dp" />
                         <TextView
                             android:id="@+id/t12"
                             android:layout_width="wrap_content"
@@ -285,7 +285,7 @@
                             android:textColor="#145DA0"
                             android:textSize="25dp"
                             android:textStyle="bold"
-                            android:layout_marginLeft="210dp" />
+                            android:layout_marginLeft="200dp" />
                         <TextView
                             android:id="@+id/t13"
                             android:layout_width="wrap_content"
@@ -294,7 +294,7 @@
                             android:textColor="#145DA0"
                             android:textSize="25dp"
                             android:textStyle="bold"
-                            android:layout_marginLeft="310dp" />
+                            android:layout_marginLeft="300dp" />
                     </RelativeLayout>
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>

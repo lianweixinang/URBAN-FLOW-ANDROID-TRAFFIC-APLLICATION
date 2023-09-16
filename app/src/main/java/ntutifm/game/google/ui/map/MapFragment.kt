@@ -41,15 +41,9 @@ import kotlinx.coroutines.launch
 import ntutifm.game.google.*
 import ntutifm.game.google.R
 import ntutifm.game.google.databinding.ActivityMainBinding
-import ntutifm.game.google.entity.MyItem
-import ntutifm.game.google.entity.SyncBottomBar
+import ntutifm.game.google.entity.*
 import ntutifm.game.google.entity.SyncBottomBar.state
-import ntutifm.game.google.entity.SyncRoad
-import ntutifm.game.google.entity.SyncSpeed
 import ntutifm.game.google.entity.adaptor.SearchAdaptor
-import ntutifm.game.google.entity.dbAddHistory
-import ntutifm.game.google.entity.dbDeleteHistory
-import ntutifm.game.google.entity.dbDisplayHistory
 import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.*
@@ -60,15 +54,13 @@ import ntutifm.game.google.ui.route.RouteFragment
 import ntutifm.game.google.ui.weather.WeatherFragment
 import kotlin.math.roundToInt
 
-
-var mClusterManager:ClusterManager<MyItem>? = null
-var favoriteFlag:MutableLiveData<Boolean>? = null
-var behavior:BottomSheetBehavior<View>? = null
 class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
     ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack,
     NavigationView.OnNavigationItemSelectedListener {
-
+    var mClusterManager:ClusterManager<MyItem>? = null
+    var behavior:BottomSheetBehavior<View>? = null
+    var favoriteFlag:MutableLiveData<Boolean>? = null
     internal var mCurrLocationMarker : Marker? = null
     internal var mLastLocation : Location? = null
     private var _binding : ActivityMainBinding? = null
@@ -81,6 +73,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     private var recycleView : RecyclerView? = null
     private var adaptor : SearchAdaptor? = null
     private var moveState:Boolean = false
+    private val weatherState:Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
@@ -113,6 +106,12 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
 //        AppUtil.showDialog("Hello", activity)
         
 
+    }
+
+    private fun weatherInit(){
+        SyncPosition.weatherLocation.observe(viewLifecycleOwner){
+            it.parkingName
+        }
     }
     /** 監視器初始化 */
     private fun webViewInit(){
@@ -235,6 +234,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         moveToCurrentLocation()
         initMark()
         setLocationInitBtn()
+        weatherInit()
     }
 
     /** 初始化搜尋*/
@@ -431,6 +431,9 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
                 }
                 latLng = LatLng(location.latitude, location.longitude)
             }
+            if(weatherState && latLng != null) {
+                SyncPosition.weatherLocationApi(this@MapFragment, this@MapFragment, latLng!!)
+            }
             if(moveState && latLng != null) {
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng!!, 15f))
             }
@@ -529,13 +532,17 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     /** 批量生成mark */
     private fun initMark() {
         mClusterManager = ClusterManager(context, map)
+        SyncPosition.parkingLists.observe(viewLifecycleOwner){
+            for(p in it){
+                mClusterManager?.addItem(MyItem(p.lat, p.lng,p.parkingName))
+            }
+        }
         map.setOnCameraIdleListener(mClusterManager)
 
-        ApiManager(this).execute(this, ApiProcessor.getParking)
+        SyncPosition.parkingApi(this,this)
         mClusterManager?.setOnClusterItemClickListener { item ->
             false
         }
-        //要拔除全域改成object
     }
 
     override fun onSuccess(successData: ArrayList<String>){}

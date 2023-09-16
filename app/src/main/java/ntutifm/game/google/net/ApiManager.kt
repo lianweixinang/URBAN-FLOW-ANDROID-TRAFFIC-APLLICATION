@@ -14,7 +14,7 @@ import java.util.ArrayList
 class ApiManager constructor(
     private val apiClass: Class<out ApiProcessor>,
     private val callBack: ApiCallBack? = null,
-    private val data: String? = null
+    private val data: List<String>? = null
 ) {
 
     constructor(
@@ -22,7 +22,7 @@ class ApiManager constructor(
     ) : this(ApiProcessor::class.java, callBack, null)
     constructor(
         callBack: ApiCallBack?,
-        data:String
+        data:List<String>
     ) : this(ApiProcessor::class.java, callBack, data)
 
     private var successData: ArrayList<String> = ArrayList(3)
@@ -51,7 +51,9 @@ class ApiManager constructor(
             errorData = ArrayList(3)
             successData.add(apiName)
             if (!data.isNullOrEmpty()) {
-                successData.add(data)
+                for(d in data) {
+                    successData.add(d)
+                }
             }
             errorData.add(apiName)
 

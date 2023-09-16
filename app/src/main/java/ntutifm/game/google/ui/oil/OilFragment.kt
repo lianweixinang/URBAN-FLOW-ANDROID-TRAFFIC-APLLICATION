@@ -32,6 +32,7 @@ class OilFragment : Fragment(), ApiCallBack {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         oilListInit()
+
         SyncOil.oilLists.observe(viewLifecycleOwner){
             MyLog.e("oilUpdate")
             binding.t1.text=it[0].ninetwo
@@ -42,11 +43,34 @@ class OilFragment : Fragment(), ApiCallBack {
             binding.t7.text=it[1].ninefive
             binding.t8.text=it[1].nineeight
             binding.t9.text=it[1].superoil
-            binding.t10.text= (((it[1].ninetwo.toFloat() - it[0].ninetwo.toFloat())*100.0).roundToInt()/100.0).toString()+"元"
-            binding.t11.text= (((it[1].ninefive.toFloat() - it[0].ninefive.toFloat())*100.0).roundToInt()/100.0).toString()+"元"
-            binding.t12.text= (((it[1].nineeight.toFloat() - it[0].nineeight.toFloat())*100.0).roundToInt()/100.0).toString()+"元"
-            binding.t13.text= (((it[1].superoil.toFloat() - it[0].superoil.toFloat())*100.0).roundToInt()/100.0).toString()+"元"
-        }
+            val value1 = it[1].ninetwo.toFloat() - it[0].ninetwo.toFloat()
+            val value2 = it[1].ninefive.toFloat() - it[0].ninefive.toFloat()
+            val value3 = it[1].nineeight.toFloat() - it[0].nineeight.toFloat()
+            val value4 = it[1].superoil.toFloat() - it[0].superoil.toFloat()
+
+            binding.t10.text = if (value1 >= 0) {
+                "+" + ((value1 * 100.0).roundToInt() / 100.0).toString() + "元"
+            } else {
+                ((value1 * 100.0).roundToInt() / 100.0).toString() + "元"
+            }
+
+            binding.t11.text = if (value2 >= 0) {
+                "+" + ((value2 * 100.0).roundToInt() / 100.0).toString() + "元"
+            } else {
+                ((value2 * 100.0).roundToInt() / 100.0).toString() + "元"
+            }
+
+            binding.t12.text = if (value3 >= 0) {
+                "+" + ((value3 * 100.0).roundToInt() / 100.0).toString() + "元"
+            } else {
+                ((value3 * 100.0).roundToInt() / 100.0).toString() + "元"
+            }
+
+            binding.t13.text = if (value4 >= 0) {
+                "+" + ((value4 * 100.0).roundToInt() / 100.0).toString() + "元"
+            } else {
+                ((value4 * 100.0).roundToInt() / 100.0).toString() + "元"
+            }        }
         SyncOil.getOil(this,this)
 
     }

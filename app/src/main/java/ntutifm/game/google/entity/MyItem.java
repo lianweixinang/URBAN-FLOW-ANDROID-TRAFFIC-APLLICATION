@@ -15,10 +15,10 @@ import com.google.maps.android.clustering.ClusterItem;
             mSnippet = null;
         }
 
-        public MyItem(double lat, double lng, String title, String snippet) {
+        public MyItem(double lat, double lng, String title) {
             mPosition = new LatLng(lat, lng);
             mTitle = title;
-            mSnippet = snippet;
+            mSnippet = null;
         }
 
         public void setTitle(String title) {

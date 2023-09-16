@@ -18,7 +18,7 @@ class WeatherAdaptor(private var mList: List<Weather>?) :
         val locationName : TextView = itemView.findViewById(R.id.position)
 //        val description : TextView = itemView.findViewById(R.id.t2)
 //        val pop : TextView = itemView.findViewById(R.id.t3)
-//        val week : TextView = itemView.findViewById(R.id.t4)
+        val phenomenon : TextView = itemView.findViewById(R.id.now_weather_text)
         val temperature : TextView = itemView.findViewById(R.id.now_weather)
 
 
@@ -39,7 +39,7 @@ class WeatherAdaptor(private var mList: List<Weather>?) :
         holder.locationName.text = mList?.get(position)?.locationName ?: ""
 //        holder.description.text = mList?.get(position)?.weatherDescription ?: ""
 //        holder.pop.text = mList?.get(position)?.pop12h1 ?: ""
-//        holder.week.text = mList?.get(position)?.wx1 ?: ""
+        holder.phenomenon.text = mList?.get(position)?.wx1 ?: ""
         holder.temperature.text = mList?.get(position)?.t1 ?: ""
 
     }

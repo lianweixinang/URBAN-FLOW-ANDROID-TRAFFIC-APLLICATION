@@ -34,7 +34,7 @@ public class MyItemReader {
                 if (!object.isNull("snippet")) {
                     snippet = object.getString("snippet");
                 }
-                items.add(new MyItem(lat, lng, title, snippet));
+                items.add(new MyItem(lat, lng, title));
             }
             return items;
         }

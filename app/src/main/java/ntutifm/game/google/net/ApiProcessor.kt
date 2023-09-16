@@ -6,7 +6,6 @@ import ntutifm.game.google.entity.*
 import ntutifm.game.google.entity.SyncOil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiClass.*
-import ntutifm.game.google.ui.map.mClusterManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -19,6 +18,7 @@ class ApiProcessor {
         const val getIncident = "getIncident"
         const val getOil = "getOil"
         const val getWeather = "getWeather"
+        const val getWeatherLocation = "getWeatherLocation"
     }
 
     fun getParking(c: Context, successData: ArrayList<String>, errorData: ArrayList<String>) {
@@ -30,9 +30,7 @@ class ApiProcessor {
                 response: Response<List<Parking>>?,
             ) {
                 if (response?.body() != null) {
-                    for (item in response.body()!!) {
-                        mClusterManager?.addItem(MyItem(item.lat, item.lng)) //要傳參數嗎
-                    }
+                    SyncPosition.updateParking(response.body()!!)
                 } else {
                     Log.d("parkingName", "Null")
                 }
@@ -133,6 +131,7 @@ class ApiProcessor {
             }
         })
     }
+
     fun getWeather(c: Context, successData: ArrayList<String>, errorData: ArrayList<String>) {
         val myAPIService = RetrofitManager.getInstance().api
         val call: Call<List<Weather>>? = myAPIService.weatherList
@@ -152,6 +151,32 @@ class ApiProcessor {
 
             override fun onFailure(call: Call<List<Weather>>?, t: Throwable?) {
                 Log.d("Title", t.toString())
+            }
+        })
+    }
+
+    fun getWeatherLocation(
+        c: Context,
+        successData: ArrayList<String>,
+        errorData: ArrayList<String>
+    ) {
+        val myAPIService = RetrofitManager.getInstance().api
+        val call: Call<WeatherLocation>? =
+            myAPIService.getWeatherLocationLatLng(successData[1], successData[2])
+        call!!.enqueue(object : Callback<WeatherLocation> {
+            override fun onResponse(
+                call: Call<WeatherLocation>?,
+                response: Response<WeatherLocation>?,
+            ) {
+                if (response?.body() != null) {
+                    SyncPosition.updateWeatherLocation(response.body()!!)
+                } else {
+                    Log.d("district", "Null")
+                }
+            }
+
+            override fun onFailure(call: Call<WeatherLocation>?, t: Throwable?) {
+                Log.d("DistrictTitle", t.toString())
             }
         })
     }

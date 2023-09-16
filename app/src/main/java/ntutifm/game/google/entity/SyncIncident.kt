@@ -16,7 +16,7 @@ object SyncIncident {
     private val _searchLists = MutableLiveData<List<Incident>>()
     val incidentLists: LiveData<List<Incident>> = _searchLists
     fun filterSearch(callBack: ApiCallBack?, data: String, fragment: Fragment){
-        ApiManager(callBack, data).execute(fragment, ApiProcessor.getIncident)
+        ApiManager(callBack, listOf(data)).execute(fragment, ApiProcessor.getIncident)
     }
     fun clearSearch(){
         _searchLists.postValue(listOf<Incident>())

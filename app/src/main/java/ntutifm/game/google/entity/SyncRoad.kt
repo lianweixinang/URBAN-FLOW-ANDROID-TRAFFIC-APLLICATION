@@ -17,7 +17,7 @@ object SyncRoad {
     val searchLists: LiveData<List<CityRoad>> = _searchLists
     fun filterSearch(callBack: ApiCallBack?, data: String, fragment: Fragment){
         MyLog.e("filterSearchStart")
-        ApiManager(callBack, data).execute(fragment, ApiProcessor.getCityRoadId)
+        ApiManager(callBack, listOf(data)).execute(fragment, ApiProcessor.getCityRoadId)
     }
     fun clearSearch(){
         _searchLists.postValue(listOf<CityRoad>())

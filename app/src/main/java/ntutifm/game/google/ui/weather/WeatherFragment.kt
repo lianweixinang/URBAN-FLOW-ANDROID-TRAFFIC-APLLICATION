@@ -30,11 +30,11 @@ class WeatherFragment : Fragment(), ApiCallBack {
     }
 
     private fun weatherTextInit() {
-
         SyncWeather.weatherLists.observe(viewLifecycleOwner) {
             MyLog.e("Weather Updated")
             binding.position.text = it[0].locationName
             binding.nowWeather.text = it[0].t1+"℃"
+            binding.nowWeatherText.text = it[0].wx1
             binding.weatherText1.text = it[0].t1+"℃"
             binding.weatherText2.text = it[0].t2+"℃"
             binding.weatherText3.text = it[0].t3+"℃"

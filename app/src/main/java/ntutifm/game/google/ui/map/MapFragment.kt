@@ -135,6 +135,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         if(sitMode) {
             viewLifecycleOwner.lifecycleScope.launch {
                 while(sitMode) {
+                    moveToCurrentLocation()
                     binding.fragmentMap.slButton.apply() {
                         val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
                         layoutParams.setMargins(left, 400, right, bottom)  // 替換為你需要的值

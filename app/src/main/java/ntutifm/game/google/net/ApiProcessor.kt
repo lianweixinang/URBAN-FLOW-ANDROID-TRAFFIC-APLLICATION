@@ -19,6 +19,8 @@ class ApiProcessor {
         const val getOil = "getOil"
         const val getWeather = "getWeather"
         const val getWeatherLocation = "getWeatherLocation"
+        const val getCameraMark = "getList<Camera>Mark"
+        const val getCameraTest = "getList<Camera>Test"
     }
 
     fun getParking(c: Context, successData: ArrayList<String>, errorData: ArrayList<String>) {
@@ -177,6 +179,56 @@ class ApiProcessor {
 
             override fun onFailure(call: Call<WeatherLocation>?, t: Throwable?) {
                 Log.d("DistrictTitle", t.toString())
+            }
+        })
+    }
+    fun getCameraMark(
+        c: Context,
+        successData: ArrayList<String>,
+        errorData: ArrayList<String>
+    ) {
+        val myAPIService = RetrofitManager.getInstance().api
+        val call: Call<List<Camera>>? = myAPIService.cameraMark
+        call!!.enqueue(object : Callback<List<Camera>> {
+            override fun onResponse(
+                call: Call<List<Camera>>?,
+                response: Response<List<Camera>>?,
+            ) {
+                if (response?.body() != null) {
+                    SyncCamera.updateCameraMark(response.body()!!)
+                } else {
+                    Log.d("getList<Camera>Mark", "Null")
+                }
+            }
+
+            override fun onFailure(call: Call<List<Camera>>?, t: Throwable?) {
+                Log.d("getList<Camera>Mark", t.toString())
+            }
+        })
+    }
+
+    fun getCameraTest(
+        c: Context,
+        successData: ArrayList<String>,
+        errorData: ArrayList<String>
+    ) {
+        val myAPIService = RetrofitManager.getInstance().api
+        val call: Call<List<Camera>>? =
+            myAPIService.cameraTest
+        call!!.enqueue(object : Callback<List<Camera>> {
+            override fun onResponse(
+                call: Call<List<Camera>>?,
+                response: Response<List<Camera>>?,
+            ) {
+                if (response?.body() != null) {
+                    SyncCamera.updateCameraTest(response.body()!!)
+                } else {
+                    Log.d("getList<Camera>Test", "Null")
+                }
+            }
+
+            override fun onFailure(call: Call<List<Camera>>?, t: Throwable?) {
+                Log.d("getList<Camera>Test", t.toString())
             }
         })
     }

@@ -2,6 +2,7 @@ package ntutifm.game.google.net;
 
 import java.util.List;
 
+import ntutifm.game.google.net.ApiClass.Camera;
 import ntutifm.game.google.net.ApiClass.City;
 import ntutifm.game.google.net.ApiClass.CitySpeed;
 import ntutifm.game.google.net.ApiClass.Incident;
@@ -18,6 +19,10 @@ public interface MyAPIService {
 
     @GET("city")
     Call<List<City>> getCityList();
+    @GET("cameraTest")
+    Call<List<Camera>> getCameraTest();
+    @GET("cameraMark")
+    Call<List<Camera>> getCameraMark();
     @GET("parking")
     Call<List<Parking>> getParkingList();
     @GET("cityRoad/{roadName}")

@@ -9,11 +9,8 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import ntutifm.game.google.MyActivity
-import ntutifm.game.google.R
 
 class AppUtil {
     companion object {
@@ -70,6 +67,15 @@ class AppUtil {
             transaction.replace(from, target, target.tag)
             transaction.addToBackStack(target.tag)
             transaction.commitAllowingStateLoss()
+        }
+
+        /**
+         * 啟動新的Fragment使用的method (帶Bundle的版本)
+         */
+        @JvmStatic
+        fun startFragment(manager: FragmentManager?, from: Int, target: Fragment, bundle: Bundle) {
+            target.arguments = bundle
+            startFragment(manager, from, target) // 重用上面的方法來處理實際的Fragment操作
         }
 
         /**

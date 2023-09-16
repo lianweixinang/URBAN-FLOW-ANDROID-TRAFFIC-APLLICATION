@@ -224,7 +224,17 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         binding.drawerLayout1.openDrawer(GravityCompat.START)
         }
     private val weatherButtonListener = View.OnClickListener {
-        AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, WeatherFragment())
+        if(latLng!=null) {
+            val bundle = Bundle()
+            bundle.putDouble("lat", latLng!!.latitude)
+            bundle.putDouble("long", latLng!!.longitude)
+            AppUtil.startFragment(
+                parentFragmentManager,
+                R.id.fragmentMap,
+                WeatherFragment(),
+                bundle
+            )
+        }
     }
 
     /** 收藏切換 */

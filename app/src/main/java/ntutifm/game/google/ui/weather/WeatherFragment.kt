@@ -14,6 +14,8 @@ class WeatherFragment : Fragment(), ApiCallBack {
 
     private var _binding: FragmentWeatherBinding? = null
     private val binding get() = _binding!!
+    private var lat:Double? = null
+    private var long:Double? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -21,6 +23,12 @@ class WeatherFragment : Fragment(), ApiCallBack {
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentWeatherBinding.inflate(inflater, container, false)
+        arguments?.let { bundle ->
+            // 使用 Bundle 中的方法來獲取數據
+            lat = bundle.getDouble("lat")
+            long = bundle.getDouble("long")
+            MyLog.d(lat.toString()+", "+long.toString())
+        }
         return binding.root
     }
 
@@ -31,6 +39,8 @@ class WeatherFragment : Fragment(), ApiCallBack {
 
     private fun weatherTextInit() {
         SyncWeather.weatherLists.observe(viewLifecycleOwner) {
+            //it的第幾筆是地區，根據查表來拿index
+
             MyLog.e("Weather Updated")
             binding.position.text = it[0].locationName
             binding.nowWeather.text = it[0].t1+"℃"

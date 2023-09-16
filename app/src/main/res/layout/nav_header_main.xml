@@ -4,7 +4,7 @@
     android:id="@+id/nav_header_main"
     android:layout_width="match_parent"
     android:layout_height="176dp"
-    android:background="@drawable/ic_launcher_background"
+    android:background="#FFFFFF"
     android:gravity="bottom"
     android:orientation="vertical"
     android:paddingLeft="16dp"
@@ -14,23 +14,10 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/ntutIfm"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:contentDescription="c"
         android:paddingTop="10dp"
-        app:srcCompat="@mipmap/ic_launcher_round" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:text="a"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="a" />
+        app:srcCompat="@drawable/ntutifm" />
 </LinearLayout>

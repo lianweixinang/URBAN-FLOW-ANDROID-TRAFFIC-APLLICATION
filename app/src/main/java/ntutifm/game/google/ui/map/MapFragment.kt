@@ -53,6 +53,8 @@ import ntutifm.game.google.ui.oil.OilFragment
 import ntutifm.game.google.ui.route.RouteFragment
 import ntutifm.game.google.ui.weather.WeatherFragment
 import kotlin.math.roundToInt
+import kotlin.random.Random
+import kotlin.random.nextInt
 
 class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
@@ -97,6 +99,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         binding.fragmentMap.fragmentHome.textContainer.setOnClickListener(searchBtnListener)
         binding.fragmentMap.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
         binding.fragmentMap.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
+        binding.fragmentMap.slButton.setOnClickListener(slButtonListener)
         bottomSheetInit()
         setNavigationViewListener()
         searchViewInit()
@@ -120,6 +123,25 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     }
 
     /** 底部抽屜初始化 */
+    private val slButtonListener = View.OnClickListener {
+        binding.fragmentMap.slButton.apply(){
+            Random.nextInt()
+            val number = listOf(25, 40, 50, 60, 70, 80).shuffled().random()
+            if (number == 25) {
+                this.setImageResource(R.drawable.sl25)
+            } else if (number == 40) {
+                this.setImageResource(R.drawable.sl40)
+            } else if (number == 50) {
+                this.setImageResource(R.drawable.sl50)
+            } else if (number == 60) {
+                this.setImageResource(R.drawable.sl60)
+            } else if (number == 70) {
+                this.setImageResource(R.drawable.sl70)
+            } else if (number == 80) {
+                this.setImageResource(R.drawable.sl80)
+            }
+        }
+    }
     private fun bottomSheetInit(){
         val bottomSheet: View = binding.fragmentMap.bg
         behavior = BottomSheetBehavior.from(bottomSheet)

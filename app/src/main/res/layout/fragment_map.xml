@@ -20,28 +20,35 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            tools:context=".MainActivity"
             tools:layout="@layout/fragment_map" />
-
         <ImageView
-            android:id="@+id/menuButton"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/sl"
+            android:layout_marginTop="200dp"
+            android:layout_marginStart="310dp"
+            android:id="@+id/slButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+        <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
             android:src="@drawable/group_225"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="5dp"
+            android:id="@+id/menuButton"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
+            app:layout_constraintTop_toTopOf="parent"/>
         <ImageView
-            android:id="@+id/weatherButton"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="65dp"
             android:src="@drawable/sun"
+            android:layout_marginTop="65dp"
+            android:layout_marginStart="5dp"
+            android:id="@+id/weatherButton"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
+            app:layout_constraintTop_toTopOf="parent"/>
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:id="@+id/coordinatorLayout"
             android:layout_width="match_parent"
@@ -75,8 +82,7 @@
                         layout="@layout/fragment_home"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
+                        app:layout_constraintTop_toTopOf="parent"/>
                     <include
                         android:id="@+id/fragmentSearch"
                         layout="@layout/fragment_search"
@@ -306,7 +312,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#FFFFFF"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:orientation="horizontal" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

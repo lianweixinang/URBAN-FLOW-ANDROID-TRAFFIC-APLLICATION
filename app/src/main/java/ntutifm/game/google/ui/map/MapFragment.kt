@@ -19,8 +19,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
+import androidx.core.view.marginStart
+import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.*
@@ -35,8 +38,10 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.navigation.NavigationView
 import com.google.maps.android.clustering.ClusterManager
+import kotlinx.coroutines.Delay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ntutifm.game.google.*
 import ntutifm.game.google.R
@@ -52,6 +57,7 @@ import ntutifm.game.google.ui.notification.NotificationFragment
 import ntutifm.game.google.ui.oil.OilFragment
 import ntutifm.game.google.ui.route.RouteFragment
 import ntutifm.game.google.ui.weather.WeatherFragment
+import kotlin.concurrent.thread
 import kotlin.math.roundToInt
 import kotlin.random.Random
 import kotlin.random.nextInt
@@ -76,6 +82,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     private var adaptor : SearchAdaptor? = null
     private var moveState:Boolean = false
     private val weatherState:Boolean = true
+    private var sitMode:Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
@@ -122,23 +129,40 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         binding.fragmentMap.webView.loadUrl("https://cctvatis4.ntpc.gov.tw/C000232")
     }
 
-    /** 底部抽屜初始化 */
+    /** 測速初始化 */
     private val slButtonListener = View.OnClickListener {
-        binding.fragmentMap.slButton.apply(){
-            Random.nextInt()
-            val number = listOf(25, 40, 50, 60, 70, 80).shuffled().random()
-            if (number == 25) {
-                this.setImageResource(R.drawable.sl25)
-            } else if (number == 40) {
-                this.setImageResource(R.drawable.sl40)
-            } else if (number == 50) {
-                this.setImageResource(R.drawable.sl50)
-            } else if (number == 60) {
-                this.setImageResource(R.drawable.sl60)
-            } else if (number == 70) {
-                this.setImageResource(R.drawable.sl70)
-            } else if (number == 80) {
-                this.setImageResource(R.drawable.sl80)
+        sitMode = !sitMode
+        if(sitMode) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                while(sitMode) {
+                    binding.fragmentMap.slButton.apply() {
+                        val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
+                        layoutParams.setMargins(left, 400, right, bottom)  // 替換為你需要的值
+                        this.layoutParams = layoutParams
+                        val number = listOf(25, 40, 50, 60, 70, 80).shuffled().random()
+                        if (number == 25) {
+                            this.setImageResource(R.drawable.sl25)
+                        } else if (number == 40) {
+                            this.setImageResource(R.drawable.sl40)
+                        } else if (number == 50) {
+                            this.setImageResource(R.drawable.sl50)
+                        } else if (number == 60) {
+                            this.setImageResource(R.drawable.sl60)
+                        } else if (number == 70) {
+                            this.setImageResource(R.drawable.sl70)
+                        } else if (number == 80) {
+                            this.setImageResource(R.drawable.sl80)
+                        }
+                        delay(2000)
+                    }
+                }
+                binding.fragmentMap.slButton.apply {
+                    val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
+                    layoutParams.setMargins(left, 5, right, bottom)  // 替換為你需要的值
+                    this.layoutParams = layoutParams
+                    this.setImageResource(R.drawable.sl)
+                }
+                return@launch
             }
         }
     }
@@ -238,6 +262,7 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         binding.fragmentMap.webView.visibility = View.GONE
         binding.fragmentMap.carDirection.visibility = View.GONE
         binding.fragmentMap.trafficFlow.visibility = View.GONE
+        binding.fragmentMap.imageView3.visibility = View.GONE
         binding.fragmentMap.fragmentSearch.searchView.apply {
             this.requestFocus()
             this.onActionViewExpanded()

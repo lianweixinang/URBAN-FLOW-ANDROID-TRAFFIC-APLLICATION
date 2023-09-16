@@ -9,6 +9,9 @@ public class Camera {
     private String Type ="Type";
     @SerializedName("Road")
     private String Road ="Road";
+
+    @SerializedName("Introduction")
+    private String Introduction ="Introduction";
     @SerializedName("Session")
     private String Session ="Session";
     @SerializedName("Direction")
@@ -16,9 +19,9 @@ public class Camera {
     @SerializedName("Limit")
     private String Limit ="Limit";
     @SerializedName("Latitude")
-    private String Latitude ="Latitude";
+    private Double Latitude = 25.0;
     @SerializedName("Longitude")
-    private String Longitude ="Longitude";
+    private Double Longitude = 123.0;
 
     public String getId() {
         return this.Id;
@@ -34,8 +37,8 @@ public class Camera {
         return this.Direction;
     }
     public String getLimit() {return this.Limit;}
-    public String getLatitude() {return this.Latitude;}
-    public String getLongitude() {return this.Longitude;}
-
+    public Double getLatitude() {return this.Latitude;}
+    public Double getLongitude() {return this.Longitude;}
+    public String getIntroduction(){return this.Introduction;}
 
 }

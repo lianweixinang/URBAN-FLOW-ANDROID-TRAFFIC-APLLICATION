@@ -6,6 +6,7 @@ import ntutifm.game.google.entity.*
 import ntutifm.game.google.entity.SyncOil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiClass.*
+import ntutifm.game.google.net.ApiClass.Parking
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -19,8 +20,8 @@ class ApiProcessor {
         const val getOil = "getOil"
         const val getWeather = "getWeather"
         const val getWeatherLocation = "getWeatherLocation"
-        const val getCameraMark = "getList<Camera>Mark"
-        const val getCameraTest = "getList<Camera>Test"
+        const val getCameraMark = "getCameraMark"
+        const val getCameraTest = "getCameraTest"
     }
 
     fun getParking(c: Context, successData: ArrayList<String>, errorData: ArrayList<String>) {

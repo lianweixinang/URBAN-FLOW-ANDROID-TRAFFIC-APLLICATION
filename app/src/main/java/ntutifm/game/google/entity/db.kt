@@ -1,6 +1,7 @@
 package ntutifm.game.google.entity
 
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -77,7 +78,7 @@ private const val SQL_CREATE_ENTRIES2 =
             "${BaseColumns._ID} INTEGER PRIMARY KEY," +
             "${FeedReaderContract.FeedEntry2.COLUMN_NAME_latitude} TEXT," +
             "${FeedReaderContract.FeedEntry2.COLUMN_NAME_longitude} TEXT," +
-            "${FeedReaderContract.FeedEntry2.COLUMN_NAME_Gas} TEXT,"+
+            "${FeedReaderContract.FeedEntry2.COLUMN_NAME_Gas} TEXT," +
             "${FeedReaderContract.FeedEntry2.COLUMN_NAME_time}TEXT);"
 
 private const val SQL_CREATE_ENTRIES3 =
@@ -91,7 +92,7 @@ private const val SQL_CREATE_ENTRIES4 =
             "${BaseColumns._ID} INTEGER PRIMARY KEY," +
             "${FeedReaderContract.FeedEntry4.COLUMN_NAME_latitude} TEXT," +
             "${FeedReaderContract.FeedEntry4.COLUMN_NAME_longitude} TEXT," +
-            "${FeedReaderContract.FeedEntry4.COLUMN_NAME_Parking} TEXT,"+
+            "${FeedReaderContract.FeedEntry4.COLUMN_NAME_Parking} TEXT," +
             "${FeedReaderContract.FeedEntry4.COLUMN_NAME_time} TEXT);"
 
 
@@ -114,21 +115,21 @@ private const val SQL_DELETE_ENTRIES4 =
 class FeedReaderDbHelper(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     override fun onCreate(db: SQLiteDatabase) {
-    db.execSQL(SQL_CREATE_ENTRIES)
-    db.execSQL(SQL_CREATE_ENTRIES1)
-    db.execSQL(SQL_CREATE_ENTRIES2)
-    db.execSQL(SQL_CREATE_ENTRIES3)
-    db.execSQL(SQL_CREATE_ENTRIES4)
+        db.execSQL(SQL_CREATE_ENTRIES)
+        db.execSQL(SQL_CREATE_ENTRIES1)
+        db.execSQL(SQL_CREATE_ENTRIES2)
+        db.execSQL(SQL_CREATE_ENTRIES3)
+        db.execSQL(SQL_CREATE_ENTRIES4)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
         db.execSQL(SQL_DELETE_ENTRIES)
-        db.execSQL(SQL_CREATE_ENTRIES1)
-        db.execSQL(SQL_CREATE_ENTRIES2)
-        db.execSQL(SQL_CREATE_ENTRIES3)
-        db.execSQL(SQL_CREATE_ENTRIES4)
+        db.execSQL(SQL_DELETE_ENTRIES1)
+        db.execSQL(SQL_DELETE_ENTRIES2)
+        db.execSQL(SQL_DELETE_ENTRIES3)
+        db.execSQL(SQL_DELETE_ENTRIES4)
         onCreate(db)
     }
 
@@ -149,7 +150,8 @@ fun dbDeleteHistory(search: String, context: Context) {
     db.execSQL("DELETE FROM history WHERE history.roadName = '$search'")
     db.close()
 }
-fun dbDisplayHistory(context: Context):List<CityRoad> {
+
+fun dbDisplayHistory(context: Context): List<CityRoad> {
     val dbHelper = FeedReaderDbHelper(context)
     val db = dbHelper.readableDatabase
     val c: Cursor =
@@ -174,60 +176,83 @@ fun dbDisplayHistory(context: Context):List<CityRoad> {
     return history
 }
 
+open class FavoriteType(val id: String, val table:String)
+open class Road(id: String, table:String) : FavoriteType(id,table)
+open class Parking(id: String, table:String) : FavoriteType(id,table)
+open class GasStation(id: String, table:String) : FavoriteType(id,table)
+open class CCTV(id: String, table:String) : FavoriteType(id,table)
+
+
+
+@SuppressLint("Recycle")
+fun dbFavChange(search: FavoriteType, context: Context):Boolean {
+    val dbHelper = FeedReaderDbHelper(context)
+    val db = dbHelper.readableDatabase
+    val res: Cursor =
+        db.rawQuery(
+            "SELECT * FROM ${search.table} where Fav_Gas.Name ='${search.id}' ",
+            null
+        )
+    return res.count > 0
+}
+
+@SuppressLint("Recycle")
 @RequiresApi(Build.VERSION_CODES.O)
-fun dbAddFavRoad(Road: CityRoad, linkID:String, context: Context){
+fun dbAddFavRoad(Road: CityRoad, linkID: String, context: Context) {
     val dbHelper = FeedReaderDbHelper(context)
     val db = dbHelper.writableDatabase
     val values = ContentValues().apply {
         put(FeedReaderContract.FeedEntry1.COLUMN_NAME_RoadId, Road.roadId)
         put(FeedReaderContract.FeedEntry1.COLUMN_NAME_RoadName, Road.roadName)
-        put(FeedReaderContract.FeedEntry1.COLUMN_NAME_LinkId,linkID)
+        put(FeedReaderContract.FeedEntry1.COLUMN_NAME_LinkId, linkID)
         put(FeedReaderContract.FeedEntry1.COLUMN_NAME_time, LocalDate.now().toString())
     }
     val newRowId = db?.insert(FeedReaderContract.FeedEntry1.TABLE_NAME, null, values)
-    db.close()
 }
 
+@SuppressLint("Recycle")
 @RequiresApi(Build.VERSION_CODES.O)
-fun dbAddFavGas(longitude: String, latitude:String,GasName:String, context: Context){
+fun dbAddFavGas(longitude: String, latitude: String, GasName: String, context: Context) {
     val dbHelper = FeedReaderDbHelper(context)
     val db = dbHelper.writableDatabase
     val values = ContentValues().apply {
-        put(FeedReaderContract.FeedEntry2.COLUMN_NAME_Gas,GasName)
-        put(FeedReaderContract.FeedEntry2.COLUMN_NAME_latitude,latitude)
-        put(FeedReaderContract.FeedEntry2.COLUMN_NAME_longitude,longitude)
+        put(FeedReaderContract.FeedEntry2.COLUMN_NAME_Gas, GasName)
+        put(FeedReaderContract.FeedEntry2.COLUMN_NAME_latitude, latitude)
+        put(FeedReaderContract.FeedEntry2.COLUMN_NAME_longitude, longitude)
         put(FeedReaderContract.FeedEntry2.COLUMN_NAME_time, LocalDate.now().toString())
     }
     val newRowId = db?.insert(FeedReaderContract.FeedEntry2.TABLE_NAME, null, values)
-    db.close()
 }
+
+@SuppressLint("Recycle")
 @RequiresApi(Build.VERSION_CODES.O)
-fun dbAddFavCCTV(url:String, context: Context){
+fun dbAddFavCCTV(url: String, context: Context) {
     val dbHelper = FeedReaderDbHelper(context)
     val db = dbHelper.writableDatabase
     val values = ContentValues().apply {
-        put(FeedReaderContract.FeedEntry3.COLUMN_NAME_url,url)
+        put(FeedReaderContract.FeedEntry3.COLUMN_NAME_url, url)
         put(FeedReaderContract.FeedEntry3.COLUMN_NAME_time, LocalDate.now().toString())
     }
     val newRowId = db?.insert(FeedReaderContract.FeedEntry3.TABLE_NAME, null, values)
-    db.close()
+
 }
+
+@SuppressLint("Recycle")
 @RequiresApi(Build.VERSION_CODES.O)
-fun dbAddFavParking(Park:Parking, context: Context){
+fun dbAddFavParking(Park: Parking, context: Context) {
     val dbHelper = FeedReaderDbHelper(context)
     val db = dbHelper.writableDatabase
     val values = ContentValues().apply {
-        put(FeedReaderContract.FeedEntry4.COLUMN_NAME_Parking,Park.parkingName)
-        put(FeedReaderContract.FeedEntry4.COLUMN_NAME_latitude,Park.lat)
-        put(FeedReaderContract.FeedEntry4.COLUMN_NAME_longitude,Park.lng)
+        put(FeedReaderContract.FeedEntry4.COLUMN_NAME_Parking, Park.parkingName)
+        put(FeedReaderContract.FeedEntry4.COLUMN_NAME_latitude, Park.lat)
+        put(FeedReaderContract.FeedEntry4.COLUMN_NAME_longitude, Park.lng)
         put(FeedReaderContract.FeedEntry4.COLUMN_NAME_time, LocalDate.now().toString())
     }
     val newRowId = db?.insert(FeedReaderContract.FeedEntry4.TABLE_NAME, null, values)
-    db.close()
 }
 
 
-//
+@SuppressLint("Recycle")
 @RequiresApi(Build.VERSION_CODES.O)
 fun dbAddHistory(search: CityRoad, context: Context) {
     val dbHelper = FeedReaderDbHelper(context)
@@ -238,13 +263,13 @@ fun dbAddHistory(search: CityRoad, context: Context) {
         put(FeedReaderContract.FeedEntry.COLUMN_NAME_time, LocalDate.now().toString())
     }
     val c: Cursor =
-        db.rawQuery("SELECT * FROM history WHERE history.roadName = '${search.roadName}'",
-            null)
+        db.rawQuery(
+            "SELECT * FROM history WHERE history.roadName = '${search.roadName}'",
+            null
+        )
     if (c.count > 0) {
         db.execSQL("DELETE FROM history WHERE history.roadName = '${search.roadName}'")
     }
 
     val newRowId = db?.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values)
-    c.close()
-    db.close()
 }

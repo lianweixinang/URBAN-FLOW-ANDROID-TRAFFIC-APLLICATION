@@ -7,7 +7,7 @@ public class WeatherLocation {
     @SerializedName("district")
     private String districtName ="district";
 
-    public String getParkingName() {
+    public String getDistrictName() {
         return this.districtName;
     }
 }

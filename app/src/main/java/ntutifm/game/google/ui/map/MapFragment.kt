@@ -19,8 +19,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
-import androidx.core.view.marginStart
-import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
@@ -38,7 +36,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.navigation.NavigationView
 import com.google.maps.android.clustering.ClusterManager
-import kotlinx.coroutines.Delay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
@@ -57,32 +54,29 @@ import ntutifm.game.google.ui.notification.NotificationFragment
 import ntutifm.game.google.ui.oil.OilFragment
 import ntutifm.game.google.ui.route.RouteFragment
 import ntutifm.game.google.ui.weather.WeatherFragment
-import kotlin.concurrent.thread
 import kotlin.math.roundToInt
-import kotlin.random.Random
-import kotlin.random.nextInt
 
-class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
+class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
     ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack,
     NavigationView.OnNavigationItemSelectedListener {
-    var mClusterManager:ClusterManager<MyItem>? = null
-    var behavior:BottomSheetBehavior<View>? = null
-    var favoriteFlag:MutableLiveData<Boolean>? = null
-    internal var mCurrLocationMarker : Marker? = null
-    internal var mLastLocation : Location? = null
-    private var _binding : ActivityMainBinding? = null
+    var mClusterManager: ClusterManager<MyItem>? = null
+    var behavior: BottomSheetBehavior<View>? = null
+    var favoriteFlag: MutableLiveData<Boolean>? = null
+    internal var mCurrLocationMarker: Marker? = null
+    internal var mLastLocation: Location? = null
+    private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
-    private var mFusedLocationClient : FusedLocationProviderClient? = null
+    private var mFusedLocationClient: FusedLocationProviderClient? = null
     private var permissionDenied = false
-    private lateinit var map : GoogleMap
-    private lateinit var mLocationRequest : LocationRequest
-    private var latLng : LatLng? = null
-    private var recycleView : RecyclerView? = null
-    private var adaptor : SearchAdaptor? = null
-    private var moveState:Boolean = false
-    private val weatherState:Boolean = true
-    private var sitMode:Boolean = true
+    private lateinit var map: GoogleMap
+    private lateinit var mLocationRequest: LocationRequest
+    private var latLng: LatLng? = null
+    private var recycleView: RecyclerView? = null
+    private var adaptor: SearchAdaptor? = null
+    private var moveState: Boolean = false
+    private val weatherState: Boolean = true
+    private var sitMode: Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
@@ -114,17 +108,18 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         webViewInit()
 //        AppUtil.showTopToast(context, "HI")
 //        AppUtil.showDialog("Hello", activity)
-        
+
 
     }
 
-    private fun weatherInit(){
-        SyncPosition.weatherLocation.observe(viewLifecycleOwner){
-            it.parkingName
+    private fun weatherInit() {
+        SyncPosition.weatherLocation.observe(viewLifecycleOwner) {
+            val index = SyncPosition.districtToIndex()
         }
     }
+
     /** 監視器初始化 */
-    private fun webViewInit(){
+    private fun webViewInit() {
         binding.fragmentMap.webView.getSettings().setJavaScriptEnabled(true);
         binding.fragmentMap.webView.loadUrl("https://cctvatis4.ntpc.gov.tw/C000232")
     }
@@ -132,13 +127,20 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     /** 測速初始化 */
     private val slButtonListener = View.OnClickListener {
         sitMode = !sitMode
-        if(sitMode) {
+        if (sitMode) {
             viewLifecycleOwner.lifecycleScope.launch {
-                while(sitMode) {
+                while (sitMode) {
+                    binding.fragmentMap.currentSpeed.apply {
+                        this.setImageResource(R.drawable.sl25)
+                        this.visibility = View.VISIBLE
+                        val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
+                        layoutParams.setMargins(left, 400, right, bottom)  // 替換為你需要的值
+                        this.layoutParams = layoutParams
+                    }
                     moveToCurrentLocation()
                     binding.fragmentMap.slButton.apply() {
                         val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
-                        layoutParams.setMargins(left, 400, right, bottom)  // 替換為你需要的值
+                        layoutParams.setMargins(left, 800, right, bottom)  // 替換為你需要的值
                         this.layoutParams = layoutParams
                         val number = listOf(25, 40, 50, 60, 70, 80).shuffled().random()
                         if (number == 25) {
@@ -163,23 +165,25 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
                     this.layoutParams = layoutParams
                     this.setImageResource(R.drawable.sl)
                 }
+                binding.fragmentMap.currentSpeed.visibility = View.GONE
                 return@launch
             }
         }
     }
-    private fun bottomSheetInit(){
+
+    private fun bottomSheetInit() {
         val bottomSheet: View = binding.fragmentMap.bg
         behavior = BottomSheetBehavior.from(bottomSheet)
         behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
         behavior?.addBottomSheetCallback(object : BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if(binding.fragmentMap.fragmentSearch.root.visibility == View.GONE) {
+                if (binding.fragmentMap.fragmentSearch.root.visibility == View.GONE) {
                     binding.fragmentMap.webView.isVisible = true
                     binding.fragmentMap.trafficFlow.isVisible =
                         newState == BottomSheetBehavior.STATE_EXPANDED
                     binding.fragmentMap.imageView3.isVisible =
                         newState == BottomSheetBehavior.STATE_EXPANDED
-                }else{
+                } else {
                     binding.fragmentMap.webView.isVisible = false
                     binding.fragmentMap.trafficFlow.isVisible = false
                     binding.fragmentMap.imageView3.isVisible = false
@@ -190,41 +194,37 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
                 // Do something when the bottom sheet is sliding
             }
         })
-        state.observe(viewLifecycleOwner) { state: SyncBottomBar.State? ->
-            when (state) {
-                is SyncBottomBar.State.Open -> {
-                    behavior?.state = BottomSheetBehavior.STATE_EXPANDED
-                }
-                is SyncBottomBar.State.Close -> {
-                    behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
-                }
-            }
-        }
-        SyncSpeed.speedLists.observe(viewLifecycleOwner){
+
+        SyncSpeed.speedLists.observe(viewLifecycleOwner) {
             MyLog.e("updateSpeedEnd")
-            if(it.isNotEmpty()) {
-                MyLog.e("changeSpeed"+it[0].volume+" "+it[0].avgSpeed)
+            if (it.isNotEmpty()) {
+                MyLog.e("changeSpeed" + it[0].volume + " " + it[0].avgSpeed)
                 binding.fragmentMap.cars.text = it[0].volume.toString() + " Cars"
                 binding.fragmentMap.speed.text = it[0].avgSpeed.roundToInt().toString() + " km/h"
                 if (it.size > 1) {
                     binding.fragmentMap.cars2.text = it[1].volume.toString() + " Cars"
-                    binding.fragmentMap.speed2.text = it[1].avgSpeed.roundToInt().toString() + " km/h"
+                    binding.fragmentMap.speed2.text =
+                        it[1].avgSpeed.roundToInt().toString() + " km/h"
                 }
-            }else{
+            } else {
                 binding.fragmentMap.cars.text = "無資料"
                 binding.fragmentMap.speed.text = "無資料"
                 binding.fragmentMap.cars2.text = "無資料"
                 binding.fragmentMap.speed2.text = "無資料"
             }
-            MainScope().launch(Dispatchers.Main){SyncBottomBar.updateState(SyncBottomBar.State.Open)}
+            behavior?.state = BottomSheetBehavior.STATE_EXPANDED
+            binding.fragmentMap.webView.visibility = View.VISIBLE
+            binding.fragmentMap.carDirection.visibility = View.VISIBLE
+            binding.fragmentMap.trafficFlow.visibility = View.VISIBLE
         }
     }
+
     private val menuButtonListener = View.OnClickListener {
         MyLog.d("openDrawer")
         binding.drawerLayout1.openDrawer(GravityCompat.START)
-        }
+    }
     private val weatherButtonListener = View.OnClickListener {
-        if(latLng!=null) {
+        if (latLng != null) {
             val bundle = Bundle()
             bundle.putDouble("lat", latLng!!.latitude)
             bundle.putDouble("long", latLng!!.longitude)
@@ -240,9 +240,9 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     /** 收藏切換 */
     private val favoriteBtnListener = View.OnClickListener {
         binding.fragmentMap.fragmentHome.favoriteBtn.apply {
-            if(favoriteFlag?.value == true){
+            if (favoriteFlag?.value == true) {
                 this.setImageResource(R.drawable.ic_baseline_star_24)
-            }else{
+            } else {
                 this.setImageResource(R.drawable.ic_baseline_star_25)
             }
             (favoriteFlag?.value).also { favoriteFlag?.value = it?.not() }
@@ -253,15 +253,26 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     /** 關閉搜尋欄 */
     private val backBtnListener = View.OnClickListener {
         MyLog.e(isOpen.value.toString())
-        if(isOpen.value == true){
-            binding.fragmentMap.fragmentSearch.root.visibility = View.GONE
-            binding.fragmentMap.fragmentHome.root.visibility = View.VISIBLE
-            binding.fragmentMap.webView.visibility = View.VISIBLE
-            binding.fragmentMap.carDirection.visibility = View.VISIBLE
-            binding.fragmentMap.trafficFlow.visibility = View.VISIBLE
+        binding.fragmentMap.fragmentSearch.root.visibility = View.GONE
+        binding.fragmentMap.fragmentHome.root.visibility = View.VISIBLE
+        binding.fragmentMap.webView.visibility = View.VISIBLE
+        when (behavior?.state) {
+            //全開
+            3 -> {
+                if (isOpen.value == true) {
+                    binding.fragmentMap.carDirection.visibility = View.VISIBLE
+                    binding.fragmentMap.trafficFlow.visibility = View.VISIBLE
+                }
+            }
+            //半開
+            6 -> {
+                if (isOpen.value == true) {
+                    binding.fragmentMap.carDirection.visibility = View.GONE
+                    binding.fragmentMap.trafficFlow.visibility = View.GONE
+                }
+            }
         }
         isOpen.value = false
-
     }
 
     /** 開啟搜尋欄 */
@@ -296,42 +307,44 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
     }
 
     /** 初始化搜尋*/
-    private fun searchViewInit(){
+    private fun searchViewInit() {
         binding.fragmentMap.fragmentSearch.searchView.setOnQueryTextListener(queryTextListener)
     }
 
     /** 初始化搜尋清單 */
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun searchListInit(){
+    private fun searchListInit() {
         recycleView = binding.fragmentMap.fragmentSearch.recycleView
         recycleView?.setHasFixedSize(true)
         recycleView?.layoutManager = LinearLayoutManager(MyActivity().context)
-        adaptor = SearchAdaptor(dbDisplayHistory(requireActivity()), itemOnClickListener, deleteListener)
+        adaptor =
+            SearchAdaptor(dbDisplayHistory(requireActivity()), itemOnClickListener, deleteListener)
         recycleView?.adapter = adaptor
-        SyncRoad.searchLists.observe(viewLifecycleOwner){
+        SyncRoad.searchLists.observe(viewLifecycleOwner) {
             adaptor?.setFilteredList(it)
         }
     }
 
     /** 當文字變化 */
-    private val queryTextListener = object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
-        override fun onQueryTextSubmit(query: String?): Boolean {
-            filterList(query)
-            return false
-        }
+    private val queryTextListener =
+        object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                filterList(query)
+                return false
+            }
 
-        override fun onQueryTextChange(newText: String?): Boolean {
-            filterList(newText)
-            return false
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterList(newText)
+                return false
+            }
         }
-    }
 
     /** 文字變化 */
     private fun filterList(newText: String?) {
         MyLog.e("textChange")
-        if(newText!= "" && newText!= null) {
+        if (newText != "" && newText != null) {
             SyncRoad.filterSearch(this, newText, this)
-        }else{
+        } else {
             adaptor?.setFilteredList(dbDisplayHistory(requireActivity()))
         }
 
@@ -345,15 +358,17 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
             dbAddHistory(searchData, requireActivity())
             MyLog.d(searchData.roadName)
             MyLog.d(searchData.roadId)
-            SyncSpeed.getCityRoadSpeed(this,searchData.roadId,this)
+            SyncSpeed.getCityRoadSpeed(this, searchData.roadId, this)
             binding.fragmentMap.fragmentSearch.searchView.setQuery("", false)
             binding.fragmentMap.fragmentSearch.root.visibility = View.GONE
-            AppUtil.showTopToast(requireActivity(),"搜尋中...")
-
+            binding.fragmentMap.fragmentHome.root.visibility = View.VISIBLE
+            isOpen.value = false
+            AppUtil.showTopToast(requireActivity(), "搜尋中...")
         } catch (e: Exception) {
             MyLog.e(e.toString())
         }
     }
+
     /** 刪除歷史紀錄 */
     private val deleteListener = View.OnClickListener {
         try {
@@ -367,14 +382,18 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
 
     /** 定位按鈕位置 */
     @SuppressLint("UseRequireInsteadOfGet")
-    private fun setLocationInitBtn(){
+    private fun setLocationInitBtn() {
         if (childFragmentManager
-                .findFragmentById(R.id.map)!=null && parentFragmentManager
-                .findFragmentById(R.id.map)?.view?.findViewById<View>("1".toInt()) != null) {
-            val locationButton : View =
+                .findFragmentById(R.id.map) != null && parentFragmentManager
+                .findFragmentById(R.id.map)?.view?.findViewById<View>("1".toInt()) != null
+        ) {
+            val locationButton: View =
                 (childFragmentManager
-                    .findFragmentById(R.id.map)?.view?.findViewById<View>("1".toInt())?.parent as View).findViewById<View>("2".toInt())
-            val rlp : RelativeLayout.LayoutParams = locationButton.layoutParams as RelativeLayout.LayoutParams
+                    .findFragmentById(R.id.map)?.view?.findViewById<View>("1".toInt())?.parent as View).findViewById<View>(
+                    "2".toInt()
+                )
+            val rlp: RelativeLayout.LayoutParams =
+                locationButton.layoutParams as RelativeLayout.LayoutParams
 
             rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0)
             rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
@@ -387,12 +406,15 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
         if (map != null) {
             map.clear()
             val gps = LatLng(location.latitude, location.longitude)
-            map.addMarker(MarkerOptions()
-                .position(gps)
-                .title("Current Position"))
+            map.addMarker(
+                MarkerOptions()
+                    .position(gps)
+                    .title("Current Position")
+            )
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(gps, 12f))
         }
     }
+
     /** 要求定位 */
     @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
@@ -445,27 +467,37 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
             )
         }
     }
+
     override fun onPause() {
         super.onPause()
         mFusedLocationClient?.removeLocationUpdates(mLocationCallback)
     }
+
     /** 選單 */
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_map -> {
                 AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, MapFragment())
             }
+
             R.id.nav_oil -> {
                 AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, OilFragment())
             }
+
             R.id.nav_weather -> {
                 AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, WeatherFragment())
             }
+
             R.id.nav_route -> {
                 AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, RouteFragment())
             }
+
             R.id.nav_notification -> {
-                AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, NotificationFragment())
+                AppUtil.startFragment(
+                    parentFragmentManager,
+                    R.id.fragmentMap,
+                    NotificationFragment()
+                )
             }
         }
 
@@ -489,10 +521,10 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
                 }
                 latLng = LatLng(location.latitude, location.longitude)
             }
-            if(weatherState && latLng != null) {
+            if (weatherState && latLng != null) {
                 SyncPosition.weatherLocationApi(this@MapFragment, this@MapFragment, latLng!!)
             }
-            if(moveState && latLng != null) {
+            if (moveState && latLng != null) {
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng!!, 15f))
             }
         }
@@ -506,15 +538,19 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
 
     /** 移動到現在位置 */
     @SuppressLint("MissingPermission")
-    private fun moveToCurrentLocation(){
+    private fun moveToCurrentLocation() {
         mLocationRequest = LocationRequest()
         mLocationRequest.interval = 120000 // two minute interval
         mLocationRequest.fastestInterval = 120000
         mLocationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-        if(!permissionDenied){
+        if (!permissionDenied) {
             moveState = true
-            mFusedLocationClient?.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper())
-        }else{
+            mFusedLocationClient?.requestLocationUpdates(
+                mLocationRequest,
+                mLocationCallback,
+                Looper.myLooper()
+            )
+        } else {
             enableMyLocation()
         }
     }
@@ -557,12 +593,15 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
             permissionDenied = true
         }
     }
+
     /**
      * Displays a dialog with error message explaining that the location permission is missing.
      */
     private fun showMissingPermissionError() {
-        PermissionUtils.PermissionDeniedDialog.newInstance(true).show(parentFragmentManager, "dialog")
+        PermissionUtils.PermissionDeniedDialog.newInstance(true)
+            .show(parentFragmentManager, "dialog")
     }
+
     companion object {
         /**
          * Request code for location permission request.
@@ -581,32 +620,33 @@ class MapFragment : Fragment() , GoogleMap.OnMyLocationButtonClickListener,
             permissionDenied = false
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.e("GGG","Ggg")
+        Log.e("GGG", "Ggg")
         _binding = null
     }
 
     /** 批量生成mark */
     private fun initMark() {
         mClusterManager = ClusterManager(context, map)
-        SyncPosition.parkingLists.observe(viewLifecycleOwner){
-            for(p in it){
-                mClusterManager?.addItem(MyItem(p.lat, p.lng,p.parkingName))
+        SyncPosition.parkingLists.observe(viewLifecycleOwner) {
+            for (p in it) {
+                mClusterManager?.addItem(MyItem(p.lat, p.lng, p.parkingName))
             }
         }
         map.setOnCameraIdleListener(mClusterManager)
 
-        SyncPosition.parkingApi(this,this)
+        SyncPosition.parkingApi(this, this)
         mClusterManager?.setOnClusterItemClickListener { item ->
             false
         }
     }
 
-    override fun onSuccess(successData: ArrayList<String>){}
+    override fun onSuccess(successData: ArrayList<String>) {}
 
-    override fun onError(errorCode: Int, errorData: ArrayList<String>){}
+    override fun onError(errorCode: Int, errorData: ArrayList<String>) {}
 
-    override fun doInBackground(result: Int, successData: ArrayList<String>){}
+    override fun doInBackground(result: Int, successData: ArrayList<String>) {}
 
 }

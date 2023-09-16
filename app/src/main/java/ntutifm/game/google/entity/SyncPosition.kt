@@ -36,5 +36,26 @@ object SyncPosition {
         MyLog.e("updateWeatherLocation")
         _weatherLocation.postValue(data)
     }
-
+    fun districtToIndex(): Int {
+        if(_weatherLocation.value!=null) {
+            val res = when (_weatherLocation.value?.districtName) {
+                "南港區" -> 0
+                "文山區" -> 1
+                "萬華區" -> 2
+                "大同區" -> 3
+                "中正區" -> 4
+                "中山區" -> 5
+                "大安區" -> 6
+                "信義區" -> 7
+                "松山區" -> 8
+                "北投區" -> 9
+                "士林區" -> 10
+                "內湖區" -> 11
+                else -> -1
+            }
+            return res
+        }else{
+            return -1
+        }
+    }
 }

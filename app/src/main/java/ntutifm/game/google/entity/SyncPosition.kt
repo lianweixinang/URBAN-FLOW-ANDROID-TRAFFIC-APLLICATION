@@ -64,11 +64,11 @@ object SyncPosition {
                 "北投區" -> 9
                 "士林區" -> 10
                 "內湖區" -> 11
-                else -> -1
+                else -> 0
             }
             return res
         }else{
-            return -1
+            return 0
         }
     }
 }

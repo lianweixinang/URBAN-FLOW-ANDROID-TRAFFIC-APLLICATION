@@ -25,9 +25,8 @@
 
 
             <androidx.cardview.widget.CardView
-                android:layout_width="344dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_marginTop="20dp"
                 app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="20dp"
@@ -37,7 +36,7 @@
                     android:id="@+id/favoriteBtn"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_marginLeft="88dp"
+                    android:layout_marginLeft="120dp"
                     android:src='@drawable/ic_baseline_star_25'
                     app:cardCornerRadius="10dp" />
 
@@ -56,6 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_marginTop="20dp"
+                android:layout_gravity="center"
                 app:cardBackgroundColor="#FFA042"
                 app:cardCornerRadius="15dp">
 

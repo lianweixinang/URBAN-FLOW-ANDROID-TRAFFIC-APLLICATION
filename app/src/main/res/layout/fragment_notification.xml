@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_oil"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:background="#EDEFF4">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -24,21 +25,28 @@
 
 
             <androidx.cardview.widget.CardView
-                android:layout_width="344dp"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="30dp"
-                app:cardBackgroundColor="#B7B7B7"
+                app:cardBackgroundColor="#FFFFFF"
+                android:layout_marginTop="10dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="10dp"
                 app:cardMaxElevation="20dp"
                 app:contentPadding="10dp">
 
-
+                <ImageView
+                    android:id="@+id/iconforNotification"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="80dp"
+                    android:src='@drawable/baseline_car_crash_24'
+                    app:cardCornerRadius="10dp" />
                 <TextView
                     android:id="@+id/textView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="130dp"
                     android:text="即時路況相關通知"
                     android:textColor="#000000"
                     android:textSize="20sp" />
@@ -52,7 +60,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="2dp"
                 android:layout_marginTop="2dp"
-                app:cardBackgroundColor="#000000"
+                app:cardBackgroundColor="#FFFFFF"
                 app:cardElevation="20dp"
                 app:cardMaxElevation="20dp">
 

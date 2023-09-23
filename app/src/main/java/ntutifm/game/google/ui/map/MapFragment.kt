@@ -106,10 +106,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         searchViewInit()
         searchListInit()
         webViewInit()
-//        AppUtil.showTopToast(context, "HI")
-//        AppUtil.showDialog("Hello", activity)
-
-
+        incidentCheck()
     }
 
     private fun weatherInit() {
@@ -118,10 +115,22 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         }
     }
 
+
     /** 監視器初始化 */
     private fun webViewInit() {
         binding.fragmentMap.webView.getSettings().setJavaScriptEnabled(true);
         binding.fragmentMap.webView.loadUrl("https://cctvatis4.ntpc.gov.tw/C000232")
+    }
+
+
+    private fun incidentCheck() {
+        SyncIncident.incidentLists.observe(viewLifecycleOwner){}
+        viewLifecycleOwner.lifecycleScope.launch {
+            while (true) {
+                SyncIncident.getIncident(this@MapFragment,this@MapFragment)
+                delay(60000)
+            }
+        }
     }
 
     /** 測速初始化 */
@@ -633,31 +642,38 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private fun initMark() {
         mClusterManager = ClusterManager(context, map)
         mClusterManager?.renderer = CustomClusterRenderer(requireActivity(), map, mClusterManager!!)
-        SyncPosition.parkingLists.observe(viewLifecycleOwner){
-            for(p in it){
-                mClusterManager?.addItem(MyItem(p.lat, p.lng,"停車場: "+p.parkingName,0))
+        SyncPosition.parkingLists.observe(viewLifecycleOwner) {
+            for (p in it) {
+                mClusterManager?.addItem(MyItem(p.lat, p.lng, "停車場: " + p.parkingName, 0))
 
             }
         }
-        SyncCamera.cameraLists.observe(viewLifecycleOwner){
-            for(p in it){
-                MyLog.d(p.road+p.longitude+p.latitude)
-                mClusterManager?.addItem(MyItem(p.latitude, p.longitude,"測速: "+p.road+p.introduction,1))
+        SyncCamera.cameraLists.observe(viewLifecycleOwner) {
+            for (p in it) {
+                MyLog.d(p.road + p.longitude + p.latitude)
+                mClusterManager?.addItem(
+                    MyItem(
+                        p.latitude,
+                        p.longitude,
+                        "測速: " + p.road + p.introduction,
+                        1
+                    )
+                )
             }
         }
-        SyncPosition.oilStation.observe(viewLifecycleOwner){
-            for(p in it){
-                mClusterManager?.addItem(MyItem(p.latitude, p.logitude,"加油站: "+p.address,2))
+        SyncPosition.oilStation.observe(viewLifecycleOwner) {
+            for (p in it) {
+                mClusterManager?.addItem(MyItem(p.latitude, p.logitude, "加油站: " + p.address, 2))
 
             }
         }
         map.setOnCameraIdleListener(mClusterManager)
 
-        SyncPosition.parkingApi(this,this)
-        SyncCamera.cameraMarkApi(this,this)
-        SyncPosition.oilStationApi(this,this)
+        SyncPosition.parkingApi(this, this)
+        SyncCamera.cameraMarkApi(this, this)
+        SyncPosition.oilStationApi(this, this)
 
-        SyncPosition.parkingApi(this,this)
+        SyncPosition.parkingApi(this, this)
         mClusterManager?.setOnClusterItemClickListener {
             false
         }

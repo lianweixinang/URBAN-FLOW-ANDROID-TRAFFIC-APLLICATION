@@ -13,7 +13,6 @@
         android:layout_height="wrap_content"
         tools:context="ntutifm.game.google.ui.oil.WeatherFragment">
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

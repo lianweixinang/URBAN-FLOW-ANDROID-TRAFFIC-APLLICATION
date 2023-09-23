@@ -14,6 +14,8 @@ import ntutifm.game.google.databinding.ActivityMainBinding
 import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.ui.map.MapFragment
 import ntutifm.game.google.ui.notification.NotificationFragment
+import ntutifm.game.google.ui.oil.AboutFragment
+import ntutifm.game.google.ui.oil.InstructionFragment
 import ntutifm.game.google.ui.oil.OilFragment
 import ntutifm.game.google.ui.route.RouteFragment
 import ntutifm.game.google.ui.weather.WeatherFragment
@@ -52,6 +54,12 @@ open class MainActivity : AppCompatActivity(),
             }
             R.id.nav_notification -> {
                 AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, NotificationFragment())
+            }
+            R.id.nav_about -> {
+                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, AboutFragment())
+            }
+            R.id.nav_instruction -> {
+                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, InstructionFragment())
             }
         }
 

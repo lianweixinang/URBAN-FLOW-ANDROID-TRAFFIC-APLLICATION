@@ -49,7 +49,7 @@ import ntutifm.game.google.net.*
 import ntutifm.game.google.net.ApiClass.CityRoad
 import ntutifm.game.google.net.ApiClass.Incident
 import ntutifm.game.google.ui.notification.NotificationFragment
-import ntutifm.game.google.ui.oil.OilFragment
+import ntutifm.game.google.ui.oil.InstructionFragment
 import ntutifm.game.google.ui.route.RouteFragment
 import ntutifm.game.google.ui.weather.WeatherFragment
 import kotlin.math.roundToInt
@@ -526,7 +526,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             }
 
             R.id.nav_oil -> {
-                AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, OilFragment())
+                AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, InstructionFragment())
             }
 
             R.id.nav_weather -> {

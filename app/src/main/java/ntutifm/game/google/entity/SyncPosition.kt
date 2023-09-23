@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.maps.model.LatLng
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiCallBack
+import ntutifm.game.google.net.ApiClass.OilStation
 import ntutifm.game.google.net.ApiClass.Parking
 import ntutifm.game.google.net.ApiClass.Weather
 import ntutifm.game.google.net.ApiClass.WeatherLocation
@@ -20,6 +21,9 @@ object SyncPosition {
 
     private val _weatherLocation = MutableLiveData<WeatherLocation>()
     val weatherLocation = _weatherLocation
+
+    private val _oilStation = MutableLiveData<List<OilStation>>()
+    val oilStation = _oilStation
     fun parkingApi(callBack: ApiCallBack, fragment: Fragment){
         MyLog.e("StartCallParkingApi")
         ApiManager(callBack).execute(fragment, ApiProcessor.getParking)
@@ -35,6 +39,14 @@ object SyncPosition {
     fun updateWeatherLocation(data:WeatherLocation){
         MyLog.e("updateWeatherLocation")
         _weatherLocation.postValue(data)
+    }
+    fun oilStationApi(callBack: ApiCallBack, fragment: Fragment){
+        MyLog.e("startOilStationApi")
+        ApiManager(callBack).execute(fragment, ApiProcessor.getOilStation)
+    }
+    fun updateOilStation(data:List<OilStation>){
+        MyLog.e("updateOilStation")
+        _oilStation.postValue(data)
     }
     fun districtToIndex(): Int {
         if(_weatherLocation.value!=null) {

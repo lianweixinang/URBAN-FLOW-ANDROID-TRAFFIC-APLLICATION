@@ -7,6 +7,7 @@ import ntutifm.game.google.net.ApiClass.City;
 import ntutifm.game.google.net.ApiClass.CitySpeed;
 import ntutifm.game.google.net.ApiClass.Incident;
 import ntutifm.game.google.net.ApiClass.Oil;
+import ntutifm.game.google.net.ApiClass.OilStation;
 import ntutifm.game.google.net.ApiClass.Parking;
 import ntutifm.game.google.net.ApiClass.CityRoad;
 import ntutifm.game.google.net.ApiClass.Weather;
@@ -35,6 +36,8 @@ public interface MyAPIService {
     Call<List<Oil>> getOilList();
     @GET("weather")
     Call<List<Weather>> getWeatherList();
+    @GET("oilStation")
+    Call<List<OilStation>> getOilStationList();
     @GET("weatherLocation/{lat},{lng}")
     Call<WeatherLocation> getWeatherLocationLatLng(@Path("lat") String lat, @Path("lng") String lng);
 

@@ -22,6 +22,7 @@ class ApiProcessor {
         const val getWeatherLocation = "getWeatherLocation"
         const val getCameraMark = "getCameraMark"
         const val getCameraTest = "getCameraTest"
+        const val getOilStation = "getOilStation"
     }
 
     fun getParking(c: Context, successData: ArrayList<String>, errorData: ArrayList<String>) {
@@ -230,6 +231,31 @@ class ApiProcessor {
 
             override fun onFailure(call: Call<List<Camera>>?, t: Throwable?) {
                 Log.d("getList<Camera>Test", t.toString())
+            }
+        })
+    }
+    fun getOilStation(
+        c: Context,
+        successData: ArrayList<String>,
+        errorData: ArrayList<String>
+    ) {
+        val myAPIService = RetrofitManager.getInstance().api
+        val call: Call<List<OilStation>>? =
+            myAPIService.oilStationList
+        call!!.enqueue(object : Callback<List<OilStation>> {
+            override fun onResponse(
+                call: Call<List<OilStation>>?,
+                response: Response<List<OilStation>>?,
+            ) {
+                if (response?.body() != null) {
+                    SyncPosition.updateOilStation(response.body()!!)
+                } else {
+                    Log.d("getOilStationMark", "Null")
+                }
+            }
+
+            override fun onFailure(call: Call<List<OilStation>>?, t: Throwable?) {
+                Log.d("getOilStationMark", t.toString())
             }
         })
     }

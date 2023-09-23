@@ -9,16 +9,18 @@ import com.google.maps.android.clustering.ClusterItem;
         private LatLng mPosition;
         private String mTitle;
         private String mSnippet;
+        private Integer mtype;
         public MyItem(double lat, double lng) {
             mPosition = new LatLng(lat, lng);
             mTitle = null;
             mSnippet = null;
         }
 
-        public MyItem(double lat, double lng, String title) {
+        public MyItem(double lat, double lng, String title, Integer type) {
             mPosition = new LatLng(lat, lng);
             mTitle = title;
             mSnippet = null;
+            mtype = type;
         }
 
         public void setTitle(String title) {
@@ -46,4 +48,6 @@ import com.google.maps.android.clustering.ClusterItem;
         public String getSnippet() {
             return mSnippet;
         }
+
+        public Integer getType(){return mtype;}
     }

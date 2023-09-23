@@ -134,13 +134,13 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                         this.setImageResource(R.drawable.sl25)
                         this.visibility = View.VISIBLE
                         val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
-                        layoutParams.setMargins(left, 400, right, bottom)  // 替換為你需要的值
+                        layoutParams.setMargins(left, 50, right, bottom)  // 替換為你需要的值
                         this.layoutParams = layoutParams
                     }
                     moveToCurrentLocation()
                     binding.fragmentMap.slButton.apply() {
                         val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
-                        layoutParams.setMargins(left, 800, right, bottom)  // 替換為你需要的值
+                        layoutParams.setMargins(left, 200, right, bottom)  // 替換為你需要的值
                         this.layoutParams = layoutParams
                         val number = listOf(25, 40, 50, 60, 70, 80).shuffled().random()
                         if (number == 25) {
@@ -216,6 +216,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             binding.fragmentMap.webView.visibility = View.VISIBLE
             binding.fragmentMap.carDirection.visibility = View.VISIBLE
             binding.fragmentMap.trafficFlow.visibility = View.VISIBLE
+            binding.fragmentMap.imageView3.visibility = View.VISIBLE
         }
     }
 
@@ -362,6 +363,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             binding.fragmentMap.fragmentSearch.searchView.setQuery("", false)
             binding.fragmentMap.fragmentSearch.root.visibility = View.GONE
             binding.fragmentMap.fragmentHome.root.visibility = View.VISIBLE
+            binding.fragmentMap.fragmentHome.textView.text = searchData.roadName
             isOpen.value = false
             AppUtil.showTopToast(requireActivity(), "搜尋中...")
         } catch (e: Exception) {
@@ -630,15 +632,33 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     /** 批量生成mark */
     private fun initMark() {
         mClusterManager = ClusterManager(context, map)
-        SyncPosition.parkingLists.observe(viewLifecycleOwner) {
-            for (p in it) {
-                mClusterManager?.addItem(MyItem(p.lat, p.lng, p.parkingName))
+        mClusterManager?.renderer = CustomClusterRenderer(requireActivity(), map, mClusterManager!!)
+        SyncPosition.parkingLists.observe(viewLifecycleOwner){
+            for(p in it){
+                mClusterManager?.addItem(MyItem(p.lat, p.lng,"停車場: "+p.parkingName,0))
+
+            }
+        }
+        SyncCamera.cameraLists.observe(viewLifecycleOwner){
+            for(p in it){
+                MyLog.d(p.road+p.longitude+p.latitude)
+                mClusterManager?.addItem(MyItem(p.latitude, p.longitude,"測速: "+p.road+p.introduction,1))
+            }
+        }
+        SyncPosition.oilStation.observe(viewLifecycleOwner){
+            for(p in it){
+                mClusterManager?.addItem(MyItem(p.latitude, p.logitude,"加油站: "+p.address,2))
+
             }
         }
         map.setOnCameraIdleListener(mClusterManager)
 
-        SyncPosition.parkingApi(this, this)
-        mClusterManager?.setOnClusterItemClickListener { item ->
+        SyncPosition.parkingApi(this,this)
+        SyncCamera.cameraMarkApi(this,this)
+        SyncPosition.oilStationApi(this,this)
+
+        SyncPosition.parkingApi(this,this)
+        mClusterManager?.setOnClusterItemClickListener {
             false
         }
     }

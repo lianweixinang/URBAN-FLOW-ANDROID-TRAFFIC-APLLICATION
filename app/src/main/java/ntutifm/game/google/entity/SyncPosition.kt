@@ -39,6 +39,7 @@ object SyncPosition {
     fun updateWeatherLocation(data:WeatherLocation){
         MyLog.e("updateWeatherLocation")
         _weatherLocation.postValue(data)
+
     }
     fun oilStationApi(callBack: ApiCallBack, fragment: Fragment){
         MyLog.e("startOilStationApi")

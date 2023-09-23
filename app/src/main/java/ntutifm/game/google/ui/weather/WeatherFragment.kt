@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import ntutifm.game.google.R
 import ntutifm.game.google.databinding.FragmentWeatherBinding
 import ntutifm.game.google.entity.SyncPosition
 import ntutifm.game.google.entity.SyncWeather
@@ -41,6 +42,10 @@ class WeatherFragment : Fragment(), ApiCallBack {
     private fun weatherTextInit() {
         SyncWeather.weatherLists.observe(viewLifecycleOwner) {
             val index = SyncPosition.districtToIndex()
+            when(it[SyncPosition.districtToIndex()].weatherDescription){
+                "晴天" -> binding.weatherIcon.setImageResource(R.drawable.sun)
+                "雨天" -> binding.weatherIcon.setImageResource(R.drawable.heavy_rain)
+            }
             if (index != -1) {
                 MyLog.e("Weather Updated")
                 binding.position.text = it[index].locationName

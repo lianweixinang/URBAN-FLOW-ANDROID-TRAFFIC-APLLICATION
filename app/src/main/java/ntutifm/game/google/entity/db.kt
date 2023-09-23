@@ -9,13 +9,14 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.os.Build
 import android.provider.BaseColumns
+import android.provider.SyncStateContract.Columns
 import android.util.Log
 import androidx.annotation.RequiresApi
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiClass.CityRoad
+import ntutifm.game.google.net.ApiClass.OilStation
 import ntutifm.game.google.net.ApiClass.Parking
 import java.time.LocalDate
-import java.time.ZoneId
 
 
 object FeedReaderContract {
@@ -29,9 +30,8 @@ object FeedReaderContract {
 
     object FeedEntry1 : BaseColumns {
         const val TABLE_NAME = "Fav_Route"
-        const val COLUMN_NAME_RoadId = "RoadId"
-        const val COLUMN_NAME_RoadName = "RoadName"
-        const val COLUMN_NAME_LinkId = "LinkId"
+        const val COLUMN_NAME_RoadId = "ID"
+        const val COLUMN_NAME_RoadName = "NAME"
         const val COLUMN_NAME_time = "time"
     }
 
@@ -39,13 +39,14 @@ object FeedReaderContract {
         const val TABLE_NAME = "Fav_Gas"
         const val COLUMN_NAME_longitude = "longitude"
         const val COLUMN_NAME_latitude = "latitude"
-        const val COLUMN_NAME_Gas = "Gas_name"
+        const val COLUMN_NAME_Gas = "NAME"
         const val COLUMN_NAME_time = "time"
     }
 
     object FeedEntry3 : BaseColumns {
         const val TABLE_NAME = "Fav_CCTV"
         const val COLUMN_NAME_url = "url"
+        const val Column_Name_name = "NAME"
         const val COLUMN_NAME_time = "time"
     }
 
@@ -53,7 +54,7 @@ object FeedReaderContract {
         const val TABLE_NAME = "Fav_parking"
         const val COLUMN_NAME_longitude = "longitude"
         const val COLUMN_NAME_latitude = "latitude"
-        const val COLUMN_NAME_Parking = "P_name"
+        const val COLUMN_NAME_Parking = "NAME"
         const val COLUMN_NAME_time = "time"
     }
 }
@@ -70,7 +71,6 @@ private const val SQL_CREATE_ENTRIES1 =
             "${BaseColumns._ID} INTEGER PRIMARY KEY," +
             "${FeedReaderContract.FeedEntry1.COLUMN_NAME_RoadId} TEXT," +
             "${FeedReaderContract.FeedEntry1.COLUMN_NAME_RoadName} TEXT," +
-            "${FeedReaderContract.FeedEntry1.COLUMN_NAME_LinkId} TEXT," +
             "${FeedReaderContract.FeedEntry1.COLUMN_NAME_time} TEXT);"
 
 private const val SQL_CREATE_ENTRIES2 =
@@ -84,6 +84,7 @@ private const val SQL_CREATE_ENTRIES2 =
 private const val SQL_CREATE_ENTRIES3 =
     "CREATE TABLE ${FeedReaderContract.FeedEntry3.TABLE_NAME} (" +
             "${BaseColumns._ID} INTEGER PRIMARY KEY," +
+            "${FeedReaderContract.FeedEntry3.Column_Name_name} TEXT," +
             "${FeedReaderContract.FeedEntry3.COLUMN_NAME_url} TEXT," +
             "${FeedReaderContract.FeedEntry3.COLUMN_NAME_time} TEXT);"
 
@@ -144,12 +145,24 @@ class FeedReaderDbHelper(context: Context) :
     }
 }
 
+@SuppressLint("Recycle")
+fun dbReset(context: Context){
+    var dbHelper = FeedReaderDbHelper(context)
+    val db = dbHelper.writableDatabase
+    db.execSQL(SQL_DELETE_ENTRIES)
+    db.execSQL(SQL_DELETE_ENTRIES1)
+    db.execSQL(SQL_DELETE_ENTRIES2)
+    db.execSQL(SQL_DELETE_ENTRIES3)
+    db.execSQL(SQL_DELETE_ENTRIES4)
+}
+@SuppressLint("Recycle")
 fun dbDeleteHistory(search: String, context: Context) {
     val dbHelper = FeedReaderDbHelper(context)
     val db = dbHelper.writableDatabase
     db.execSQL("DELETE FROM history WHERE history.roadName = '$search'")
     db.close()
 }
+
 
 fun dbDisplayHistory(context: Context): List<CityRoad> {
     val dbHelper = FeedReaderDbHelper(context)
@@ -176,35 +189,39 @@ fun dbDisplayHistory(context: Context): List<CityRoad> {
     return history
 }
 
-open class FavoriteType(val id: String, val table:String)
-open class Road(id: String, table:String) : FavoriteType(id,table)
-open class Parking(id: String, table:String) : FavoriteType(id,table)
-open class GasStation(id: String, table:String) : FavoriteType(id,table)
-open class CCTV(id: String, table:String) : FavoriteType(id,table)
+open class FavoriteType(val name: String, val table:String)
+open class Road(name: String, table:String= FeedReaderContract.FeedEntry1.TABLE_NAME) : FavoriteType(name,table)
+open class Parking(name: String, table:String= FeedReaderContract.FeedEntry4.TABLE_NAME) : FavoriteType(name,table)
+open class GasStation(name: String, table:String= FeedReaderContract.FeedEntry2.TABLE_NAME) : FavoriteType(name,table)
+open class CCTV(name: String, table:String= FeedReaderContract.FeedEntry3.TABLE_NAME,val url:String) : FavoriteType(name,table)
 
 
 
 @SuppressLint("Recycle")
-fun dbFavChange(search: FavoriteType, context: Context):Boolean {
+fun dbFavDisplay(search: FavoriteType, context: Context):Boolean {
     val dbHelper = FeedReaderDbHelper(context)
     val db = dbHelper.readableDatabase
     val res: Cursor =
         db.rawQuery(
-            "SELECT * FROM ${search.table} where Fav_Gas.Name ='${search.id}' ",
+            "SELECT * FROM ${search.table} where Name ='${search.name}' ",
             null
         )
     return res.count > 0
 }
-
+fun dbFavCDelete(search: FavoriteType, context: Context) {
+    val dbHelper = FeedReaderDbHelper(context)
+    val db = dbHelper.writableDatabase
+    db.execSQL("DELETE FROM ${search.table} WHERE Name = '${search.name}'")
+    db.close()
+}
 @SuppressLint("Recycle")
 @RequiresApi(Build.VERSION_CODES.O)
-fun dbAddFavRoad(Road: CityRoad, linkID: String, context: Context) {
+fun dbAddFavRoad(Road: CityRoad, context: Context) {
     val dbHelper = FeedReaderDbHelper(context)
     val db = dbHelper.writableDatabase
     val values = ContentValues().apply {
         put(FeedReaderContract.FeedEntry1.COLUMN_NAME_RoadId, Road.roadId)
         put(FeedReaderContract.FeedEntry1.COLUMN_NAME_RoadName, Road.roadName)
-        put(FeedReaderContract.FeedEntry1.COLUMN_NAME_LinkId, linkID)
         put(FeedReaderContract.FeedEntry1.COLUMN_NAME_time, LocalDate.now().toString())
     }
     val newRowId = db?.insert(FeedReaderContract.FeedEntry1.TABLE_NAME, null, values)
@@ -212,13 +229,13 @@ fun dbAddFavRoad(Road: CityRoad, linkID: String, context: Context) {
 
 @SuppressLint("Recycle")
 @RequiresApi(Build.VERSION_CODES.O)
-fun dbAddFavGas(longitude: String, latitude: String, GasName: String, context: Context) {
+fun dbAddFavGas(data:OilStation, context: Context) {
     val dbHelper = FeedReaderDbHelper(context)
     val db = dbHelper.writableDatabase
     val values = ContentValues().apply {
-        put(FeedReaderContract.FeedEntry2.COLUMN_NAME_Gas, GasName)
-        put(FeedReaderContract.FeedEntry2.COLUMN_NAME_latitude, latitude)
-        put(FeedReaderContract.FeedEntry2.COLUMN_NAME_longitude, longitude)
+        put(FeedReaderContract.FeedEntry2.COLUMN_NAME_Gas, data.station)
+        put(FeedReaderContract.FeedEntry2.COLUMN_NAME_latitude, data.latitude)
+        put(FeedReaderContract.FeedEntry2.COLUMN_NAME_longitude, data.logitude)
         put(FeedReaderContract.FeedEntry2.COLUMN_NAME_time, LocalDate.now().toString())
     }
     val newRowId = db?.insert(FeedReaderContract.FeedEntry2.TABLE_NAME, null, values)
@@ -226,11 +243,12 @@ fun dbAddFavGas(longitude: String, latitude: String, GasName: String, context: C
 
 @SuppressLint("Recycle")
 @RequiresApi(Build.VERSION_CODES.O)
-fun dbAddFavCCTV(url: String, context: Context) {
+fun dbAddFavCCTV(cctv: CCTV, context: Context) {
     val dbHelper = FeedReaderDbHelper(context)
     val db = dbHelper.writableDatabase
     val values = ContentValues().apply {
-        put(FeedReaderContract.FeedEntry3.COLUMN_NAME_url, url)
+        put(FeedReaderContract.FeedEntry3.Column_Name_name,cctv.name )
+        put(FeedReaderContract.FeedEntry3.COLUMN_NAME_url, cctv.url)
         put(FeedReaderContract.FeedEntry3.COLUMN_NAME_time, LocalDate.now().toString())
     }
     val newRowId = db?.insert(FeedReaderContract.FeedEntry3.TABLE_NAME, null, values)
@@ -239,13 +257,13 @@ fun dbAddFavCCTV(url: String, context: Context) {
 
 @SuppressLint("Recycle")
 @RequiresApi(Build.VERSION_CODES.O)
-fun dbAddFavParking(Park: Parking, context: Context) {
+fun dbAddFavParking(park: Parking, context: Context) {
     val dbHelper = FeedReaderDbHelper(context)
     val db = dbHelper.writableDatabase
     val values = ContentValues().apply {
-        put(FeedReaderContract.FeedEntry4.COLUMN_NAME_Parking, Park.parkingName)
-        put(FeedReaderContract.FeedEntry4.COLUMN_NAME_latitude, Park.lat)
-        put(FeedReaderContract.FeedEntry4.COLUMN_NAME_longitude, Park.lng)
+        put(FeedReaderContract.FeedEntry4.COLUMN_NAME_Parking, park.parkingName)
+        put(FeedReaderContract.FeedEntry4.COLUMN_NAME_latitude, park.lat)
+        put(FeedReaderContract.FeedEntry4.COLUMN_NAME_longitude, park.lng)
         put(FeedReaderContract.FeedEntry4.COLUMN_NAME_time, LocalDate.now().toString())
     }
     val newRowId = db?.insert(FeedReaderContract.FeedEntry4.TABLE_NAME, null, values)

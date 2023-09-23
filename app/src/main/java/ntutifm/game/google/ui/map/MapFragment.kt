@@ -36,20 +36,18 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.navigation.NavigationView
 import com.google.maps.android.clustering.ClusterManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ntutifm.game.google.*
 import ntutifm.game.google.R
 import ntutifm.game.google.databinding.ActivityMainBinding
 import ntutifm.game.google.entity.*
-import ntutifm.game.google.entity.SyncBottomBar.state
 import ntutifm.game.google.entity.adaptor.SearchAdaptor
 import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.*
 import ntutifm.game.google.net.ApiClass.CityRoad
+import ntutifm.game.google.net.ApiClass.Incident
 import ntutifm.game.google.ui.notification.NotificationFragment
 import ntutifm.game.google.ui.oil.OilFragment
 import ntutifm.game.google.ui.route.RouteFragment
@@ -60,9 +58,11 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
     ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack,
     NavigationView.OnNavigationItemSelectedListener {
-    var mClusterManager: ClusterManager<MyItem>? = null
-    var behavior: BottomSheetBehavior<View>? = null
-    var favoriteFlag: MutableLiveData<Boolean>? = null
+    private var mClusterManager: ClusterManager<MyItem>? = null
+    private var behavior: BottomSheetBehavior<View>? = null
+    private var favoriteFlag: Boolean = false
+    private var searchData:CityRoad? = null
+    private var isOpen: Boolean = false
     internal var mCurrLocationMarker: Marker? = null
     internal var mLastLocation: Location? = null
     private var _binding: ActivityMainBinding? = null
@@ -77,6 +77,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var moveState: Boolean = false
     private val weatherState: Boolean = true
     private var sitMode: Boolean = true
+    private var oldIncident:List<Incident>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
@@ -91,16 +92,14 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         binding.fragmentMap.cover.visibility = View.GONE
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
-        favoriteFlag = MutableLiveData(false) //到時候用viewModel給值
         binding.fragmentMap.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
         binding.fragmentMap.bg.setOnClickListener(backBtnListener)
-        binding.fragmentMap.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
         binding.fragmentMap.menuButton.setOnClickListener(menuButtonListener)
         binding.fragmentMap.weatherButton.setOnClickListener(weatherButtonListener)
         binding.fragmentMap.fragmentHome.textContainer.setOnClickListener(searchBtnListener)
         binding.fragmentMap.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
-        binding.fragmentMap.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
         binding.fragmentMap.slButton.setOnClickListener(slButtonListener)
+        favoriteInit()
         bottomSheetInit()
         setNavigationViewListener()
         searchViewInit()
@@ -111,20 +110,32 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     private fun weatherInit() {
         SyncPosition.weatherLocation.observe(viewLifecycleOwner) {
-            val index = SyncPosition.districtToIndex()
+            SyncWeather.weatherDataApi(this,this)
+        }
+        SyncWeather.weatherLists.observe(viewLifecycleOwner){
+            when(it[SyncPosition.districtToIndex()].weatherDescription){
+                "晴天" -> binding.fragmentMap.weatherButton.setImageResource(R.drawable.sun)
+                "雨天" -> binding.fragmentMap.weatherButton.setImageResource(R.drawable.heavy_rain)
+            }
         }
     }
 
 
     /** 監視器初始化 */
+    @SuppressLint("SetJavaScriptEnabled")
     private fun webViewInit() {
-        binding.fragmentMap.webView.getSettings().setJavaScriptEnabled(true);
+        binding.fragmentMap.webView.settings.javaScriptEnabled = true
         binding.fragmentMap.webView.loadUrl("https://cctvatis4.ntpc.gov.tw/C000232")
     }
 
 
     private fun incidentCheck() {
-        SyncIncident.incidentLists.observe(viewLifecycleOwner){}
+        SyncIncident.incidentLists.observe(viewLifecycleOwner){
+            if(it!= null && it[it.size-1] != oldIncident?.get(it.size - 1)){
+                AppUtil.showTopToast(requireActivity(), it[it.size-1].title)
+                oldIncident = it
+            }
+        }
         viewLifecycleOwner.lifecycleScope.launch {
             while (true) {
                 SyncIncident.getIncident(this@MapFragment,this@MapFragment)
@@ -180,6 +191,18 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun favoriteInit(){
+        favoriteFlag = dbFavDisplay(Road("南京東路"),requireActivity())
+        binding.fragmentMap.fragmentHome.favoriteBtn.apply {
+            if (favoriteFlag) {
+                this.setImageResource(R.drawable.ic_baseline_star_25)
+            } else {
+                this.setImageResource(R.drawable.ic_baseline_star_24)
+            }
+            binding.fragmentMap.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
+        }
+    }
     private fun bottomSheetInit() {
         val bottomSheet: View = binding.fragmentMap.bg
         behavior = BottomSheetBehavior.from(bottomSheet)
@@ -248,47 +271,56 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     }
 
     /** 收藏切換 */
+    @RequiresApi(Build.VERSION_CODES.O)
     private val favoriteBtnListener = View.OnClickListener {
         binding.fragmentMap.fragmentHome.favoriteBtn.apply {
-            if (favoriteFlag?.value == true) {
+            MyLog.e(favoriteFlag.toString())
+            if (favoriteFlag) {
                 this.setImageResource(R.drawable.ic_baseline_star_24)
+                if(searchData != null) {
+                    dbAddFavRoad(searchData!!, requireActivity())
+                }
             } else {
                 this.setImageResource(R.drawable.ic_baseline_star_25)
+                if(searchData != null) {
+                    val data = Road(searchData!!.roadName)
+                    dbFavCDelete(data, requireActivity())
+                }
             }
-            (favoriteFlag?.value).also { favoriteFlag?.value = it?.not() }
+            favoriteFlag = !favoriteFlag
         }
 
     }
 
     /** 關閉搜尋欄 */
     private val backBtnListener = View.OnClickListener {
-        MyLog.e(isOpen.value.toString())
+        MyLog.e(isOpen.toString())
         binding.fragmentMap.fragmentSearch.root.visibility = View.GONE
         binding.fragmentMap.fragmentHome.root.visibility = View.VISIBLE
         binding.fragmentMap.webView.visibility = View.VISIBLE
         when (behavior?.state) {
             //全開
             3 -> {
-                if (isOpen.value == true) {
+                if (isOpen == true) {
                     binding.fragmentMap.carDirection.visibility = View.VISIBLE
                     binding.fragmentMap.trafficFlow.visibility = View.VISIBLE
                 }
             }
             //半開
             6 -> {
-                if (isOpen.value == true) {
+                if (isOpen == true) {
                     binding.fragmentMap.carDirection.visibility = View.GONE
                     binding.fragmentMap.trafficFlow.visibility = View.GONE
                 }
             }
         }
-        isOpen.value = false
+        isOpen= false
     }
 
     /** 開啟搜尋欄 */
     private val searchBtnListener = View.OnClickListener {
-        isOpen.value = true
-        MyLog.e(isOpen.value.toString())
+        isOpen = true
+        MyLog.e(isOpen.toString())
         binding.fragmentMap.fragmentSearch.root.visibility = View.VISIBLE
         binding.fragmentMap.fragmentHome.root.visibility = View.GONE
         binding.fragmentMap.webView.visibility = View.GONE
@@ -364,17 +396,19 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     @RequiresApi(Build.VERSION_CODES.O)
     private val itemOnClickListener = View.OnClickListener {
         try {
-            val searchData = it.tag as CityRoad
-            dbAddHistory(searchData, requireActivity())
-            MyLog.d(searchData.roadName)
-            MyLog.d(searchData.roadId)
-            SyncSpeed.getCityRoadSpeed(this, searchData.roadId, this)
-            binding.fragmentMap.fragmentSearch.searchView.setQuery("", false)
-            binding.fragmentMap.fragmentSearch.root.visibility = View.GONE
-            binding.fragmentMap.fragmentHome.root.visibility = View.VISIBLE
-            binding.fragmentMap.fragmentHome.textView.text = searchData.roadName
-            isOpen.value = false
-            AppUtil.showTopToast(requireActivity(), "搜尋中...")
+            searchData = it.tag as CityRoad
+            if(searchData != null) {
+                dbAddHistory(searchData!!, requireActivity())
+                MyLog.d(searchData!!.roadName)
+                MyLog.d(searchData!!.roadId)
+                SyncSpeed.getCityRoadSpeed(this, searchData!!.roadId, this)
+                binding.fragmentMap.fragmentSearch.searchView.setQuery("", false)
+                binding.fragmentMap.fragmentSearch.root.visibility = View.GONE
+                binding.fragmentMap.fragmentHome.root.visibility = View.VISIBLE
+                binding.fragmentMap.fragmentHome.textView.text = searchData!!.roadName
+                isOpen = false
+                AppUtil.showTopToast(requireActivity(), "搜尋中...")
+            }
         } catch (e: Exception) {
             MyLog.e(e.toString())
         }

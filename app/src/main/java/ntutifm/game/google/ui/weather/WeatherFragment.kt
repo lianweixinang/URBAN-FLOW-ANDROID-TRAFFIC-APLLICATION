@@ -42,32 +42,32 @@ class WeatherFragment : Fragment(), ApiCallBack {
     private fun weatherTextInit() {
         SyncWeather.weatherLists.observe(viewLifecycleOwner) {
             val index = SyncPosition.districtToIndex()
-            when(it[SyncPosition.districtToIndex()].weatherDescription){
+            when (it[index].weatherDescription) {
                 "晴天" -> binding.weatherIcon.setImageResource(R.drawable.sun)
                 "雨天" -> binding.weatherIcon.setImageResource(R.drawable.heavy_rain)
             }
-            if (index != -1) {
-                MyLog.e("Weather Updated")
-                binding.position.text = it[index].locationName
-                binding.nowWeather.text = it[index].t1 + "℃"
-                binding.nowWeatherText.text = it[index].wx1
-                binding.weatherText1.text = it[index].t1 + "℃"
-                binding.weatherText2.text = it[index].t2 + "℃"
-                binding.weatherText3.text = it[index].t3 + "℃"
-                binding.weatherText4.text = it[index].t4 + "℃"
-                binding.weatherText5.text = it[index].t5 + "℃"
-                binding.weatherText6.text = it[index].t6 + "℃"
-                binding.weatherText7.text = it[index].t7 + "℃"
-                binding.weatherText8.text = it[index].t8 + "℃"
-                binding.rainText1.text = it[index].pop6h1 + "%"
-                binding.rainText2.text = it[index].pop6h1 + "%"
-                binding.rainText3.text = it[index].pop6h2 + "%"
-                binding.rainText4.text = it[index].pop6h2 + "%"
-                binding.rainText5.text = it[index].pop6h3 + "%"
-                binding.rainText6.text = it[index].pop6h3 + "%"
-                binding.rainText7.text = it[index].pop6h4 + "%"
-                binding.rainText8.text = it[index].pop6h4 + "%"
-            }
+
+            MyLog.e("Weather Updated")
+            binding.position.text = it[index].locationName
+            binding.nowWeather.text = it[index].t1 + "℃"
+            binding.nowWeatherText.text = it[index].wx1
+            binding.weatherText1.text = it[index].t1 + "℃"
+            binding.weatherText2.text = it[index].t2 + "℃"
+            binding.weatherText3.text = it[index].t3 + "℃"
+            binding.weatherText4.text = it[index].t4 + "℃"
+            binding.weatherText5.text = it[index].t5 + "℃"
+            binding.weatherText6.text = it[index].t6 + "℃"
+            binding.weatherText7.text = it[index].t7 + "℃"
+            binding.weatherText8.text = it[index].t8 + "℃"
+            binding.rainText1.text = it[index].pop6h1 + "%"
+            binding.rainText2.text = it[index].pop6h1 + "%"
+            binding.rainText3.text = it[index].pop6h2 + "%"
+            binding.rainText4.text = it[index].pop6h2 + "%"
+            binding.rainText5.text = it[index].pop6h3 + "%"
+            binding.rainText6.text = it[index].pop6h3 + "%"
+            binding.rainText7.text = it[index].pop6h4 + "%"
+            binding.rainText8.text = it[index].pop6h4 + "%"
+
         }
         SyncWeather.weatherDataApi(this, this)
     }

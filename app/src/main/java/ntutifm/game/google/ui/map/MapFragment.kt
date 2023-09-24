@@ -2,6 +2,7 @@ package ntutifm.game.google.ui.map
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
@@ -12,7 +13,11 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.RelativeLayout
+import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
@@ -57,6 +62,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
 
+
 class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
     ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack,
@@ -80,6 +86,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private val weatherState: Boolean = true
     private var sitMode: Boolean = true
     private var oldIncident: List<Incident>? = null
+    private var adapter: RoadAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
@@ -100,6 +107,16 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         binding.fragmentMap.weatherButton.setOnClickListener(weatherButtonListener)
         binding.fragmentMap.fragmentHome.textContainer.setOnClickListener(searchBtnListener)
         binding.fragmentMap.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
+        cameraInit()
+        favoriteInit()
+        bottomSheetInit()
+        setNavigationViewListener()
+        searchViewInit()
+        searchListInit()
+        webViewInit()
+        incidentCheck()
+    }
+    private fun cameraInit(){
         binding.fragmentMap.slButton.setOnClickListener(slButtonListener)
         SyncCamera.camara.observe(viewLifecycleOwner){
             if(it!=null && it.distance!=10000){
@@ -110,15 +127,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 binding.fragmentMap.slButton.visibility = View.GONE
             }
         }
-        favoriteInit()
-        bottomSheetInit()
-        setNavigationViewListener()
-        searchViewInit()
-        searchListInit()
-        webViewInit()
-        incidentCheck()
     }
-
     private fun weatherInit() {
         SyncPosition.weatherLocation.observe(viewLifecycleOwner) {
             SyncWeather.weatherDataApi(this, this)
@@ -131,14 +140,69 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         }
     }
 
+    private fun updateAdapterData(dataList: List<CCTV>) {
+        MyLog.e("updateAdapterData")
+        for (i in dataList){
+            MyLog.e("updateAdapterData"+i.name)
+        }
+        adapter?.clear() // 清除适配器中的数据
+        adapter?.addAll(dataList) // 将新的数据列表添加到适配器
+        adapter?.notifyDataSetChanged() // 通知适配器数据已更改
+    }
 
     /** 監視器初始化 */
     @SuppressLint("SetJavaScriptEnabled")
     private fun webViewInit() {
+        adapter = RoadAdapter(
+            requireActivity(),
+            android.R.layout.simple_spinner_item)
+
+        adapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.fragmentMap.spinner.adapter = adapter
+        binding.fragmentMap.spinner.setSelection(0, false)
+        binding.fragmentMap.spinner.onItemSelectedListener = SpnOnItemSelected(binding)
+
         binding.fragmentMap.webView.settings.javaScriptEnabled = true
         binding.fragmentMap.webView.loadUrl("https://cctvatis4.ntpc.gov.tw/C000232")
     }
+    class RoadAdapter(context: Context, resource: Int, objects: MutableList<CCTV> = mutableListOf(CCTV("九份老街",url="https://cctvatis4.ntpc.gov.tw/C000232"),CCTV("至善路-福林路口",url="https://cctvatis4.ntpc.gov.tw/C000233"),CCTV("福林路-雨農路-中正路口",url="https://cctvatis4.ntpc.gov.tw/C000234"))) :
+        ArrayAdapter<CCTV>(context, resource, objects) {
 
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val road = getItem(position)
+            val view = convertView ?: LayoutInflater.from(context).inflate(
+                android.R.layout.simple_spinner_item,
+                parent,
+                false
+            )
+
+            val textView = view.findViewById<TextView>(android.R.id.text1)
+            textView.text = road?.name
+            view.tag = road
+            return view
+        }
+
+        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+            return getView(position, convertView, parent)
+        }
+        override fun addAll(vararg items: CCTV?) {
+            super.addAll(*items)
+        }
+    }
+    class SpnOnItemSelected(val binding:ActivityMainBinding): AdapterView.OnItemSelectedListener{
+        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            val selectedItem = parent?.getItemAtPosition(position) as? CCTV
+            selectedItem?.let {
+                binding.fragmentMap.webView.loadUrl(it.url)
+            }
+
+        }
+
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+
+        }
+
+    }
 
     private fun incidentCheck() {
         SyncIncident.incidentLists.observe(viewLifecycleOwner) {
@@ -274,6 +338,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             binding.fragmentMap.carDirection.visibility = View.VISIBLE
             binding.fragmentMap.trafficFlow.visibility = View.VISIBLE
             binding.fragmentMap.imageView3.visibility = View.VISIBLE
+            binding.fragmentMap.spinner.visibility = View.VISIBLE
         }
     }
 
@@ -323,6 +388,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         binding.fragmentMap.fragmentSearch.root.visibility = View.GONE
         binding.fragmentMap.fragmentHome.root.visibility = View.VISIBLE
         binding.fragmentMap.webView.visibility = View.VISIBLE
+        binding.fragmentMap.spinner.visibility = View.VISIBLE
         when (behavior?.state) {
             //全開
             3 -> {
@@ -352,6 +418,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         binding.fragmentMap.carDirection.visibility = View.GONE
         binding.fragmentMap.trafficFlow.visibility = View.GONE
         binding.fragmentMap.imageView3.visibility = View.GONE
+        binding.fragmentMap.spinner.visibility = View.GONE
         binding.fragmentMap.fragmentSearch.searchView.apply {
             this.requestFocus()
             this.onActionViewExpanded()
@@ -426,6 +493,30 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 dbAddHistory(searchData!!, requireActivity())
                 MyLog.d(searchData!!.roadName)
                 MyLog.d(searchData!!.roadId)
+                var l = 0
+                val searchSet = mutableSetOf<CCTV>()
+                while(l < searchData!!.roadName.length-1){
+                    val s = searchData!!.roadName.substring(l,l+2)
+                    if(s.contains("段") ||s.contains("路") || s.contains("巷") || s.contains("號") ||s.contains("橋") ||s.contains("街") ){
+                        l+=1
+                        continue
+                    }
+                    MyLog.e("searchWord:$s")
+                    val matchingKeys = mapData.entries.filter { roadData->
+                        roadData.key.contains(s)
+                    }
+                    if (matchingKeys.isNotEmpty()) {
+                        val roadList = matchingKeys.map { (name, no) ->
+                            MyLog.e("searchResult:$name")
+                            CCTV(name, url= "https://cctvatis4.ntpc.gov.tw/C000$no")
+                        }
+                        searchSet.addAll(roadList)
+                    }
+                    l+=1
+                    MyLog.e("index:$l")
+                }
+                MyLog.e("updateAdapterData over")
+                updateAdapterData(searchSet.toMutableList())
                 SyncSpeed.getCityRoadSpeed(this, searchData!!.roadId, this)
                 binding.fragmentMap.fragmentSearch.searchView.setQuery("", false)
                 binding.fragmentMap.fragmentSearch.root.visibility = View.GONE

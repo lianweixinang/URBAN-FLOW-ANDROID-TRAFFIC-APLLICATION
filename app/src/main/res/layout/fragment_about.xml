@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<FrameLayout
     android:id="@+id/fragment_oil"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -38,7 +41,7 @@
                     android:gravity="center"
                     android:text="關於"
                     android:textColor="#000000"
-                    android:textSize="25dp" />
+                    android:textSize="15dp" />
 
             </androidx.cardview.widget.CardView>
 
@@ -60,7 +63,8 @@
                         android:id="@+id/about_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="這是由台北科技大學資訊與財金管理系陳皮皮團隊所研發的一款交通即時路況整合應用程式，本應用程式透過整合政府資訊來提供即時的路況資訊，希望能讓使用者在交通上能有更多可以參考的數據資訊，提升交通的便利性。"
+                        android:layout_margin="5dp"
+                        android:text="這是一款由台北科技大學資訊與財金管理系陳皮皮團隊所研發的交通即時路況整合應用程式，本應用程式透過整合政府資訊來提供即時的路況資訊，希望能讓使用者在交通上能有更多可以參考的數據資訊，提升交通的便利性。"
                         android:textColor="#000000"
                         android:textSize="12dp" />
 
@@ -81,7 +85,7 @@
                     android:gravity="center"
                     android:text="隱私權政策"
                     android:textColor="#000000"
-                    android:textSize="25dp" />
+                    android:textSize="15dp" />
 
             </androidx.cardview.widget.CardView>
 
@@ -89,6 +93,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:layout_gravity="center"
                 app:cardBackgroundColor="#FFA042"
                 app:cardCornerRadius="15dp">
@@ -103,6 +108,7 @@
                         android:id="@+id/privacy_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
                         android:text="陳一心應用程式隱私權政策\n生效日期：2023/09/24\n 感謝您使用陳一心應用程式（以下簡稱「本應用程式」）。我們非常重視您的隱私權並致力於保護您的個人資料。本隱私權政策旨在向您說明我們如何收集、使用、存儲和保護您的個人資料。
                                         \n1. 收集和使用個人資料
                                         \n當您使用本應用程式時，我們可能會收集與您有關的某些個人資料。這些資料可能包括但不限於：
@@ -132,9 +138,7 @@
                         android:textSize="12dp" />
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
-
-
-
-
         </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout></FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>
+</ScrollView>

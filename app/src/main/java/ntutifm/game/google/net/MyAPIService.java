@@ -20,8 +20,8 @@ public interface MyAPIService {
 
     @GET("city")
     Call<List<City>> getCityList();
-    @GET("cameraTest")
-    Call<List<Camera>> getCameraTest();
+    @GET("findCamera/{lat},{lng}")
+    Call<Camera> getFindCamera(@Path("lat") String lat, @Path("lng") String lng);
     @GET("cameraMark")
     Call<List<Camera>> getCameraMark();
     @GET("parking")

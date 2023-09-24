@@ -9,7 +9,6 @@ public class Camera {
     private String Type ="Type";
     @SerializedName("Road")
     private String Road ="Road";
-
     @SerializedName("Introduction")
     private String Introduction ="Introduction";
     @SerializedName("Session")
@@ -23,8 +22,10 @@ public class Camera {
     @SerializedName("Longitude")
     private Double Longitude = 123.0;
     @SerializedName("Distance")
-    private Integer Distance = 5;
+    private Integer Distance = 10000;
 
+    public Camera(){
+    }
     public String getId() {
         return this.Id;
     }

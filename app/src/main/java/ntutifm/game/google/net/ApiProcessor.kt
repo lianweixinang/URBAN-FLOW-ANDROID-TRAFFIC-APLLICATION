@@ -21,7 +21,7 @@ class ApiProcessor {
         const val getWeather = "getWeather"
         const val getWeatherLocation = "getWeatherLocation"
         const val getCameraMark = "getCameraMark"
-        const val getCameraTest = "getCameraTest"
+        const val getFindCamera = "getFindCamera"
         const val getOilStation = "getOilStation"
     }
 
@@ -209,28 +209,29 @@ class ApiProcessor {
         })
     }
 
-    fun getCameraTest(
+    fun getFindCamera(
         c: Context,
         successData: ArrayList<String>,
         errorData: ArrayList<String>
     ) {
         val myAPIService = RetrofitManager.getInstance().api
-        val call: Call<List<Camera>>? =
-            myAPIService.cameraTest
-        call!!.enqueue(object : Callback<List<Camera>> {
+        val call: Call<Camera>? =
+            myAPIService.getFindCamera(successData[1], successData[2])
+        call!!.enqueue(object : Callback<Camera> {
             override fun onResponse(
-                call: Call<List<Camera>>?,
-                response: Response<List<Camera>>?,
+                call: Call<Camera>?,
+                response: Response<Camera>?,
             ) {
                 if (response?.body() != null) {
-                    SyncCamera.updateCameraTest(response.body()!!)
+                    MyLog.e("getFindCamera:close")
+                    SyncCamera.updateFindCamera(response.body()!!)
                 } else {
-                    Log.d("getList<Camera>Test", "Null")
+                    MyLog.e("getFindCamera:Null")
                 }
             }
 
-            override fun onFailure(call: Call<List<Camera>>?, t: Throwable?) {
-                Log.d("getList<Camera>Test", t.toString())
+            override fun onFailure(call: Call<Camera>?, t: Throwable?) {
+                MyLog.d("getFindCamera:${t}")
             }
         })
     }

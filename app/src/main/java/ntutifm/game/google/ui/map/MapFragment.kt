@@ -20,7 +20,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,7 +30,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.navigation.NavigationView
@@ -49,11 +47,15 @@ import ntutifm.game.google.net.*
 import ntutifm.game.google.net.ApiClass.CityRoad
 import ntutifm.game.google.net.ApiClass.Incident
 import ntutifm.game.google.ui.notification.NotificationFragment
-import ntutifm.game.google.ui.oil.InstructionFragment
 import ntutifm.game.google.ui.oil.OilFragment
 import ntutifm.game.google.ui.route.RouteFragment
 import ntutifm.game.google.ui.weather.WeatherFragment
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
@@ -62,7 +64,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var mClusterManager: ClusterManager<MyItem>? = null
     private var behavior: BottomSheetBehavior<View>? = null
     private var favoriteFlag: Boolean = false
-    private var searchData:CityRoad? = null
+    private var searchData: CityRoad? = null
     private var isOpen: Boolean = false
     internal var mCurrLocationMarker: Marker? = null
     internal var mLastLocation: Location? = null
@@ -77,7 +79,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var adaptor: SearchAdaptor? = null
     private val weatherState: Boolean = true
     private var sitMode: Boolean = true
-    private var oldIncident:List<Incident>? = null
+    private var oldIncident: List<Incident>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
@@ -99,6 +101,15 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         binding.fragmentMap.fragmentHome.textContainer.setOnClickListener(searchBtnListener)
         binding.fragmentMap.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
         binding.fragmentMap.slButton.setOnClickListener(slButtonListener)
+        SyncCamera.camara.observe(viewLifecycleOwner){
+            if(it!=null && it.distance!=10000){
+                binding.fragmentMap.slButton.visibility = View.VISIBLE
+                //修改文字
+                AppUtil.showTopToast(requireActivity(),"前方限速:${it.limit}公里，距離:${it.distance}公尺")
+            }else{
+                binding.fragmentMap.slButton.visibility = View.GONE
+            }
+        }
         favoriteInit()
         bottomSheetInit()
         setNavigationViewListener()
@@ -110,10 +121,10 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     private fun weatherInit() {
         SyncPosition.weatherLocation.observe(viewLifecycleOwner) {
-            SyncWeather.weatherDataApi(this,this)
+            SyncWeather.weatherDataApi(this, this)
         }
-        SyncWeather.weatherLists.observe(viewLifecycleOwner){
-            when(it[SyncPosition.districtToIndex()].weatherDescription){
+        SyncWeather.weatherLists.observe(viewLifecycleOwner) {
+            when (it[SyncPosition.districtToIndex()].weatherDescription) {
                 "晴天" -> binding.fragmentMap.weatherButton.setImageResource(R.drawable.sun)
                 "雨天" -> binding.fragmentMap.weatherButton.setImageResource(R.drawable.heavy_rain)
             }
@@ -130,15 +141,15 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
 
     private fun incidentCheck() {
-        SyncIncident.incidentLists.observe(viewLifecycleOwner){
-            if(it!= null && it[it.size-1] != oldIncident?.get(it.size - 1)){
-                AppUtil.showTopToast(requireActivity(), it[it.size-1].title)
+        SyncIncident.incidentLists.observe(viewLifecycleOwner) {
+            if (it != null && it[it.size - 1] != oldIncident?.get(it.size - 1)) {
+                AppUtil.showTopToast(requireActivity(), it[it.size - 1].title)
                 oldIncident = it
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             while (true) {
-                SyncIncident.getIncident(this@MapFragment,this@MapFragment)
+                SyncIncident.getIncident(this@MapFragment, this@MapFragment)
                 delay(60000)
             }
         }
@@ -149,36 +160,31 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         sitMode = !sitMode
         if (sitMode) {
             viewLifecycleOwner.lifecycleScope.launch {
-                while (sitMode) {
-                    binding.fragmentMap.currentSpeed.apply {
-                        this.setImageResource(R.drawable.sl25)
-                        this.visibility = View.VISIBLE
-                        val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
-                        layoutParams.setMargins(left, 50, right, bottom)  // 替換為你需要的值
-                        this.layoutParams = layoutParams
-                    }
-                    moveToCurrentLocation()
-                    binding.fragmentMap.slButton.apply() {
-                        val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
-                        layoutParams.setMargins(left, 200, right, bottom)  // 替換為你需要的值
-                        this.layoutParams = layoutParams
-                        val number = listOf(25, 40, 50, 60, 70, 80).shuffled().random()
-                        if (number == 25) {
-                            this.setImageResource(R.drawable.sl25)
-                        } else if (number == 40) {
-                            this.setImageResource(R.drawable.sl40)
-                        } else if (number == 50) {
-                            this.setImageResource(R.drawable.sl50)
-                        } else if (number == 60) {
-                            this.setImageResource(R.drawable.sl60)
-                        } else if (number == 70) {
-                            this.setImageResource(R.drawable.sl70)
-                        } else if (number == 80) {
-                            this.setImageResource(R.drawable.sl80)
-                        }
-                        delay(2000)
-                    }
+                binding.fragmentMap.currentSpeed.apply { //設定自身速度
+                    this.setImageResource(R.drawable.sl25)
+                    this.visibility = View.VISIBLE
+                    val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
+                    layoutParams.setMargins(left, 50, right, bottom)  // 替換為你需要的值
+                    this.layoutParams = layoutParams
                 }
+                binding.fragmentMap.slButton.apply() {//設定限速
+                    val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
+                    layoutParams.setMargins(left, 250, right, bottom)  // 替換為你需要的值
+                    this.layoutParams = layoutParams
+                }
+                val lastPosition = latLng
+                //開啟測速模式
+                while (sitMode) {
+                    moveToCurrentLocation()
+                    if(latLng !=null && lastPosition != latLng){
+                        val distance = calculateDistance(lastPosition!!,latLng!!)
+                        val kmPerHour = distance * 6 / 10
+                        //修改UI
+                        SyncCamera.cameraFindCamera(this@MapFragment,this@MapFragment,latLng!!)
+                    }
+                    delay(6000)
+                }
+                //關閉測速模式
                 binding.fragmentMap.slButton.apply {
                     val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
                     layoutParams.setMargins(left, 5, right, bottom)  // 替換為你需要的值
@@ -190,10 +196,28 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             }
         }
     }
+    fun calculateDistance(point1: LatLng, point2: LatLng): Int {
+        val earthRadius = 6371.0 // 地球的半徑（以公里為單位）
+
+        // 將經緯度轉換為弧度
+        val lat1 = Math.toRadians(point1.latitude)
+        val lon1 = Math.toRadians(point1.longitude)
+        val lat2 = Math.toRadians(point2.latitude)
+        val lon2 = Math.toRadians(point2.longitude)
+
+        // Haversine 公式
+        val dlon = lon2 - lon1
+        val dlat = lat2 - lat1
+
+        val a = sin(dlat / 2).pow(2) + cos(lat1) * cos(lat2) * sin(dlon / 2).pow(2)
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+        return (earthRadius * c * 1000).toInt()
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun favoriteInit(){
-        favoriteFlag = dbFavDisplay(Road("南京東路"),requireActivity())
+    private fun favoriteInit() {
+        favoriteFlag = dbFavDisplay(Road("南京東路"), requireActivity())
         binding.fragmentMap.fragmentHome.favoriteBtn.apply {
             if (favoriteFlag) {
                 this.setImageResource(R.drawable.ic_baseline_star_25)
@@ -203,6 +227,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             binding.fragmentMap.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
         }
     }
+
     private fun bottomSheetInit() {
         val bottomSheet: View = binding.fragmentMap.bg
         behavior = BottomSheetBehavior.from(bottomSheet)
@@ -277,12 +302,12 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             MyLog.e(favoriteFlag.toString())
             if (favoriteFlag) {
                 this.setImageResource(R.drawable.ic_baseline_star_24)
-                if(searchData != null) {
+                if (searchData != null) {
                     dbAddFavRoad(searchData!!, requireActivity())
                 }
             } else {
                 this.setImageResource(R.drawable.ic_baseline_star_25)
-                if(searchData != null) {
+                if (searchData != null) {
                     val data = Road(searchData!!.roadName)
                     dbFavCDelete(data, requireActivity())
                 }
@@ -314,7 +339,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 }
             }
         }
-        isOpen= false
+        isOpen = false
     }
 
     /** 開啟搜尋欄 */
@@ -397,7 +422,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private val itemOnClickListener = View.OnClickListener {
         try {
             searchData = it.tag as CityRoad
-            if(searchData != null) {
+            if (searchData != null) {
                 dbAddHistory(searchData!!, requireActivity())
                 MyLog.d(searchData!!.roadName)
                 MyLog.d(searchData!!.roadId)
@@ -556,7 +581,14 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 SyncPosition.weatherLocationApi(this@MapFragment, this@MapFragment, latLng!!)
             }
             if (latLng != null) {
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latLng!!.latitude-0.00005, latLng!!.longitude), 50f))
+                map.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        LatLng(
+                            latLng!!.latitude - 0.00005,
+                            latLng!!.longitude
+                        ), 50f
+                    )
+                )
             }
         }
     }
@@ -583,8 +615,15 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         } else {
             enableMyLocation()
         }
-        if(latLng!=null) {
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latLng!!.latitude-0.00005, latLng!!.longitude), 50f))
+        if (latLng != null) {
+            map.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(
+                        latLng!!.latitude - 0.00005,
+                        latLng!!.longitude
+                    ), 50f
+                )
+            )
         }
     }
 
@@ -592,7 +631,14 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     override fun onMyLocationClick(location: Location) {
         Toast.makeText(activity, "Current location:\n$location", Toast.LENGTH_LONG)
             .show()
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude-0.00005,location.longitude), 50f))
+        map.moveCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                LatLng(
+                    location.latitude - 0.00005,
+                    location.longitude
+                ), 50f
+            )
+        )
     }
 
     override fun onRequestPermissionsResult(

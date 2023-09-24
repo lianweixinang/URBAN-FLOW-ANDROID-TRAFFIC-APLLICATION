@@ -10,7 +10,7 @@ public class RetrofitManager {
     private RetrofitManager() {
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.43.178:80")
+                .baseUrl("https://ntutifm.zeabur.app/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 

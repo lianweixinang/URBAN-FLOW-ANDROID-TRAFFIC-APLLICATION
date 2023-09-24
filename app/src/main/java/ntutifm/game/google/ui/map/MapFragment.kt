@@ -50,6 +50,7 @@ import ntutifm.game.google.net.ApiClass.CityRoad
 import ntutifm.game.google.net.ApiClass.Incident
 import ntutifm.game.google.ui.notification.NotificationFragment
 import ntutifm.game.google.ui.oil.InstructionFragment
+import ntutifm.game.google.ui.oil.OilFragment
 import ntutifm.game.google.ui.route.RouteFragment
 import ntutifm.game.google.ui.weather.WeatherFragment
 import kotlin.math.roundToInt
@@ -74,7 +75,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var latLng: LatLng? = null
     private var recycleView: RecyclerView? = null
     private var adaptor: SearchAdaptor? = null
-    private var moveState: Boolean = false
     private val weatherState: Boolean = true
     private var sitMode: Boolean = true
     private var oldIncident:List<Incident>? = null
@@ -446,20 +446,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         }
     }
 
-    /** 打點 */
-    private fun drawMarker(map: GoogleMap, location: Location) {
-        if (map != null) {
-            map.clear()
-            val gps = LatLng(location.latitude, location.longitude)
-            map.addMarker(
-                MarkerOptions()
-                    .position(gps)
-                    .title("Current Position")
-            )
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(gps, 12f))
-        }
-    }
-
     /** 要求定位 */
     @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
@@ -526,7 +512,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             }
 
             R.id.nav_oil -> {
-                AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, InstructionFragment())
+                AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, OilFragment())
             }
 
             R.id.nav_weather -> {
@@ -569,8 +555,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             if (weatherState && latLng != null) {
                 SyncPosition.weatherLocationApi(this@MapFragment, this@MapFragment, latLng!!)
             }
-            if (moveState && latLng != null) {
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng!!, 15f))
+            if (latLng != null) {
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latLng!!.latitude-0.00005, latLng!!.longitude), 50f))
             }
         }
     }
@@ -589,7 +575,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         mLocationRequest.fastestInterval = 120000
         mLocationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
         if (!permissionDenied) {
-            moveState = true
             mFusedLocationClient?.requestLocationUpdates(
                 mLocationRequest,
                 mLocationCallback,
@@ -598,12 +583,16 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         } else {
             enableMyLocation()
         }
+        if(latLng!=null) {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latLng!!.latitude-0.00005, latLng!!.longitude), 50f))
+        }
     }
 
     /** 點擊mark動作 */
     override fun onMyLocationClick(location: Location) {
         Toast.makeText(activity, "Current location:\n$location", Toast.LENGTH_LONG)
             .show()
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude-0.00005,location.longitude), 50f))
     }
 
     override fun onRequestPermissionsResult(

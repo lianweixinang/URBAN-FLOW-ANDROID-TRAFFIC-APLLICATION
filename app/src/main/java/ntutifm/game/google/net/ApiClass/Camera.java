@@ -22,6 +22,8 @@ public class Camera {
     private Double Latitude = 25.0;
     @SerializedName("Longitude")
     private Double Longitude = 123.0;
+    @SerializedName("Distance")
+    private Integer Distance = 5;
 
     public String getId() {
         return this.Id;
@@ -40,5 +42,6 @@ public class Camera {
     public Double getLatitude() {return this.Latitude;}
     public Double getLongitude() {return this.Longitude;}
     public String getIntroduction(){return this.Introduction;}
+    public Integer getDistance(){return this.Distance;}
 
 }

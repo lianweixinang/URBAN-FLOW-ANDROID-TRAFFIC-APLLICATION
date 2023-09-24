@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.findFragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -119,12 +120,13 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private fun cameraInit(){
         binding.fragmentMap.slButton.setOnClickListener(slButtonListener)
         SyncCamera.camara.observe(viewLifecycleOwner){
-            if(it!=null && it.distance!=10000){
+            if(it!=null && it.distance<500){
                 binding.fragmentMap.slButton.visibility = View.VISIBLE
-                //修改文字
+                binding.fragmentMap.gvSL.text = it.limit
                 AppUtil.showTopToast(requireActivity(),"前方限速:${it.limit}公里，距離:${it.distance}公尺")
             }else{
-                binding.fragmentMap.slButton.visibility = View.GONE
+                binding.fragmentMap.gvSL.visibility = View.GONE
+                binding.fragmentMap.slButton.setImageResource(R.drawable.sldash)
             }
         }
     }
@@ -206,8 +208,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     private fun incidentCheck() {
         SyncIncident.incidentLists.observe(viewLifecycleOwner) {
-            if (it != null && it[it.size - 1] != oldIncident?.get(it.size - 1)) {
-                AppUtil.showTopToast(requireActivity(), it[it.size - 1].title)
+            if (it != null && it[0] != oldIncident?.get(0)) {
+                AppUtil.showTopToast(requireActivity(), it[0].title)
                 oldIncident = it
             }
         }
@@ -225,17 +227,21 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         if (sitMode) {
             viewLifecycleOwner.lifecycleScope.launch {
                 binding.fragmentMap.currentSpeed.apply { //設定自身速度
-                    this.setImageResource(R.drawable.sl25)
+                    this.setImageResource(R.drawable.slnull)
                     this.visibility = View.VISIBLE
                     val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
                     layoutParams.setMargins(left, 50, right, bottom)  // 替換為你需要的值
                     this.layoutParams = layoutParams
                 }
+                binding.fragmentMap.mySL.text="0"
+                binding.fragmentMap.mySL.visibility=View.VISIBLE
                 binding.fragmentMap.slButton.apply() {//設定限速
+                    this.setImageResource(R.drawable.sldash)
                     val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
                     layoutParams.setMargins(left, 250, right, bottom)  // 替換為你需要的值
                     this.layoutParams = layoutParams
                 }
+                binding.fragmentMap.gvSL.visibility=View.GONE
                 val lastPosition = latLng
                 //開啟測速模式
                 while (sitMode) {
@@ -243,9 +249,13 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                     if(latLng !=null && lastPosition != latLng){
                         val distance = calculateDistance(lastPosition!!,latLng!!)
                         val kmPerHour = distance * 6 / 10
+                        binding.fragmentMap.mySL.text = kmPerHour.toString()
                         //修改UI
                         SyncCamera.cameraFindCamera(this@MapFragment,this@MapFragment,latLng!!)
+                    }else{
+                        binding.fragmentMap.mySL.text = "0"
                     }
+
                     delay(6000)
                 }
                 //關閉測速模式

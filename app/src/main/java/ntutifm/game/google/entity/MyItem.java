@@ -10,14 +10,14 @@ import com.google.maps.android.clustering.ClusterItem;
         private String mTitle;
         private String mSnippet;
         private Integer mtype;
-        public MyItem(double lat, double lng) {
-            mPosition = new LatLng(lat, lng);
+        public MyItem(double lat,  double lng) {
+            mPosition = new LatLng(lat,lng);
             mTitle = null;
             mSnippet = null;
         }
 
-        public MyItem(double lat, double lng, String title, Integer type) {
-            mPosition = new LatLng(lat, lng);
+        public MyItem(double lat,  double lng, String title,Integer type) {
+            mPosition = new LatLng(lat,lng);
             mTitle = title;
             mSnippet = null;
             mtype = type;
@@ -51,3 +51,4 @@ import com.google.maps.android.clustering.ClusterItem;
 
         public Integer getType(){return mtype;}
     }
+

@@ -12,4 +12,5 @@ interface ApiCallBack {
     fun onError(errorCode: Int, errorData: ArrayList<String>)
 
     fun doInBackground(result: Int, successData: ArrayList<String>)
+
 }

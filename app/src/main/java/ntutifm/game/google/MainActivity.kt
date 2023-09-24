@@ -19,7 +19,7 @@ import ntutifm.game.google.ui.oil.InstructionFragment
 import ntutifm.game.google.ui.oil.OilFragment
 import ntutifm.game.google.ui.route.RouteFragment
 import ntutifm.game.google.ui.weather.WeatherFragment
-
+val isOpen: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
 open class MainActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener{
 

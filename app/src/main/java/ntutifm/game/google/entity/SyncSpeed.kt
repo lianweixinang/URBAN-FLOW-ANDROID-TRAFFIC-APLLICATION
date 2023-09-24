@@ -14,12 +14,14 @@ object SyncSpeed {
     private val _speedLists = MutableLiveData<List<CitySpeed>>()
     val speedLists: LiveData<List<CitySpeed>> = _speedLists
 
-    fun updateSpeed(data: List<CitySpeed>){
+    fun updateSpeed(data: List<CitySpeed>) {
         MyLog.e("updateSpeed")
         _speedLists.postValue(data)
     }
-    fun getCityRoadSpeed(callBack: ApiCallBack?, data: String, fragment: Fragment){
+
+    fun getCityRoadSpeed(callBack: ApiCallBack?, data: String, fragment: Fragment) {
         MyLog.e("startUpdateSpeed")
         ApiManager(callBack, listOf(data)).execute(fragment, ApiProcessor.getCityRoadSpeed)
     }
+
 }

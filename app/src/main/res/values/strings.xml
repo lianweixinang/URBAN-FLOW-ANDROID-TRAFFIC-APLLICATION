@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">google</string>
+    <string name="road">Choose a road</string>
+    <string-array name="road_array">
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+        <item>Mars</item>
+        <item>Jupiter</item>
+        <item>Saturn</item>
+        <item>Uranus</item>
+        <item>Neptune</item>
+    </string-array>
 </resources>

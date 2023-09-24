@@ -32,7 +32,7 @@
                 app:contentPadding="10dp">
 
                 <TextView
-                    android:id="@+id/textView"
+                    android:id="@+id/aboutView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -44,7 +44,7 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_gravity="center"
                 app:cardBackgroundColor="#FFA042"
@@ -57,15 +57,82 @@
                     android:padding="5dp">
 
                     <TextView
-                        android:id="@+id/t2"
+                        android:id="@+id/about_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="這是由台北科技大學資訊與財金管理系陳皮皮團隊所研發的一款交通即時路況整合應用程式，本應用程式透過整合政府資訊來提供即時的路況資訊，希望能讓使用者在交通上能有更多可以參考的數據資訊，提升交通的便利性。"
                         android:textColor="#000000"
-                        android:textSize="20dp" />
+                        android:textSize="12dp" />
 
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="20dp"
+                app:contentPadding="10dp">
+
+                <TextView
+                    android:id="@+id/privacy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="隱私權政策"
+                    android:textColor="#000000"
+                    android:textSize="25dp" />
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                app:cardBackgroundColor="#FFA042"
+                app:cardCornerRadius="15dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#FFFFFF"
+                    android:padding="5dp">
+
+                    <TextView
+                        android:id="@+id/privacy_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="陳一心應用程式隱私權政策\n生效日期：2023/09/24\n 感謝您使用陳一心應用程式（以下簡稱「本應用程式」）。我們非常重視您的隱私權並致力於保護您的個人資料。本隱私權政策旨在向您說明我們如何收集、使用、存儲和保護您的個人資料。
+                                        \n1. 收集和使用個人資料
+                                        \n當您使用本應用程式時，我們可能會收集與您有關的某些個人資料。這些資料可能包括但不限於：
+                                        \n      - 姓名
+                                        \n      - 電子郵件地址
+                                        \n      - 地址
+                                        \n      - 電話號碼
+                                        \n      - 地理位置數據
+                                        \n我們僅會在法律允許的範圍內收集和使用這些資料，並且僅在與提供和改進本應用程式相關的目的下使用。
+                                        \n2. 資料存儲
+                                        \n我們將採取合理的技術手段來保護您的個人資料，以防止未經授權的訪問、使用或洩露。我們將採取所有合理必要的措施來確保您的資料安全。
+                                        \n3. 資料共享
+                                        \n我們不會將您的個人資料出售、交易或轉讓給第三方。但在某些情況下，我們可能需要與第三方共享您的資料，以提供更好的服務或遵守法律法規的要求。
+                                        \n4. Cookie 和類似技術
+                                        \n本應用程式可能會使用Cookie和類似技術來改善用戶體驗並提供更好的服務。這些技術可能會收集某些非個人識別資訊。
+                                        \n5. 兒童隱私
+                                        \n本應用程式不面向未滿18歲的兒童。如果您是未滿18歲的兒童，請不要向我們提供任何個人資料。
+                                        \n6. 變更和修訂
+                                        \n我們保留隨時修改或更新本隱私權政策的權利。請定期查看此頁面以獲取最新信息。
+                                        \n7. 聯繫我們
+                                        \n如果您對本隱私權政策有任何問題或疑慮，請通過以下方式聯繫我們：
+                                        \n電子郵件：yichong.chen@gmail.com
+                                        \n電話：0989432829
+                                        \n地址:新北市板橋區僑中一街80巷3弄一號4樓
+                                        \n感謝您閱讀並理解陳一心應用程式的隱私權政策。希望您能放心使用我們的產品和服務。"
+                        android:textColor="#000000"
+                        android:textSize="12dp" />
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
 
 
 

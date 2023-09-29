@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import ntutifm.game.google.R
 import ntutifm.game.google.databinding.SearchItemBinding
-import ntutifm.game.google.net.ApiClass.CityRoad
+import ntutifm.game.google.net.apiClass.CityRoad
 
 class SearchAdaptor(private var mList: List<CityRoad>?, private val itemOnClickListener: View.OnClickListener,  private val deleteListener: View.OnClickListener) :
     RecyclerView.Adapter<SearchAdaptor.SearchViewHolder>() {

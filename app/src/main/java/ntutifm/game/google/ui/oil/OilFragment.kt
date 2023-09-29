@@ -9,7 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import ntutifm.game.google.databinding.FragmentOilBinding
-import ntutifm.game.google.entity.SyncOil
+import ntutifm.game.google.entity.sync.SyncOil
 import ntutifm.game.google.entity.adaptor.OilAdaptor
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiCallBack
@@ -35,18 +35,18 @@ class OilFragment : Fragment(), ApiCallBack {
 
         SyncOil.oilLists.observe(viewLifecycleOwner){
             MyLog.e("oilUpdate")
-            binding.t1.text=it[0].ninetwo
-            binding.t2.text=it[0].ninefive
-            binding.t3.text=it[0].nineeight
-            binding.t4.text=it[0].superoil
-            binding.t6.text=it[1].ninetwo
-            binding.t7.text=it[1].ninefive
-            binding.t8.text=it[1].nineeight
-            binding.t9.text=it[1].superoil
-            val value1 = it[1].ninetwo.toFloat() - it[0].ninetwo.toFloat()
-            val value2 = it[1].ninefive.toFloat() - it[0].ninefive.toFloat()
-            val value3 = it[1].nineeight.toFloat() - it[0].nineeight.toFloat()
-            val value4 = it[1].superoil.toFloat() - it[0].superoil.toFloat()
+            binding.t1.text=it[0].nineTwo
+            binding.t2.text=it[0].nineFive
+            binding.t3.text=it[0].nineEight
+            binding.t4.text=it[0].superOil
+            binding.t6.text=it[1].nineTwo
+            binding.t7.text=it[1].nineFive
+            binding.t8.text=it[1].nineEight
+            binding.t9.text=it[1].superOil
+            val value1 = it[1].nineTwo.toFloat() - it[0].nineTwo.toFloat()
+            val value2 = it[1].nineFive.toFloat() - it[0].nineFive.toFloat()
+            val value3 = it[1].nineEight.toFloat() - it[0].nineEight.toFloat()
+            val value4 = it[1].superOil.toFloat() - it[0].superOil.toFloat()
 
             binding.t10.text = if (value1 >= 0) {
                 "+" + ((value1 * 100.0).roundToInt() / 100.0).toString() + "元"

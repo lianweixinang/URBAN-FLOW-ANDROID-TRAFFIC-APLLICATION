@@ -16,7 +16,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.RelativeLayout
-import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -25,7 +24,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.findFragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -47,11 +45,18 @@ import ntutifm.game.google.R
 import ntutifm.game.google.databinding.ActivityMainBinding
 import ntutifm.game.google.entity.*
 import ntutifm.game.google.entity.adaptor.SearchAdaptor
+import ntutifm.game.google.entity.mark.MyItem
+import ntutifm.game.google.entity.sync.SyncCamera
+import ntutifm.game.google.entity.sync.SyncIncident
+import ntutifm.game.google.entity.sync.SyncPosition
+import ntutifm.game.google.entity.sync.SyncRoad
+import ntutifm.game.google.entity.sync.SyncSpeed
+import ntutifm.game.google.entity.sync.SyncWeather
 import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.*
-import ntutifm.game.google.net.ApiClass.CityRoad
-import ntutifm.game.google.net.ApiClass.Incident
+import ntutifm.game.google.net.apiClass.CityRoad
+import ntutifm.game.google.net.apiClass.Incident
 import ntutifm.game.google.ui.notification.NotificationFragment
 import ntutifm.game.google.ui.oil.OilFragment
 import ntutifm.game.google.ui.route.RouteFragment
@@ -814,7 +819,14 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         mClusterManager?.renderer = CustomClusterRenderer(requireActivity(), map, mClusterManager!!)
         SyncPosition.parkingLists.observe(viewLifecycleOwner) {
             for (p in it) {
-                mClusterManager?.addItem(MyItem(p.lat, p.lng, "停車場: " + p.parkingName, 0))
+                mClusterManager?.addItem(
+                    MyItem(
+                        p.latitude,
+                        p.longitude,
+                        "停車場: " + p.parkingName,
+                        0
+                    )
+                )
 
             }
         }
@@ -833,7 +845,14 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         }
         SyncPosition.oilStation.observe(viewLifecycleOwner) {
             for (p in it) {
-                mClusterManager?.addItem(MyItem(p.latitude, p.logitude, "加油站: " + p.address, 2))
+                mClusterManager?.addItem(
+                    MyItem(
+                        p.latitude,
+                        p.logitude,
+                        "加油站: " + p.address,
+                        2
+                    )
+                )
 
             }
         }

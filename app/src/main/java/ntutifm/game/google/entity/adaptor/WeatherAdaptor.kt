@@ -1,15 +1,11 @@
 package ntutifm.game.google.entity.adaptor
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.card.MaterialCardView
 import ntutifm.game.google.R
-import ntutifm.game.google.databinding.OilItemBinding
 import ntutifm.game.google.databinding.WeatherItemBinding
-import ntutifm.game.google.net.ApiClass.Oil
-import ntutifm.game.google.net.ApiClass.Weather
+import ntutifm.game.google.net.apiClass.Weather
 
 class WeatherAdaptor(private var mList: List<Weather>?) :
     RecyclerView.Adapter<WeatherAdaptor.WeatherHolder>() {

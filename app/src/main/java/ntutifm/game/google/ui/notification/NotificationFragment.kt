@@ -12,11 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ntutifm.game.google.MyActivity
 import ntutifm.game.google.databinding.FragmentNotificationBinding
-import ntutifm.game.google.entity.SyncIncident
-import ntutifm.game.google.entity.SyncRoad
+import ntutifm.game.google.entity.sync.SyncIncident
 import ntutifm.game.google.entity.adaptor.NotificationAdaptor
-import ntutifm.game.google.entity.adaptor.SearchAdaptor
-import ntutifm.game.google.entity.dbDisplayHistory
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiCallBack
 import ntutifm.game.google.ui.oil.NotificationViewModel

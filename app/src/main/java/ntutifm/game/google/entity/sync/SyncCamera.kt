@@ -1,4 +1,4 @@
-package ntutifm.game.google.entity
+package ntutifm.game.google.entity.sync
 
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
@@ -6,11 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.maps.model.LatLng
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiCallBack
-import ntutifm.game.google.net.ApiClass.Camera
-import ntutifm.game.google.net.ApiClass.Weather
+import ntutifm.game.google.net.apiClass.Camera
 import ntutifm.game.google.net.ApiManager
 import ntutifm.game.google.net.ApiProcessor
-import ntutifm.game.google.ui.weather.WeatherFragment
 
 object SyncCamera {
 

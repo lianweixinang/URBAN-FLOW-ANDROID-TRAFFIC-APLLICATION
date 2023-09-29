@@ -2,16 +2,16 @@ package ntutifm.game.google.net;
 
 import java.util.List;
 
-import ntutifm.game.google.net.ApiClass.Camera;
-import ntutifm.game.google.net.ApiClass.City;
-import ntutifm.game.google.net.ApiClass.CitySpeed;
-import ntutifm.game.google.net.ApiClass.Incident;
-import ntutifm.game.google.net.ApiClass.Oil;
-import ntutifm.game.google.net.ApiClass.OilStation;
-import ntutifm.game.google.net.ApiClass.Parking;
-import ntutifm.game.google.net.ApiClass.CityRoad;
-import ntutifm.game.google.net.ApiClass.Weather;
-import ntutifm.game.google.net.ApiClass.WeatherLocation;
+import ntutifm.game.google.net.apiClass.Camera;
+import ntutifm.game.google.net.apiClass.City;
+import ntutifm.game.google.net.apiClass.CitySpeed;
+import ntutifm.game.google.net.apiClass.Incident;
+import ntutifm.game.google.net.apiClass.Oil;
+import ntutifm.game.google.net.apiClass.OilStation;
+import ntutifm.game.google.net.apiClass.Parking;
+import ntutifm.game.google.net.apiClass.CityRoad;
+import ntutifm.game.google.net.apiClass.Weather;
+import ntutifm.game.google.net.apiClass.WeatherLocation;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;

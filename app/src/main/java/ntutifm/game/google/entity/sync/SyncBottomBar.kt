@@ -1,4 +1,4 @@
-package ntutifm.game.google.entity
+package ntutifm.game.google.entity.sync
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData

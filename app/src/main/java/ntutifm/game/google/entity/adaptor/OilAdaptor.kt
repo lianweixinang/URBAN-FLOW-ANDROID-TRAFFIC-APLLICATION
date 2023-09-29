@@ -1,13 +1,11 @@
 package ntutifm.game.google.entity.adaptor
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.card.MaterialCardView
 import ntutifm.game.google.R
 import ntutifm.game.google.databinding.OilItemBinding
-import ntutifm.game.google.net.ApiClass.Oil
+import ntutifm.game.google.net.apiClass.Oil
 
 class OilAdaptor(private var mList: List<Oil>?) :
     RecyclerView.Adapter<OilAdaptor.OilHolder>() {
@@ -32,10 +30,10 @@ class OilAdaptor(private var mList: List<Oil>?) :
     }
 
     override fun onBindViewHolder(holder: OilAdaptor.OilHolder, position: Int) {
-        holder.ninetwo.text = mList?.get(position)?.ninetwo ?: ""
-        holder.ninefive.text = mList?.get(position)?.ninefive ?: ""
-        holder.nineeight.text = mList?.get(position)?.nineeight ?: ""
-        holder.superoil.text = mList?.get(position)?.superoil ?: ""
+        holder.ninetwo.text = mList?.get(position)?.nineTwo ?: ""
+        holder.ninefive.text = mList?.get(position)?.nineFive ?: ""
+        holder.nineeight.text = mList?.get(position)?.nineEight ?: ""
+        holder.superoil.text = mList?.get(position)?.superOil ?: ""
 
     }
 

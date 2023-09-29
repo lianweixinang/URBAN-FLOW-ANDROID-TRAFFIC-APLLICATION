@@ -1,13 +1,11 @@
-package ntutifm.game.google.entity
+package ntutifm.game.google.entity.sync
 
-import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiCallBack
-import ntutifm.game.google.net.ApiClass.CityRoad
-import ntutifm.game.google.net.ApiClass.CitySpeed
+import ntutifm.game.google.net.apiClass.CityRoad
 import ntutifm.game.google.net.ApiManager
 import ntutifm.game.google.net.ApiProcessor
 

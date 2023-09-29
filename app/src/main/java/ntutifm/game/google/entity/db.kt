@@ -9,13 +9,12 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.os.Build
 import android.provider.BaseColumns
-import android.provider.SyncStateContract.Columns
 import android.util.Log
 import androidx.annotation.RequiresApi
 import ntutifm.game.google.global.MyLog
-import ntutifm.game.google.net.ApiClass.CityRoad
-import ntutifm.game.google.net.ApiClass.OilStation
-import ntutifm.game.google.net.ApiClass.Parking
+import ntutifm.game.google.net.apiClass.CityRoad
+import ntutifm.game.google.net.apiClass.OilStation
+import ntutifm.game.google.net.apiClass.Parking
 import java.time.LocalDate
 
 
@@ -262,8 +261,8 @@ fun dbAddFavParking(park: Parking, context: Context) {
     val db = dbHelper.writableDatabase
     val values = ContentValues().apply {
         put(FeedReaderContract.FeedEntry4.COLUMN_NAME_Parking, park.parkingName)
-        put(FeedReaderContract.FeedEntry4.COLUMN_NAME_latitude, park.lat)
-        put(FeedReaderContract.FeedEntry4.COLUMN_NAME_longitude, park.lng)
+        put(FeedReaderContract.FeedEntry4.COLUMN_NAME_latitude, park.latitude)
+        put(FeedReaderContract.FeedEntry4.COLUMN_NAME_longitude, park.longitude)
         put(FeedReaderContract.FeedEntry4.COLUMN_NAME_time, LocalDate.now().toString())
     }
     val newRowId = db?.insert(FeedReaderContract.FeedEntry4.TABLE_NAME, null, values)

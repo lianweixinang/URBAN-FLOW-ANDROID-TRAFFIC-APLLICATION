@@ -1,14 +1,11 @@
 package ntutifm.game.google.entity.adaptor
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.card.MaterialCardView
 import ntutifm.game.google.R
-import ntutifm.game.google.databinding.FragmentNotificationBinding
 import ntutifm.game.google.databinding.IncidentItemBinding
-import ntutifm.game.google.net.ApiClass.Incident
+import ntutifm.game.google.net.apiClass.Incident
 
 class NotificationAdaptor(private var mList: List<Incident>?) :
     RecyclerView.Adapter<NotificationAdaptor.IncidentHolder>() {
@@ -33,7 +30,7 @@ class NotificationAdaptor(private var mList: List<Incident>?) :
     override fun onBindViewHolder(holder: NotificationAdaptor.IncidentHolder, position: Int) {
         holder.type.text = mList?.get(position)?.type ?: ""
         holder.description.text = mList?.get(position)?.title ?: ""
-        holder.time.text = mList?.get(position)?.edited_Time ?: ""
+        holder.time.text = mList?.get(position)?.editedTime ?: ""
     }
 
     override fun getItemCount(): Int {

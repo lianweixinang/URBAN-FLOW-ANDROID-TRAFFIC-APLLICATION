@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import ntutifm.game.google.R
 import ntutifm.game.google.databinding.FragmentWeatherBinding
-import ntutifm.game.google.entity.SyncPosition
-import ntutifm.game.google.entity.SyncWeather
+import ntutifm.game.google.entity.sync.SyncPosition
+import ntutifm.game.google.entity.sync.SyncWeather
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiCallBack
 

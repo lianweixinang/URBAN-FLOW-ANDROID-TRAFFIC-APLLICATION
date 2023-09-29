@@ -2,11 +2,16 @@ package ntutifm.game.google.net
 
 import android.content.Context
 import android.util.Log
-import ntutifm.game.google.entity.*
-import ntutifm.game.google.entity.SyncOil
+import ntutifm.game.google.entity.sync.SyncOil
+import ntutifm.game.google.entity.sync.SyncCamera
+import ntutifm.game.google.entity.sync.SyncIncident
+import ntutifm.game.google.entity.sync.SyncPosition
+import ntutifm.game.google.entity.sync.SyncRoad
+import ntutifm.game.google.entity.sync.SyncSpeed
+import ntutifm.game.google.entity.sync.SyncWeather
 import ntutifm.game.google.global.MyLog
-import ntutifm.game.google.net.ApiClass.*
-import ntutifm.game.google.net.ApiClass.Parking
+import ntutifm.game.google.net.apiClass.*
+import ntutifm.game.google.net.apiClass.Parking
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

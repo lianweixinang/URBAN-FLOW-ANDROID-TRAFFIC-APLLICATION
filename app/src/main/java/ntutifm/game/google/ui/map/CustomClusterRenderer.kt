@@ -6,9 +6,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
-import com.google.maps.android.clustering.view.ClusterRenderer
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
-import ntutifm.game.google.entity.MyItem
+import ntutifm.game.google.entity.mark.MyItem
 
 class CustomClusterRenderer(
     context: Context,

@@ -5,7 +5,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ntutifm.game.google.R
 import ntutifm.game.google.databinding.IncidentItemBinding
-import ntutifm.game.google.net.apiClass.Incident
+import ntutifm.game.google.apiClass.Incident
 
 class NotificationAdaptor(private var mList: List<Incident>?) :
     RecyclerView.Adapter<NotificationAdaptor.IncidentHolder>() {

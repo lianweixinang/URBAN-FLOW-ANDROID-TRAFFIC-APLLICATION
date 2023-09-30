@@ -2,6 +2,12 @@ package ntutifm.game.google.net
 
 import android.content.Context
 import android.util.Log
+import ntutifm.game.google.apiClass.Camera
+import ntutifm.game.google.apiClass.SearchHistory
+import ntutifm.game.google.apiClass.CitySpeed
+import ntutifm.game.google.apiClass.Incident
+import ntutifm.game.google.apiClass.Oil
+import ntutifm.game.google.apiClass.OilStation
 import ntutifm.game.google.entity.sync.SyncOil
 import ntutifm.game.google.entity.sync.SyncCamera
 import ntutifm.game.google.entity.sync.SyncIncident
@@ -10,8 +16,9 @@ import ntutifm.game.google.entity.sync.SyncRoad
 import ntutifm.game.google.entity.sync.SyncSpeed
 import ntutifm.game.google.entity.sync.SyncWeather
 import ntutifm.game.google.global.MyLog
-import ntutifm.game.google.net.apiClass.*
-import ntutifm.game.google.net.apiClass.Parking
+import ntutifm.game.google.apiClass.Parking
+import ntutifm.game.google.apiClass.Weather
+import ntutifm.game.google.apiClass.WeatherLocation
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -54,11 +61,11 @@ class ApiProcessor {
     fun getCityRoadId(c: Context, successData: ArrayList<String>, errorData: ArrayList<String>) {
         val myAPIService = RetrofitManager.getInstance().api
         MyLog.d(successData.toString())
-        val call: Call<List<CityRoad>>? = myAPIService.getRoadId(successData[1])
-        call!!.enqueue(object : Callback<List<CityRoad>> {
+        val call: Call<List<SearchHistory>>? = myAPIService.getRoadId(successData[1])
+        call!!.enqueue(object : Callback<List<SearchHistory>> {
             override fun onResponse(
-                call: Call<List<CityRoad>>?,
-                response: Response<List<CityRoad>>?,
+                call: Call<List<SearchHistory>>?,
+                response: Response<List<SearchHistory>>?,
             ) {
                 if (response?.body() != null) {
                     MyLog.d("SearchStart")
@@ -68,7 +75,7 @@ class ApiProcessor {
                 }
             }
 
-            override fun onFailure(call: Call<List<CityRoad>>?, t: Throwable?) {
+            override fun onFailure(call: Call<List<SearchHistory>>?, t: Throwable?) {
                 Log.d("RoadName", t.toString())
             }
         })

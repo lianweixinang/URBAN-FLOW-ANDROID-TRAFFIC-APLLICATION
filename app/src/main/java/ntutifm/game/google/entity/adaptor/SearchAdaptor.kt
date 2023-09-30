@@ -7,10 +7,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import ntutifm.game.google.R
+import ntutifm.game.google.apiClass.SearchHistory
 import ntutifm.game.google.databinding.SearchItemBinding
-import ntutifm.game.google.net.apiClass.CityRoad
 
-class SearchAdaptor(private var mList: List<CityRoad>?, private val itemOnClickListener: View.OnClickListener,  private val deleteListener: View.OnClickListener) :
+class SearchAdaptor(private var mList: List<SearchHistory>?, private val itemOnClickListener: View.OnClickListener, private val deleteListener: View.OnClickListener) :
     RecyclerView.Adapter<SearchAdaptor.SearchViewHolder>() {
 
     inner class SearchViewHolder(binding: SearchItemBinding): RecyclerView.ViewHolder(binding.root){
@@ -20,7 +20,7 @@ class SearchAdaptor(private var mList: List<CityRoad>?, private val itemOnClickL
         val delete : ImageView = itemView.findViewById(R.id.delete)
     }
 
-    fun setFilteredList(mList: List<CityRoad>){
+    fun setFilteredList(mList: List<SearchHistory>){
         this.mList = mList
         notifyDataSetChanged()
     }

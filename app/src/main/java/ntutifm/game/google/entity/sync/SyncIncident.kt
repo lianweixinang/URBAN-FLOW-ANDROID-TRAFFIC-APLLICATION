@@ -4,7 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ntutifm.game.google.net.ApiCallBack
-import ntutifm.game.google.net.apiClass.Incident
+import ntutifm.game.google.apiClass.Incident
 import ntutifm.game.google.net.ApiManager
 import ntutifm.game.google.net.ApiProcessor
 

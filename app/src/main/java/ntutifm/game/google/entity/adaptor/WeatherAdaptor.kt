@@ -5,7 +5,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ntutifm.game.google.R
 import ntutifm.game.google.databinding.WeatherItemBinding
-import ntutifm.game.google.net.apiClass.Weather
+import ntutifm.game.google.apiClass.Weather
 
 class WeatherAdaptor(private var mList: List<Weather>?) :
     RecyclerView.Adapter<WeatherAdaptor.WeatherHolder>() {

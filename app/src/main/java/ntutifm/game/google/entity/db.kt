@@ -12,9 +12,9 @@ import android.provider.BaseColumns
 import android.util.Log
 import androidx.annotation.RequiresApi
 import ntutifm.game.google.global.MyLog
-import ntutifm.game.google.net.apiClass.CityRoad
-import ntutifm.game.google.net.apiClass.OilStation
-import ntutifm.game.google.net.apiClass.Parking
+import ntutifm.game.google.apiClass.SearchHistory
+import ntutifm.game.google.apiClass.OilStation
+import ntutifm.game.google.apiClass.Parking
 import java.time.LocalDate
 
 
@@ -154,39 +154,7 @@ fun dbReset(context: Context){
     db.execSQL(SQL_DELETE_ENTRIES3)
     db.execSQL(SQL_DELETE_ENTRIES4)
 }
-@SuppressLint("Recycle")
-fun dbDeleteHistory(search: String, context: Context) {
-    val dbHelper = FeedReaderDbHelper(context)
-    val db = dbHelper.writableDatabase
-    db.execSQL("DELETE FROM history WHERE history.roadName = '$search'")
-    db.close()
-}
 
-
-fun dbDisplayHistory(context: Context): List<CityRoad> {
-    val dbHelper = FeedReaderDbHelper(context)
-    val db = dbHelper.readableDatabase
-    val c: Cursor =
-        db.rawQuery(
-            "SELECT * FROM history ORDER BY history.time, history._id DESC",
-            null
-        )
-    var history: MutableList<CityRoad> = mutableListOf()
-    if (c.count != 0) {
-        Log.d("Count", c.count.toString())
-        with(c) {
-            moveToFirst()
-            while (!isAfterLast) {
-                MyLog.d(getString(2))
-                history.add(CityRoad(getString(1).orEmpty(), getString(2).orEmpty()))
-                moveToNext()
-            }
-        }
-    }
-    c.close()
-    db.close()
-    return history
-}
 
 open class FavoriteType(val name: String, val table:String)
 open class Road(name: String, table:String= FeedReaderContract.FeedEntry1.TABLE_NAME) : FavoriteType(name,table)
@@ -215,7 +183,7 @@ fun dbFavCDelete(search: FavoriteType, context: Context) {
 }
 @SuppressLint("Recycle")
 @RequiresApi(Build.VERSION_CODES.O)
-fun dbAddFavRoad(Road: CityRoad, context: Context) {
+fun dbAddFavRoad(Road: SearchHistory, context: Context) {
     val dbHelper = FeedReaderDbHelper(context)
     val db = dbHelper.writableDatabase
     val values = ContentValues().apply {
@@ -228,7 +196,7 @@ fun dbAddFavRoad(Road: CityRoad, context: Context) {
 
 @SuppressLint("Recycle")
 @RequiresApi(Build.VERSION_CODES.O)
-fun dbAddFavGas(data:OilStation, context: Context) {
+fun dbAddFavGas(data: OilStation, context: Context) {
     val dbHelper = FeedReaderDbHelper(context)
     val db = dbHelper.writableDatabase
     val values = ContentValues().apply {
@@ -268,25 +236,3 @@ fun dbAddFavParking(park: Parking, context: Context) {
     val newRowId = db?.insert(FeedReaderContract.FeedEntry4.TABLE_NAME, null, values)
 }
 
-
-@SuppressLint("Recycle")
-@RequiresApi(Build.VERSION_CODES.O)
-fun dbAddHistory(search: CityRoad, context: Context) {
-    val dbHelper = FeedReaderDbHelper(context)
-    val db = dbHelper.writableDatabase
-    val values = ContentValues().apply {
-        put(FeedReaderContract.FeedEntry.COLUMN_NAME_RoadId, search.roadId)
-        put(FeedReaderContract.FeedEntry.COLUMN_NAME_RoadName, search.roadName)
-        put(FeedReaderContract.FeedEntry.COLUMN_NAME_time, LocalDate.now().toString())
-    }
-    val c: Cursor =
-        db.rawQuery(
-            "SELECT * FROM history WHERE history.roadName = '${search.roadName}'",
-            null
-        )
-    if (c.count > 0) {
-        db.execSQL("DELETE FROM history WHERE history.roadName = '${search.roadName}'")
-    }
-
-    val newRowId = db?.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values)
-}

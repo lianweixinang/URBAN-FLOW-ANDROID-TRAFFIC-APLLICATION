@@ -1,4 +1,4 @@
-package ntutifm.game.google.net.apiClass
+package ntutifm.game.google.apiClass
 
 import com.google.gson.annotations.SerializedName
 

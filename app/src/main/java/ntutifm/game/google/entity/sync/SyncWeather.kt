@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiCallBack
-import ntutifm.game.google.net.apiClass.Weather
+import ntutifm.game.google.apiClass.Weather
 import ntutifm.game.google.net.ApiManager
 import ntutifm.game.google.net.ApiProcessor
 

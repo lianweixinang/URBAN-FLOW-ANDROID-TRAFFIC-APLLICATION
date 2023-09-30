@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.maps.model.LatLng
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiCallBack
-import ntutifm.game.google.net.apiClass.Camera
+import ntutifm.game.google.apiClass.Camera
 import ntutifm.game.google.net.ApiManager
 import ntutifm.game.google.net.ApiProcessor
 
@@ -28,7 +28,7 @@ object SyncCamera {
         MyLog.e("StartCallCameraTestApi")
         ApiManager(callBack,listOf(latLng.latitude.toString(),latLng.longitude.toString())).execute(fragment, ApiProcessor.getFindCamera)
     }
-    fun updateFindCamera(data:Camera){
+    fun updateFindCamera(data: Camera){
         MyLog.e("UpdateCameraTest")
         _camara.postValue(data)
     }

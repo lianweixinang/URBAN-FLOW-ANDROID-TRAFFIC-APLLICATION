@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.maps.model.LatLng
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiCallBack
-import ntutifm.game.google.net.apiClass.OilStation
-import ntutifm.game.google.net.apiClass.Parking
-import ntutifm.game.google.net.apiClass.WeatherLocation
+import ntutifm.game.google.apiClass.OilStation
+import ntutifm.game.google.apiClass.Parking
+import ntutifm.game.google.apiClass.WeatherLocation
 import ntutifm.game.google.net.ApiManager
 import ntutifm.game.google.net.ApiProcessor
 
@@ -33,7 +33,7 @@ object SyncPosition {
         MyLog.e("StartCallWeatherLocationApi")
         ApiManager(callBack,listOf(latLong.latitude.toString(),latLong.longitude.toString())).execute(fragment, ApiProcessor.getWeatherLocation)
     }
-    fun updateWeatherLocation(data:WeatherLocation){
+    fun updateWeatherLocation(data: WeatherLocation){
         MyLog.e("updateWeatherLocation")
         _weatherLocation.postValue(data)
 

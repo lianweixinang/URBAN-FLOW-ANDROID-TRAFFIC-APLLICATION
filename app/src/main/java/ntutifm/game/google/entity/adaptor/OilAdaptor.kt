@@ -5,7 +5,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ntutifm.game.google.R
 import ntutifm.game.google.databinding.OilItemBinding
-import ntutifm.game.google.net.apiClass.Oil
+import ntutifm.game.google.apiClass.Oil
 
 class OilAdaptor(private var mList: List<Oil>?) :
     RecyclerView.Adapter<OilAdaptor.OilHolder>() {

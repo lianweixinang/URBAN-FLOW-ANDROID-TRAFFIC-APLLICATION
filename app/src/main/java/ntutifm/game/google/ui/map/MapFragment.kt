@@ -84,7 +84,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private lateinit var map: GoogleMap
 
     private var isOpen: Boolean = false
-    private var sitMode: Boolean = true
+    private var sitMode: Boolean = false
     private var favoriteFlag: Boolean = false
     private var weatherState: Boolean = true
     private var permissionDenied: Boolean = false
@@ -306,6 +306,14 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             moveTo(newLocation)
             binding.fragmentMap.mySL.text = (distance * 18 / 10).toString()
         }
+    }
+
+    /** 測速模式移動到現在位置 */
+    private fun moveTo(location: LatLng) {
+        val targetLatLng = LatLng(location.latitude - 0.00006, location.longitude)
+        val targetZoomLevel = 18f
+        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(targetLatLng, targetZoomLevel)
+        map.animateCamera(cameraUpdate, 1000, null)
     }
 
     /** 計算距離 */
@@ -637,14 +645,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     override fun onMyLocationButtonClick(): Boolean {
         moveToCurrentLocation()
         return false
-    }
-
-    /** 測速模式移動到現在位置 */
-    private fun moveTo(location: LatLng) {
-        val targetLatLng = LatLng(location.latitude - 0.00006, location.longitude)
-        val targetZoomLevel = 18f
-        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(targetLatLng, targetZoomLevel)
-        map.animateCamera(cameraUpdate, 1000, null)
     }
 
     /** 通用移動到現在位置 */

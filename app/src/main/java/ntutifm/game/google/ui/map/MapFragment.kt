@@ -33,9 +33,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.navigation.NavigationView
@@ -44,8 +42,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ntutifm.game.google.*
 import ntutifm.game.google.R
-import ntutifm.game.google.apiClass.SearchHistory
 import ntutifm.game.google.apiClass.Incident
+import ntutifm.game.google.apiClass.SearchHistory
 import ntutifm.game.google.databinding.ActivityMainBinding
 import ntutifm.game.google.entity.*
 import ntutifm.game.google.entity.adaptor.SearchAdaptor
@@ -80,15 +78,12 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var favoriteFlag: Boolean = false
     private var searchData: SearchHistory? = null
     private var isOpen: Boolean = false
-    internal var mCurrLocationMarker: Marker? = null
-    internal var mLastLocation: Location? = null
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
     private var mFusedLocationClient: FusedLocationProviderClient? = null
     private var permissionDenied = false
     private lateinit var map: GoogleMap
-    private lateinit var mLocationRequest: LocationRequest
-    private var latLng: LatLng? = null
+    private var lastLatLng: LatLng? = null
     private var recycleView: RecyclerView? = null
     private var adaptor: SearchAdaptor? = null
     private val weatherState: Boolean = true
@@ -261,49 +256,78 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private val slButtonListener = View.OnClickListener {
         sitMode = !sitMode
         if (sitMode) {
-            viewLifecycleOwner.lifecycleScope.launch {
-                binding.fragmentMap.currentSpeed.apply { //設定自身速度
-                    this.setImageResource(R.drawable.slnull)
-                    this.visibility = View.VISIBLE
-                    val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
-                    layoutParams.setMargins(left, 50, right, bottom)  // 替換為你需要的值
-                    this.layoutParams = layoutParams
-                }
-                binding.fragmentMap.mySL.text = "0"
-                binding.fragmentMap.mySL.visibility = View.VISIBLE
-                binding.fragmentMap.slButton.apply() {//設定限速
-                    this.setImageResource(R.drawable.sldash)
-                    val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
-                    layoutParams.setMargins(left, 250, right, bottom)  // 替換為你需要的值
-                    this.layoutParams = layoutParams
-                }
-                binding.fragmentMap.gvSL.visibility = View.GONE
-                val lastPosition = latLng
-                //開啟測速模式
-                while (sitMode) {
-                    moveToCurrentLocation()
-                    if (latLng != null && lastPosition != latLng) {
-                        val distance = calculateDistance(lastPosition!!, latLng!!)
-                        val kmPerHour = distance * 6 / 10
-                        binding.fragmentMap.mySL.text = kmPerHour.toString()
-                        //修改UI
-                        SyncCamera.cameraFindCamera(this@MapFragment, this@MapFragment, latLng!!)
-                    } else {
-                        binding.fragmentMap.mySL.text = "0"
-                    }
+            opensl()
+            startDistanceMeasurement()
+        } else {
+            mFusedLocationClient?.removeLocationUpdates(locationCallback)
+            closeSl()
+        }
+    }
 
-                    delay(6000)
+    //開啟測速模式
+    private fun opensl() {
+        binding.fragmentMap.currentSpeed.apply { //設定自身速度
+            this.setImageResource(R.drawable.slnull)
+            this.visibility = View.VISIBLE
+            val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
+            layoutParams.setMargins(left, 50, right, bottom)  // 替換為你需要的值
+            this.layoutParams = layoutParams
+        }
+        binding.fragmentMap.mySL.text = "0"
+        binding.fragmentMap.mySL.visibility = View.VISIBLE
+        binding.fragmentMap.slButton.apply() {//設定限速
+            this.setImageResource(R.drawable.sldash)
+            val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
+            layoutParams.setMargins(left, 250, right, bottom)  // 替換為你需要的值
+            this.layoutParams = layoutParams
+        }
+        binding.fragmentMap.gvSL.visibility = View.GONE
+    }
+
+    //關閉測速模式
+    private fun closeSl() {
+        binding.fragmentMap.slButton.apply {
+            val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
+            layoutParams.setMargins(left, 5, right, bottom)  // 替換為你需要的值
+            this.layoutParams = layoutParams
+            this.setImageResource(R.drawable.sl)
+        }
+        binding.fragmentMap.currentSpeed.visibility = View.GONE
+        binding.fragmentMap.mySL.visibility = View.GONE
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun startDistanceMeasurement() {
+        val locationRequest = LocationRequest()
+        locationRequest.interval = 2000 // two minute interval
+        locationRequest.fastestInterval = 2000
+        locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        mFusedLocationClient?.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            Looper.myLooper()
+        )
+    }
+
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult?) {
+            super.onLocationResult(locationResult)
+            locationResult?.lastLocation?.let { location ->
+                val newLocation = LatLng(location.latitude, location.longitude)
+                lastLatLng?.let {
+                    val distance = calculateDistance(it, newLocation)
+                    updateUIWithDistance(distance, newLocation)
+                    SyncCamera.cameraFindCamera(this@MapFragment, this@MapFragment, newLocation)
                 }
-                //關閉測速模式
-                binding.fragmentMap.slButton.apply {
-                    val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
-                    layoutParams.setMargins(left, 5, right, bottom)  // 替換為你需要的值
-                    this.layoutParams = layoutParams
-                    this.setImageResource(R.drawable.sl)
-                }
-                binding.fragmentMap.currentSpeed.visibility = View.GONE
-                return@launch
+                lastLatLng = newLocation
             }
+        }
+    }
+
+    private fun updateUIWithDistance(distance: Int, newLocation: LatLng) {
+        lifecycleScope.launch {
+            moveTo(newLocation)
+            binding.fragmentMap.mySL.text = (distance * 18 / 10).toString()
         }
     }
 
@@ -393,17 +417,26 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         MyLog.d("openDrawer")
         binding.drawerLayout1.openDrawer(GravityCompat.START)
     }
+
+    @SuppressLint("MissingPermission")
     private val weatherButtonListener = View.OnClickListener {
-        if (latLng != null) {
-            val bundle = Bundle()
-            bundle.putDouble("lat", latLng!!.latitude)
-            bundle.putDouble("long", latLng!!.longitude)
-            AppUtil.startFragment(
-                parentFragmentManager,
-                R.id.fragmentMap,
-                WeatherFragment(),
-                bundle
-            )
+        if (!permissionDenied) {
+            mFusedLocationClient?.lastLocation
+                ?.addOnSuccessListener { location: Location? ->
+                    location?.let {
+                        val bundle = Bundle()
+                        bundle.putDouble("lat", it.latitude)
+                        bundle.putDouble("long", it.longitude)
+                        AppUtil.startFragment(
+                            parentFragmentManager,
+                            R.id.fragmentMap,
+                            WeatherFragment(),
+                            bundle
+                        )
+                    }
+                }
+        } else {
+            enableMyLocation()
         }
     }
 
@@ -671,7 +704,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     override fun onPause() {
         super.onPause()
-        mFusedLocationClient?.removeLocationUpdates(mLocationCallback)
     }
 
     /** 選單 */
@@ -710,59 +742,45 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         binding.navView.setNavigationItemSelectedListener(this)
     }
 
-    /** 當位置改變 */
-    private var mLocationCallback: LocationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult) {
-            val locationList = locationResult.locations
-            if (locationList.isNotEmpty()) {
-                val location = locationList.last()
-                mLastLocation = location
-                if (mCurrLocationMarker != null) {
-                    mCurrLocationMarker?.remove()
-                }
-                latLng = LatLng(location.latitude, location.longitude)
-            }
-            if (weatherState && latLng != null) {
-                SyncPosition.weatherLocationApi(this@MapFragment, this@MapFragment, latLng!!)
-            }
-
-            if (latLng != null) {
-                val targetLatLng = LatLng(latLng!!.latitude - 0.00006, latLng!!.longitude)
-                val targetZoomLevel = 50f
-                val cameraUpdate = CameraUpdateFactory.newLatLngZoom(targetLatLng, targetZoomLevel)
-                map.animateCamera(cameraUpdate, 1000, null)
-            }
-
-        }
-    }
-
     /** 點擊定位 */
     override fun onMyLocationButtonClick(): Boolean {
         moveToCurrentLocation()
         return false
     }
 
+    private fun moveTo(location: LatLng) {
+        val targetLatLng = LatLng(location.latitude - 0.00006, location.longitude)
+        val targetZoomLevel = 18f
+        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(targetLatLng, targetZoomLevel)
+        map.animateCamera(cameraUpdate, 1000, null)
+    }
+
     /** 移動到現在位置 */
     @SuppressLint("MissingPermission")
     private fun moveToCurrentLocation() {
-        mLocationRequest = LocationRequest()
-        mLocationRequest.interval = 120000 // two minute interval
-        mLocationRequest.fastestInterval = 120000
-        mLocationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
         if (!permissionDenied) {
-            mFusedLocationClient?.requestLocationUpdates(
-                mLocationRequest,
-                mLocationCallback,
-                Looper.myLooper()
-            )
+            mFusedLocationClient?.lastLocation
+                ?.addOnSuccessListener { location: Location? ->
+                    location?.let {
+                        val newLatLng = LatLng(location.latitude, location.longitude)
+
+                        if (weatherState) {
+                            SyncPosition.weatherLocationApi(
+                                this@MapFragment,
+                                this@MapFragment,
+                                newLatLng
+                            )
+                        }
+                        val targetLatLng =
+                            LatLng(newLatLng.latitude - 0.00006, newLatLng.longitude)
+                        val targetZoomLevel = 18f
+                        val cameraUpdate =
+                            CameraUpdateFactory.newLatLngZoom(targetLatLng, targetZoomLevel)
+                        map.animateCamera(cameraUpdate, 1000, null)
+                    }
+                }
         } else {
             enableMyLocation()
-        }
-        if (latLng != null) {
-            val targetLatLng = LatLng(latLng!!.latitude - 0.00006, latLng!!.longitude)
-            val targetZoomLevel = 50f
-            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(targetLatLng, targetZoomLevel)
-            map.animateCamera(cameraUpdate, 1000, null)
         }
     }
 
@@ -770,10 +788,12 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     override fun onMyLocationClick(location: Location) {
         Toast.makeText(activity, "Current location:\n$location", Toast.LENGTH_LONG)
             .show()
-        val targetLatLng = LatLng(location.latitude - 0.00006,
-            location.longitude)
-        val targetZoomLevel = 50f
-        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(targetLatLng, targetZoomLevel)
+        val targetlastLatLng = LatLng(
+            location.latitude - 0.00006,
+            location.longitude
+        )
+        val targetZoomLevel = 18f
+        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(targetlastLatLng, targetZoomLevel)
         map.animateCamera(cameraUpdate, 1000, null)
     }
 

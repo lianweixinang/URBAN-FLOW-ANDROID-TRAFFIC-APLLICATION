@@ -165,9 +165,11 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 更新錄像清單 */
     private fun updateAdapterData(dataList: List<CCTV>) {
-        MyLog.e("updateAdapterData")
-        for (i in dataList) {
-            MyLog.e("updateAdapterData" + i.name)
+        if (BuildConfig.DEBUG) {
+            MyLog.e("updateAdapterData")
+            for (i in dataList) {
+                MyLog.e("updateAdapterData" + i.name)
+            }
         }
         adapter?.clear()
         adapter?.addAll(dataList)
@@ -356,7 +358,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     @RequiresApi(Build.VERSION_CODES.O)
     private val favoriteBtnListener = View.OnClickListener {
         binding.fragmentHome.favoriteBtn.apply {
-            MyLog.e(favoriteFlag.toString())
+            if (BuildConfig.DEBUG) {
+                MyLog.e(favoriteFlag.toString())
+            }
             if (favoriteFlag) {
                 this.setImageResource(R.drawable.ic_baseline_star_24)
                 if (searchData != null) {
@@ -381,9 +385,13 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         behavior?.addBottomSheetCallback(bottomSheetCallback)
 
         SyncSpeed.speedLists.observe(viewLifecycleOwner) {
-            MyLog.e("updateSpeedEnd")
+            if (BuildConfig.DEBUG) {
+                MyLog.e("updateSpeedEnd")
+            }
             if (it.isNotEmpty()) {
-                MyLog.e("changeSpeed" + it[0].volume + " " + it[0].avgSpeed)
+                if (BuildConfig.DEBUG) {
+                    MyLog.e("changeSpeed" + it[0].volume + " " + it[0].avgSpeed)
+                }
                 binding.cars.text = it[0].volume.toString() + " Cars"
                 binding.speed.text = it[0].avgSpeed.roundToInt().toString() + " km/h"
                 if (it.size > 1) {
@@ -429,7 +437,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 側欄按鈕初始化 */
     private val menuButtonListener = View.OnClickListener {
-        MyLog.d("openDrawer")
+        if (BuildConfig.DEBUG) {
+            MyLog.d("openDrawer")
+        }
         val drawerView = requireActivity()?.findViewById<View>(R.id.drawerLayout1) as DrawerLayout
         drawerView.openDrawer(GravityCompat.START)
     }
@@ -456,7 +466,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     /** 關閉搜尋欄 */
     @SuppressLint("SwitchIntDef")
     private val backBtnListener = View.OnClickListener {
-        MyLog.e(isOpen.toString())
+        if (BuildConfig.DEBUG) {
+            MyLog.e(isOpen.toString())
+        }
         binding.fragmentSearch.root.visibility = View.GONE
         binding.fragmentHome.root.visibility = View.VISIBLE
         binding.webView.visibility = View.VISIBLE
@@ -535,7 +547,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 過濾搜尋文字變化 */
     private fun filterList(newText: String?) {
-        MyLog.e("textChange")
+        if (BuildConfig.DEBUG) {
+            MyLog.e("textChange")
+        }
         if (newText != "" && newText != null) {
             SyncRoad.filterSearch(this, newText, this)
         } else {
@@ -551,8 +565,10 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             if (searchData != null) {
                 searchData!!.searchTime = System.currentTimeMillis()
                 viewModel.insertHistory(searchData!!)
-                MyLog.d(searchData!!.roadName)
-                MyLog.d(searchData!!.roadId)
+                if (BuildConfig.DEBUG) {
+                    MyLog.d(searchData!!.roadName)
+                    MyLog.d(searchData!!.roadId)
+                }
                 var l = 0
                 val searchSet = mutableSetOf<CCTV>()
                 while (l < searchData!!.roadName.length - 1) {
@@ -564,21 +580,29 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                         l += 1
                         continue
                     }
-                    MyLog.e("searchWord:$s")
+                    if (BuildConfig.DEBUG) {
+                        MyLog.e("searchWord:$s")
+                    }
                     val matchingKeys = mapData.entries.filter { roadData ->
                         roadData.key.contains(s)
                     }
                     if (matchingKeys.isNotEmpty()) {
                         val roadList = matchingKeys.map { (name, no) ->
-                            MyLog.e("searchResult:$name")
+                            if (BuildConfig.DEBUG) {
+                                MyLog.e("searchResult:$name")
+                            }
                             CCTV(name, url = "https://cctvatis4.ntpc.gov.tw/C000$no")
                         }
                         searchSet.addAll(roadList)
                     }
                     l += 1
-                    MyLog.e("index:$l")
+                    if (BuildConfig.DEBUG) {
+                        MyLog.e("index:$l")
+                    }
                 }
-                MyLog.e("updateAdapterData over")
+                if (BuildConfig.DEBUG) {
+                    MyLog.e("updateAdapterData over")
+                }
                 updateAdapterData(searchSet.toMutableList())
                 SyncSpeed.getCityRoadSpeed(this, searchData!!.roadId, this)
                 binding.fragmentSearch.searchView.setQuery("", false)
@@ -776,7 +800,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
         SyncCamera.cameraLists.observe(viewLifecycleOwner) {
             for (p in it) {
+                if (BuildConfig.DEBUG) {
                 MyLog.d(p.road + p.longitude + p.latitude)
+                }
                 mClusterManager?.addItem(
                     MyItem(
                         p.latitude,

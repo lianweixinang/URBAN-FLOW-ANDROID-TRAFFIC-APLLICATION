@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
@@ -18,9 +17,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.*
@@ -31,7 +32,6 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
-import com.google.android.material.navigation.NavigationView
 import com.google.maps.android.clustering.ClusterManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -39,7 +39,7 @@ import ntutifm.game.google.*
 import ntutifm.game.google.R
 import ntutifm.game.google.apiClass.Incident
 import ntutifm.game.google.apiClass.SearchHistory
-import ntutifm.game.google.databinding.ActivityMainBinding
+import ntutifm.game.google.databinding.FragmentMapBinding
 import ntutifm.game.google.entity.*
 import ntutifm.game.google.entity.adaptor.RoadAdaptor
 import ntutifm.game.google.entity.adaptor.SearchAdaptor
@@ -54,10 +54,6 @@ import ntutifm.game.google.entity.sync.SyncWeather
 import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.*
-import ntutifm.game.google.ui.notification.NotificationFragment
-import ntutifm.game.google.ui.oil.OilFragment
-import ntutifm.game.google.ui.route.RouteFragment
-import ntutifm.game.google.ui.weather.WeatherFragment
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
@@ -68,9 +64,8 @@ import kotlin.math.sqrt
 
 class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
-    ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack,
-    NavigationView.OnNavigationItemSelectedListener {
-    private var _binding: ActivityMainBinding? = null
+    ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack {
+    private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
     private val viewModel: MapViewModel by lazy {
         ViewModelProvider(
@@ -103,7 +98,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
-        _binding = ActivityMainBinding.inflate(inflater, container, false)
+        _binding = FragmentMapBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -115,14 +110,13 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
 
-        binding.fragmentMap.cover.visibility = View.GONE
-        binding.fragmentMap.menuButton.setOnClickListener(menuButtonListener)
+        binding.cover.visibility = View.GONE
+        binding.menuButton.setOnClickListener(menuButtonListener)
 
         titleInit()
         cameraInit()
         favoriteInit()
         bottomSheetInit()
-        setNavigationViewListener()
         searchViewInit()
         searchListInit()
         webViewInit()
@@ -145,21 +139,21 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 標題初始化 */
     private fun titleInit() {
-        binding.fragmentMap.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
-        binding.fragmentMap.fragmentHome.textContainer.setOnClickListener(searchBtnListener)
-        binding.fragmentMap.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
+        binding.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
+        binding.fragmentHome.textContainer.setOnClickListener(searchBtnListener)
+        binding.fragmentHome.searchBtn.setOnClickListener(searchBtnListener)
     }
 
     /** 天氣初始化 */
     private fun weatherInit() {
-        binding.fragmentMap.weatherButton.setOnClickListener(weatherButtonListener)
+        binding.weatherButton.setOnClickListener(weatherButtonListener)
         SyncPosition.weatherLocation.observe(viewLifecycleOwner) {
             SyncWeather.weatherDataApi(this, this)
         }
         SyncWeather.weatherLists.observe(viewLifecycleOwner) {
             when (it[SyncPosition.districtToIndex()].weatherDescription) {
-                "晴天" -> binding.fragmentMap.weatherButton.setImageResource(R.drawable.sun)
-                "雨天" -> binding.fragmentMap.weatherButton.setImageResource(R.drawable.heavy_rain)
+                "晴天" -> binding.weatherButton.setImageResource(R.drawable.sun)
+                "雨天" -> binding.weatherButton.setImageResource(R.drawable.heavy_rain)
                 //還缺其他型態
             }
         }
@@ -184,12 +178,12 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             android.R.layout.simple_spinner_item
         )
         adapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.fragmentMap.spinner.adapter = adapter
-        binding.fragmentMap.spinner.setSelection(0, false)
-        binding.fragmentMap.spinner.onItemSelectedListener = SpnOnItemSelected(binding)
+        binding.spinner.adapter = adapter
+        binding.spinner.setSelection(0, false)
+        binding.spinner.onItemSelectedListener = SpnOnItemSelected(binding)
 
-        binding.fragmentMap.webView.settings.javaScriptEnabled = true
-        binding.fragmentMap.webView.loadUrl("https://cctvatis4.ntpc.gov.tw/C000232")
+        binding.webView.settings.javaScriptEnabled = true
+        binding.webView.loadUrl("https://cctvatis4.ntpc.gov.tw/C000232")
     }
 
     /** 事故觀察及定時 */
@@ -210,18 +204,18 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 測速UI初始化 */
     private fun cameraInit() {
-        binding.fragmentMap.slButton.setOnClickListener(slButtonListener)
+        binding.slButton.setOnClickListener(slButtonListener)
         SyncCamera.camara.observe(viewLifecycleOwner) {
             if (it != null && it.distance < 500) {
-                binding.fragmentMap.slButton.visibility = View.VISIBLE
-                binding.fragmentMap.gvSL.text = it.limit
+                binding.slButton.visibility = View.VISIBLE
+                binding.gvSL.text = it.limit
                 AppUtil.showTopToast(
                     requireActivity(),
                     "前方限速:${it.limit}公里，距離:${it.distance}公尺"
                 )
             } else {
-                binding.fragmentMap.gvSL.visibility = View.GONE
-                binding.fragmentMap.slButton.setImageResource(R.drawable.sldash)
+                binding.gvSL.visibility = View.GONE
+                binding.slButton.setImageResource(R.drawable.sldash)
             }
         }
     }
@@ -240,34 +234,34 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 開啟測速模式 */
     private fun opensl() {
-        binding.fragmentMap.currentSpeed.apply { //設定自身速度
+        binding.currentSpeed.apply { //設定自身速度
             this.setImageResource(R.drawable.slnull)
             this.visibility = View.VISIBLE
             val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.setMargins(left, 50, right, bottom)  // 替換為你需要的值
             this.layoutParams = layoutParams
         }
-        binding.fragmentMap.mySL.text = "0"
-        binding.fragmentMap.mySL.visibility = View.VISIBLE
-        binding.fragmentMap.slButton.apply {//設定限速
+        binding.mySL.text = "0"
+        binding.mySL.visibility = View.VISIBLE
+        binding.slButton.apply {//設定限速
             this.setImageResource(R.drawable.sldash)
             val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.setMargins(left, 250, right, bottom)  // 替換為你需要的值
             this.layoutParams = layoutParams
         }
-        binding.fragmentMap.gvSL.visibility = View.GONE
+        binding.gvSL.visibility = View.GONE
     }
 
     /** 關閉測速模式 */
     private fun closeSl() {
-        binding.fragmentMap.slButton.apply {
+        binding.slButton.apply {
             val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.setMargins(left, 5, right, bottom)  // 替換為你需要的值
             this.layoutParams = layoutParams
             this.setImageResource(R.drawable.sl)
         }
-        binding.fragmentMap.currentSpeed.visibility = View.GONE
-        binding.fragmentMap.mySL.visibility = View.GONE
+        binding.currentSpeed.visibility = View.GONE
+        binding.mySL.visibility = View.GONE
     }
 
     /** 開啟定時測速 */
@@ -304,7 +298,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private fun updateUIWithDistance(distance: Int, newLocation: LatLng) {
         viewLifecycleOwner.lifecycleScope.launch {
             moveTo(newLocation)
-            binding.fragmentMap.mySL.text = (distance * 18 / 10).toString()
+            binding.mySL.text = (distance * 18 / 10).toString()
         }
     }
 
@@ -340,20 +334,20 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     @RequiresApi(Build.VERSION_CODES.O)
     private fun favoriteInit() {
 //        favoriteFlag = dbFavDisplay(Road("南京東路"), requireActivity())
-        binding.fragmentMap.fragmentHome.favoriteBtn.apply {
+        binding.fragmentHome.favoriteBtn.apply {
             if (favoriteFlag) {
                 this.setImageResource(R.drawable.ic_baseline_star_25)
             } else {
                 this.setImageResource(R.drawable.ic_baseline_star_24)
             }
-            binding.fragmentMap.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
+            binding.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
         }
     }
 
     /** 收藏切換 */
     @RequiresApi(Build.VERSION_CODES.O)
     private val favoriteBtnListener = View.OnClickListener {
-        binding.fragmentMap.fragmentHome.favoriteBtn.apply {
+        binding.fragmentHome.favoriteBtn.apply {
             MyLog.e(favoriteFlag.toString())
             if (favoriteFlag) {
                 this.setImageResource(R.drawable.ic_baseline_star_24)
@@ -373,8 +367,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 抽屜初始化 */
     private fun bottomSheetInit() {
-        binding.fragmentMap.bg.setOnClickListener(backBtnListener)
-        behavior = BottomSheetBehavior.from(binding.fragmentMap.bg)
+        binding.bg.setOnClickListener(backBtnListener)
+        behavior = BottomSheetBehavior.from(binding.bg)
         behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
         behavior?.addBottomSheetCallback(bottomSheetCallback)
 
@@ -382,41 +376,41 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             MyLog.e("updateSpeedEnd")
             if (it.isNotEmpty()) {
                 MyLog.e("changeSpeed" + it[0].volume + " " + it[0].avgSpeed)
-                binding.fragmentMap.cars.text = it[0].volume.toString() + " Cars"
-                binding.fragmentMap.speed.text = it[0].avgSpeed.roundToInt().toString() + " km/h"
+                binding.cars.text = it[0].volume.toString() + " Cars"
+                binding.speed.text = it[0].avgSpeed.roundToInt().toString() + " km/h"
                 if (it.size > 1) {
-                    binding.fragmentMap.cars2.text = it[1].volume.toString() + " Cars"
-                    binding.fragmentMap.speed2.text =
+                    binding.cars2.text = it[1].volume.toString() + " Cars"
+                    binding.speed2.text =
                         it[1].avgSpeed.roundToInt().toString() + " km/h"
                 }
             } else {
-                binding.fragmentMap.cars.text = "無資料"
-                binding.fragmentMap.speed.text = "無資料"
-                binding.fragmentMap.cars2.text = "無資料"
-                binding.fragmentMap.speed2.text = "無資料"
+                binding.cars.text = "無資料"
+                binding.speed.text = "無資料"
+                binding.cars2.text = "無資料"
+                binding.speed2.text = "無資料"
             }
             behavior?.state = BottomSheetBehavior.STATE_EXPANDED
-            binding.fragmentMap.webView.visibility = View.VISIBLE
-            binding.fragmentMap.carDirection.visibility = View.VISIBLE
-            binding.fragmentMap.trafficFlow.visibility = View.VISIBLE
-            binding.fragmentMap.imageView3.visibility = View.VISIBLE
-            binding.fragmentMap.spinner.visibility = View.VISIBLE
+            binding.webView.visibility = View.VISIBLE
+            binding.carDirection.visibility = View.VISIBLE
+            binding.trafficFlow.visibility = View.VISIBLE
+            binding.imageView3.visibility = View.VISIBLE
+            binding.spinner.visibility = View.VISIBLE
         }
     }
 
     /** 抽屜邏輯 */
     private val bottomSheetCallback = object : BottomSheetCallback() {
         override fun onStateChanged(bottomSheet: View, newState: Int) {
-            if (binding.fragmentMap.fragmentSearch.root.visibility == View.GONE) {
-                binding.fragmentMap.webView.isVisible = true
-                binding.fragmentMap.trafficFlow.isVisible =
+            if (binding.fragmentSearch.root.visibility == View.GONE) {
+                binding.webView.isVisible = true
+                binding.trafficFlow.isVisible =
                     newState == BottomSheetBehavior.STATE_EXPANDED
-                binding.fragmentMap.imageView3.isVisible =
+                binding.imageView3.isVisible =
                     newState == BottomSheetBehavior.STATE_EXPANDED
             } else {
-                binding.fragmentMap.webView.isVisible = false
-                binding.fragmentMap.trafficFlow.isVisible = false
-                binding.fragmentMap.imageView3.isVisible = false
+                binding.webView.isVisible = false
+                binding.trafficFlow.isVisible = false
+                binding.imageView3.isVisible = false
             }
         }
 
@@ -428,7 +422,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     /** 側欄按鈕初始化 */
     private val menuButtonListener = View.OnClickListener {
         MyLog.d("openDrawer")
-        binding.drawerLayout1.openDrawer(GravityCompat.START)
+        val drawerView = requireActivity()?.findViewById<View>(R.id.drawerLayout1) as DrawerLayout
+        drawerView.openDrawer(GravityCompat.START)
     }
 
     /** 跳轉到天氣 */
@@ -441,12 +436,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                         val bundle = Bundle()
                         bundle.putDouble("lat", it.latitude)
                         bundle.putDouble("long", it.longitude)
-                        AppUtil.startFragment(
-                            parentFragmentManager,
-                            R.id.fragmentMap,
-                            WeatherFragment(),
-                            bundle
-                        )
+                        Navigation.findNavController(binding.root).navigate(R.id.action_mapFragment_to_weatherFragment)
                     }
                 }
         } else {
@@ -459,23 +449,23 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     @SuppressLint("SwitchIntDef")
     private val backBtnListener = View.OnClickListener {
         MyLog.e(isOpen.toString())
-        binding.fragmentMap.fragmentSearch.root.visibility = View.GONE
-        binding.fragmentMap.fragmentHome.root.visibility = View.VISIBLE
-        binding.fragmentMap.webView.visibility = View.VISIBLE
-        binding.fragmentMap.spinner.visibility = View.VISIBLE
+        binding.fragmentSearch.root.visibility = View.GONE
+        binding.fragmentHome.root.visibility = View.VISIBLE
+        binding.webView.visibility = View.VISIBLE
+        binding.spinner.visibility = View.VISIBLE
         when (behavior?.state) {
             //全開
             3 -> {
                 if (isOpen) {
-                    binding.fragmentMap.carDirection.visibility = View.VISIBLE
-                    binding.fragmentMap.trafficFlow.visibility = View.VISIBLE
+                    binding.carDirection.visibility = View.VISIBLE
+                    binding.trafficFlow.visibility = View.VISIBLE
                 }
             }
             //半開
             6 -> {
                 if (isOpen) {
-                    binding.fragmentMap.carDirection.visibility = View.GONE
-                    binding.fragmentMap.trafficFlow.visibility = View.GONE
+                    binding.carDirection.visibility = View.GONE
+                    binding.trafficFlow.visibility = View.GONE
                 }
             }
         }
@@ -485,14 +475,14 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     /** 開啟搜尋欄 */
     private val searchBtnListener = View.OnClickListener {
         isOpen = true
-        binding.fragmentMap.fragmentSearch.root.visibility = View.VISIBLE
-        binding.fragmentMap.fragmentHome.root.visibility = View.GONE
-        binding.fragmentMap.webView.visibility = View.GONE
-        binding.fragmentMap.carDirection.visibility = View.GONE
-        binding.fragmentMap.trafficFlow.visibility = View.GONE
-        binding.fragmentMap.imageView3.visibility = View.GONE
-        binding.fragmentMap.spinner.visibility = View.GONE
-        binding.fragmentMap.fragmentSearch.searchView.apply {
+        binding.fragmentSearch.root.visibility = View.VISIBLE
+        binding.fragmentHome.root.visibility = View.GONE
+        binding.webView.visibility = View.GONE
+        binding.carDirection.visibility = View.GONE
+        binding.trafficFlow.visibility = View.GONE
+        binding.imageView3.visibility = View.GONE
+        binding.spinner.visibility = View.GONE
+        binding.fragmentSearch.searchView.apply {
             this.requestFocus()
             this.onActionViewExpanded()
         }
@@ -500,13 +490,13 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 搜尋初始化 */
     private fun searchViewInit() {
-        binding.fragmentMap.fragmentSearch.searchView.setOnQueryTextListener(queryTextListener)
+        binding.fragmentSearch.searchView.setOnQueryTextListener(queryTextListener)
     }
 
     /** 初始化搜尋清單 */
     @RequiresApi(Build.VERSION_CODES.O)
     private fun searchListInit() {
-        recycleView = binding.fragmentMap.fragmentSearch.recycleView
+        recycleView = binding.fragmentSearch.recycleView
         recycleView?.setHasFixedSize(true)
         recycleView?.layoutManager = LinearLayoutManager(MyActivity().context)
 
@@ -583,10 +573,10 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 MyLog.e("updateAdapterData over")
                 updateAdapterData(searchSet.toMutableList())
                 SyncSpeed.getCityRoadSpeed(this, searchData!!.roadId, this)
-                binding.fragmentMap.fragmentSearch.searchView.setQuery("", false)
-                binding.fragmentMap.fragmentSearch.root.visibility = View.GONE
-                binding.fragmentMap.fragmentHome.root.visibility = View.VISIBLE
-                binding.fragmentMap.fragmentHome.textView.text = searchData!!.roadName
+                binding.fragmentSearch.searchView.setQuery("", false)
+                binding.fragmentSearch.root.visibility = View.GONE
+                binding.fragmentHome.root.visibility = View.VISIBLE
+                binding.fragmentHome.textView.text = searchData!!.roadName
                 isOpen = false
                 AppUtil.showTopToast(requireActivity(), "搜尋中...")
             }
@@ -825,43 +815,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         val targetZoomLevel = 18f
         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(targetlastLatLng, targetZoomLevel)
         map.animateCamera(cameraUpdate, 1000, null)
-    }
-
-    /** 側欄導航 */
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.nav_map -> {
-                AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, MapFragment())
-            }
-
-            R.id.nav_oil -> {
-                AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, OilFragment())
-            }
-
-            R.id.nav_weather -> {
-                AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, WeatherFragment())
-            }
-
-            R.id.nav_route -> {
-                AppUtil.startFragment(parentFragmentManager, R.id.fragmentMap, RouteFragment())
-            }
-
-            R.id.nav_notification -> {
-                AppUtil.startFragment(
-                    parentFragmentManager,
-                    R.id.fragmentMap,
-                    NotificationFragment()
-                )
-            }
-        }
-
-        binding.drawerLayout1.closeDrawer(GravityCompat.START)
-        return true
-    }
-
-    /** 側欄綁定監聽 */
-    private fun setNavigationViewListener() {
-        binding.navView.setNavigationItemSelectedListener(this)
     }
 
     /** API CALLBACK */

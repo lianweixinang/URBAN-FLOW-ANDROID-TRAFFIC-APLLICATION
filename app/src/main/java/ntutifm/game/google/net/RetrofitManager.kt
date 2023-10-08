@@ -1,27 +1,22 @@
-package ntutifm.game.google.net;
+package ntutifm.game.google.net
 
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
-public class RetrofitManager {
-    // 以Singleton模式建立
-    private static RetrofitManager mInstance = new RetrofitManager();
-    private MyAPIService myAPIService;
-    private RetrofitManager() {
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://ntutifm.zeabur.app/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        myAPIService = retrofit.create(MyAPIService.class);
-    }
-
-    public static RetrofitManager getInstance() {
-        return mInstance;
-    }
-
-    public MyAPIService getAPI() {
-        return myAPIService;
+class RetrofitManager {
+    companion object {
+        private var instance: RetrofitManager? = null
+        private var _api: MyAPIService? = null
+        val api get() = _api
+        init{
+            if (instance == null) {
+                instance = RetrofitManager()
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("https://ntutifm.zeabur.app/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+                _api = retrofit.create(MyAPIService::class.java)
+            }
+        }
     }
 }

@@ -7,6 +7,8 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.MutableLiveData
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -19,7 +21,6 @@ import ntutifm.game.google.ui.oil.InstructionFragment
 import ntutifm.game.google.ui.oil.OilFragment
 import ntutifm.game.google.ui.route.RouteFragment
 import ntutifm.game.google.ui.weather.WeatherFragment
-val isOpen: MutableLiveData<Boolean> = MutableLiveData<Boolean>(false)
 open class MainActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener{
 
@@ -30,7 +31,7 @@ open class MainActivity : AppCompatActivity(),
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setNavigationViewListener()
-        AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, MapFragment())
+//        AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, MapFragment())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -39,27 +40,30 @@ open class MainActivity : AppCompatActivity(),
         return true
     }
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+        val navController = navHostFragment.navController
         when (item.itemId) {
             R.id.nav_map -> {
-                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, MapFragment())
+                navController.navigate(R.id.mapFragment)
+//                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, MapFragment())
             }
             R.id.nav_oil -> {
-                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, OilFragment())
+                navController.navigate(R.id.oilFragment)
             }
             R.id.nav_weather -> {
-                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, WeatherFragment())
+                navController.navigate(R.id.weatherFragment)
             }
             R.id.nav_route -> {
-                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, RouteFragment())
+                navController.navigate(R.id.routeFragment)
             }
             R.id.nav_notification -> {
-                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, NotificationFragment())
+                navController.navigate(R.id.notificationFragment)
             }
             R.id.nav_about -> {
-                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, AboutFragment())
+                navController.navigate(R.id.aboutFragment)
             }
             R.id.nav_instruction -> {
-                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, InstructionFragment())
+                navController.navigate(R.id.instructionFragment)
             }
         }
 
@@ -68,7 +72,7 @@ open class MainActivity : AppCompatActivity(),
     }
 
     private fun setNavigationViewListener() {
-        val navigationView = findViewById<NavigationView>(R.id.nav_view) as NavigationView
+        val navigationView = findViewById(R.id.nav_view) as NavigationView
         navigationView.setNavigationItemSelectedListener(this)
     }
 

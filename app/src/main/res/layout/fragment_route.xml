@@ -192,8 +192,6 @@
                         android:layout_below="@id/camtxt2"
                         app:cardCornerRadius="10dp"
                         app:srcCompat="@drawable/rcc" />
-
-
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
 

@@ -4,12 +4,16 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.SslErrorHandler
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -181,7 +185,11 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         binding.spinner.adapter = adapter
         binding.spinner.setSelection(0, false)
         binding.spinner.onItemSelectedListener = SpnOnItemSelected(binding)
-
+        binding.webView.webViewClient = object : WebViewClient() {
+            override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
+                handler?.proceed()
+            }
+        }
         binding.webView.settings.javaScriptEnabled = true
         binding.webView.loadUrl("https://cctvatis4.ntpc.gov.tw/C000232")
     }
@@ -614,7 +622,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     @SuppressLint("UseRequireInsteadOfGet")
     private fun setLocationInitBtn() {
         if (childFragmentManager
-                .findFragmentById(R.id.map) != null && parentFragmentManager
+                .findFragmentById(R.id.map) != null && childFragmentManager
                 .findFragmentById(R.id.map)?.view?.findViewById<View>("1".toInt()) != null
         ) {
             val locationButton: View =

@@ -42,10 +42,23 @@ class WeatherFragment : Fragment(), ApiCallBack {
     private fun weatherTextInit() {
         SyncWeather.weatherLists.observe(viewLifecycleOwner) {
             val index = SyncPosition.districtToIndex()
-            when (it[index].weatherDescription) {
-                "晴天" -> binding.weatherIcon.setImageResource(R.drawable.sun)
-                "雨天" -> binding.weatherIcon.setImageResource(R.drawable.heavy_rain)
-            }
+            binding.weatherIcon.setImageResource(
+                when (it[index].wx1) {
+                    "多雲短暫陣雨" ->R.drawable.heavy_rain
+                    "陰時多雲短暫陣雨" ->R.drawable.heavy_rain
+                    "多雲午後短暫陣雨" ->R.drawable.heavy_rain
+                    "晴時多雲" ->R.drawable.cloudy
+                    "多雲晴時" ->R.drawable.cloudy
+                    "午後短暫雷陣雨" ->R.drawable.storm
+                    "短暫陣雨或雷雨" ->R.drawable.storm
+                    "多雲午後短暫雷陣雨" ->R.drawable.storm
+                    "多雲" -> R.drawable.cloudy_nosun
+                    "多雲時陰" -> R.drawable.cloudy_nosun
+                    "多雲時晴" -> R.drawable.cloudy_nosun
+                    "陰時多雲" -> R.drawable.cloudy_nosun
+                    else -> R.drawable.cloudy_nosun
+                }
+            )
 
             MyLog.e("Weather Updated")
             binding.position.text = it[index].locationName

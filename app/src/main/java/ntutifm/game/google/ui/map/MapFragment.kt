@@ -192,10 +192,20 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             SyncWeather.weatherDataApi(this, this)
         }
         SyncWeather.weatherLists.observe(viewLifecycleOwner) {
-            when (it[SyncPosition.districtToIndex()].weatherDescription) {
-                "晴天" -> binding.weatherButton.setImageResource(R.drawable.sun)
-                "雨天" -> binding.weatherButton.setImageResource(R.drawable.heavy_rain)
-                //還缺其他型態
+            when (it[SyncPosition.districtToIndex()].wx1) {
+                "多雲短暫陣雨" ->R.drawable.heavy_rain
+                "陰時多雲短暫陣雨" ->R.drawable.heavy_rain
+                "多雲午後短暫陣雨" ->R.drawable.heavy_rain
+                "晴時多雲" ->R.drawable.cloudy
+                "多雲晴時" ->R.drawable.cloudy
+                "午後短暫雷陣雨" ->R.drawable.storm
+                "短暫陣雨或雷雨" ->R.drawable.storm
+                "多雲午後短暫雷陣雨" ->R.drawable.storm
+                "多雲" -> R.drawable.cloudy_nosun
+                "多雲時陰" -> R.drawable.cloudy_nosun
+                "多雲時晴" -> R.drawable.cloudy_nosun
+                "陰時多雲" -> R.drawable.cloudy_nosun
+                else -> R.drawable.cloudy_nosun
             }
         }
     }
@@ -255,7 +265,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 測速UI初始化 */
     private fun cameraInit() {
-        binding.slButton.setOnClickListener(slButtonListener)
+        binding.mySpeedButton.setOnClickListener(slButtonListener)
         SyncCamera.camara.observe(viewLifecycleOwner) {
             fun showCurrent(distance: Int) {
                 val text = "前方限速:${it.limit}公里，距離:${distance}公尺"
@@ -266,8 +276,11 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 speakText(text)
             }
             if (it != null && it.distance < 500) {
-                binding.slButton.visibility = View.VISIBLE
-                binding.gvSL.text = it.limit
+                binding.cameraSpeedButton.setImageResource(R.drawable.slnull)
+                binding.cameraSpeedNumber.apply{
+                    this.visibility = View.VISIBLE
+                    this.text = it.limit
+                }
                 when (it.distance) {
                     in 251..500 -> {
                         if (lastCamera == null || (it.id != lastCamera!!.id)) {
@@ -319,8 +332,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                     }
                 }
             } else {
-                binding.gvSL.visibility = View.GONE
-                binding.slButton.setImageResource(R.drawable.sldash)
+                binding.cameraSpeedButton.setImageResource(R.drawable.sldash)
+                binding.cameraSpeedNumber.visibility = View.GONE
             }
         }
     }
@@ -340,34 +353,24 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 開啟測速模式 */
     private fun opensl() {
-        binding.currentSpeed.apply { //設定自身速度
-            this.setImageResource(R.drawable.slnull)
+        binding.mySpeedButton.setImageResource(R.drawable.slnull)
+        binding.mySpeedNumber.apply {
+            this.text = "0"
             this.visibility = View.VISIBLE
-            val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
-            layoutParams.setMargins(left, 50, right, bottom)  // 替換為你需要的值
-            this.layoutParams = layoutParams
         }
-        binding.mySL.text = "0"
-        binding.mySL.visibility = View.VISIBLE
-        binding.slButton.apply {//設定限速
+        binding.cameraSpeedButton.apply {//設定限速
             this.setImageResource(R.drawable.sldash)
-            val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
-            layoutParams.setMargins(left, 250, right, bottom)  // 替換為你需要的值
-            this.layoutParams = layoutParams
+            this.visibility = View.VISIBLE
         }
-        binding.gvSL.visibility = View.GONE
+        binding.cameraSpeedNumber.visibility = View.GONE
     }
 
     /** 關閉測速模式 */
     private fun closeSl() {
-        binding.slButton.apply {
-            val layoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
-            layoutParams.setMargins(left, 5, right, bottom)  // 替換為你需要的值
-            this.layoutParams = layoutParams
-            this.setImageResource(R.drawable.sl)
-        }
-        binding.currentSpeed.visibility = View.GONE
-        binding.mySL.visibility = View.GONE
+        binding.mySpeedButton.setImageResource(R.drawable.sl)
+        binding.mySpeedNumber.visibility = View.GONE
+        binding.cameraSpeedButton.visibility = View.GONE
+        binding.cameraSpeedNumber.visibility = View.GONE
     }
 
     /** 開啟定時測速 */
@@ -404,7 +407,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private fun updateUIWithDistance(distance: Int, newLocation: LatLng) {
         viewLifecycleOwner.lifecycleScope.launch {
             moveTo(newLocation)
-            binding.mySL.text = (distance * 18 / 10).toString()
+            binding.mySpeedNumber.text = (distance * 18 / 10).toString()
         }
     }
 
@@ -520,6 +523,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 binding.trafficFlow.isVisible =
                     newState == BottomSheetBehavior.STATE_EXPANDED
                 binding.imageView3.isVisible =
+                    newState == BottomSheetBehavior.STATE_EXPANDED
+                binding.direction.isVisible =
                     newState == BottomSheetBehavior.STATE_EXPANDED
             } else {
                 binding.webView.isVisible = false

@@ -60,6 +60,7 @@ class NotificationFragment : Fragment(), ApiCallBack {
             MyLog.e("updateIncident")
             adaptor?.setFilteredList(it)
             adaptor?.notifyDataSetChanged()
+
         }
         SyncIncident.getIncident(this,this)
     }

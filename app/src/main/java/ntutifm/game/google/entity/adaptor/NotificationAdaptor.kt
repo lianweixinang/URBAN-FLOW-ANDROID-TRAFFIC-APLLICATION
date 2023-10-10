@@ -32,11 +32,16 @@ class NotificationAdaptor(private var mList: List<Incident>?) :
     }
 
     override fun onBindViewHolder(holder: NotificationAdaptor.IncidentHolder, position: Int) {
-        holder.type.text = mList?.get(position)?.part + mList?.get(position)?.type ?:  ""
+        holder.type.text = (mList?.get(position)?.part + mList?.get(position)?.type) ?: ""
         holder.description.text = mList?.get(position)?.title ?: ""
         holder.time.text = mList?.get(position)?.raiseTime ?: ""
-        holder.from.text = "來源:" + mList?.get(position)?.auth ?: ""
-        holder.state.text = "(狀況:" + mList?.get(position)?.solved + ")"  ?: ""
+        holder.from.text = ("來源:" + mList?.get(position)?.auth) ?: ""
+        holder.state.text = "(狀況:" +
+              (if(mList?.get(position)?.solved !="nxx"){
+                  mList?.get(position)?.solved
+              } else {" 未排除"} )  +
+         ")"
+
         val index = SyncPosition.districtToIndex()
     }
 

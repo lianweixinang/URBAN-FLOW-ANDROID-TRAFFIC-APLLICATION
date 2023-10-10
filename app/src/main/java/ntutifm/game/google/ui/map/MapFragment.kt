@@ -8,6 +8,8 @@ import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
+import android.speech.tts.TextToSpeech
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,6 +43,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ntutifm.game.google.*
 import ntutifm.game.google.R
+import ntutifm.game.google.apiClass.Camera
 import ntutifm.game.google.apiClass.Incident
 import ntutifm.game.google.apiClass.SearchHistory
 import ntutifm.game.google.databinding.FragmentMapBinding
@@ -58,6 +61,7 @@ import ntutifm.game.google.entity.sync.SyncWeather
 import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.*
+import java.util.Locale
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
@@ -68,7 +72,7 @@ import kotlin.math.sqrt
 
 class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
-    ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack {
+    ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack, TextToSpeech.OnInitListener {
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
     private val viewModel: MapViewModel by lazy {
@@ -81,6 +85,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var mClusterManager: ClusterManager<MyItem>? = null
     private var behavior: BottomSheetBehavior<View>? = null
     private lateinit var map: GoogleMap
+    private var textToSpeech: TextToSpeech? = null
 
     private var isOpen: Boolean = false
     private var sitMode: Boolean = false
@@ -92,6 +97,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var oldIncident: List<Incident>? = null
     private var mFusedLocationClient: FusedLocationProviderClient? = null
     private var lastLatLng: LatLng? = null
+    private var lastCamera: Camera? = null
 
     private var recycleView: RecyclerView? = null
     private var adaptor: SearchAdaptor? = null
@@ -117,6 +123,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         binding.cover.visibility = View.GONE
         binding.menuButton.setOnClickListener(menuButtonListener)
 
+        textToSpeech = TextToSpeech(requireContext(), this)
+
         titleInit()
         cameraInit()
         favoriteInit()
@@ -137,8 +145,26 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        textToSpeech?.stop()
+        textToSpeech?.shutdown()
+        super.onDestroyView()
+    }
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            val result = textToSpeech?.setLanguage(Locale.getDefault())
+
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("YourFragment", "Language not supported")
+            }
+        } else {
+            Log.e("YourFragment", "TTS initialization failed")
+        }
+    }
+
+    private fun speakText(textToSpeak:String) {
+        textToSpeech?.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null, null)
     }
 
     /** 標題初始化 */
@@ -216,19 +242,66 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private fun cameraInit() {
         binding.slButton.setOnClickListener(slButtonListener)
         SyncCamera.camara.observe(viewLifecycleOwner) {
+            fun showCurrent(distance: Int){
+                val text = "前方限速:${it.limit}公里，距離:${distance}公尺"
+                AppUtil.showTopToast(
+                    requireActivity(),
+                    text
+                )
+                speakText(text)
+            }
             if (it != null && it.distance < 500) {
                 binding.slButton.visibility = View.VISIBLE
                 binding.gvSL.text = it.limit
-                AppUtil.showTopToast(
-                    requireActivity(),
-                    "前方限速:${it.limit}公里，距離:${it.distance}公尺"
-                )
+                when (it.distance) {
+                    in 251 .. 500 ->{
+                        if(lastCamera == null || (it.id != lastCamera!!.id)){
+                            lastCamera = it
+                        }
+                    }
+                    in 151..250 -> {
+                        if((lastCamera!!.distance in 151..250) ||
+                            lastCamera!!.distance < it.distance){
+                            return@observe
+                        }
+                        lastCamera!!.distance = it.distance
+                        showCurrent(200)
+                    }
+                    in 51 .. 150 -> {
+                        if((lastCamera!!.distance in 51..150) ||
+                            lastCamera!!.distance < it.distance){
+                            return@observe
+                        }
+                        lastCamera!!.distance = it.distance
+                        showCurrent(100)
+                    }
+                    in 3..50 -> {
+                        if((lastCamera!!.distance in 3..50) ||
+                            lastCamera!!.distance < it.distance){
+                            return@observe
+                        }
+                        lastCamera!!.distance = it.distance
+//                        showCurrent(50)
+                    }
+                    in 0..2 -> {
+                        if((lastCamera!!.distance in 0..2) ||
+                            lastCamera!!.distance < it.distance){
+                            return@observe
+                        }
+                        lastCamera!!.distance = it.distance
+                        AppUtil.showTopToast(
+                            requireActivity(),
+                            "通過測速向"
+                        )
+                    }
+                }
             } else {
                 binding.gvSL.visibility = View.GONE
                 binding.slButton.setImageResource(R.drawable.sldash)
             }
         }
     }
+
 
     /** 測速初始化 */
     private val slButtonListener = View.OnClickListener {

@@ -3,6 +3,11 @@ package ntutifm.game.google.entity.sync
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiCallBack
 import ntutifm.game.google.apiClass.OilStation
@@ -13,21 +18,23 @@ import ntutifm.game.google.net.ApiProcessor
 
 object SyncPosition {
 
-    private val _parkingLists = MutableLiveData<List<Parking>>()
-    val parkingLists = _parkingLists
+    private val _parkingLists = MutableSharedFlow<List<Parking>>()
+    val parkingLists = _parkingLists.asSharedFlow()
 
     private val _weatherLocation = MutableLiveData<WeatherLocation>()
     val weatherLocation = _weatherLocation
 
-    private val _oilStation = MutableLiveData<List<OilStation>>()
-    val oilStation = _oilStation
-    fun parkingApi(callBack: ApiCallBack, fragment: Fragment){
-        MyLog.e("StartCallParkingApi")
-        ApiManager(callBack).execute(fragment, ApiProcessor.getParking)
+    private val _oilStation = MutableSharedFlow<List<OilStation>>()
+    val oilStation = _oilStation.asSharedFlow()
+    fun parkingApi(){
+        CoroutineScope(Dispatchers.IO).launch {
+            MyLog.e("StartCallParkingApi")
+            ApiProcessor().getParking()
+        }
     }
-    fun updateParking(data:List<Parking>){
+    suspend fun updateParking(data:List<Parking>){
         MyLog.e("updateParking")
-        _parkingLists.postValue(data)
+        _parkingLists.emit(data)
     }
     fun weatherLocationApi(callBack: ApiCallBack, fragment: Fragment,latLong:LatLng){
         MyLog.e("StartCallWeatherLocationApi")
@@ -38,13 +45,15 @@ object SyncPosition {
         _weatherLocation.postValue(data)
 
     }
-    fun oilStationApi(callBack: ApiCallBack, fragment: Fragment){
-        MyLog.e("startOilStationApi")
-        ApiManager(callBack).execute(fragment, ApiProcessor.getOilStation)
+    fun oilStationApi(){
+        CoroutineScope(Dispatchers.IO).launch {
+            MyLog.e("startOilStationApi")
+            ApiProcessor().getOilStation()
+        }
     }
-    fun updateOilStation(data:List<OilStation>){
+    suspend fun updateOilStation(data:List<OilStation>){
         MyLog.e("updateOilStation")
-        _oilStation.postValue(data)
+        _oilStation.emit(data)
     }
     fun districtToIndex(): Int {
         if(_weatherLocation.value!=null) {

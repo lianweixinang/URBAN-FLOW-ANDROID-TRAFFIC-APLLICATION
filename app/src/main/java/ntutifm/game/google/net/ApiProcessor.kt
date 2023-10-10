@@ -25,7 +25,7 @@ class ApiProcessor {
         const val getOilStation = "getOilStation"
     }
 
-    fun getParking(c: Context, successData: ArrayList<String>, errorData: ArrayList<String>) {
+    suspend fun getParking() {
         val myAPIService = RetrofitManager.api
         val response =
             myAPIService?.parkingList?.execute()
@@ -142,11 +142,7 @@ class ApiProcessor {
         }
     }
 
-    fun getCameraMark(
-        c: Context,
-        successData: ArrayList<String>,
-        errorData: ArrayList<String>,
-    ) {
+    suspend fun getCameraMark() {
         val myAPIService = RetrofitManager.api
         val response = myAPIService?.cameraMark?.execute()
         try {
@@ -179,11 +175,7 @@ class ApiProcessor {
         }
     }
 
-    fun getOilStation(
-        c: Context,
-        successData: ArrayList<String>,
-        errorData: ArrayList<String>,
-    ) {
+    suspend fun getOilStation() {
         val myAPIService = RetrofitManager.api
         val response = myAPIService?.oilStationList?.execute()
         try {

@@ -360,6 +360,24 @@
             android:layout_height="match_parent"
             android:background="#FFFFFF"
             app:layout_constraintTop_toTopOf="parent"
-            android:orientation="horizontal" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:orientation="vertical"
+            android:gravity="center">
+            <ImageView
+                android:id='@+id/logoCover'
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                app:cardCornerRadius="10dp"
+                app:srcCompat="@drawable/ntutifm" />
+            <TextView
+                android:id="@+id/Version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:text="v1.0.0"/>
+
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

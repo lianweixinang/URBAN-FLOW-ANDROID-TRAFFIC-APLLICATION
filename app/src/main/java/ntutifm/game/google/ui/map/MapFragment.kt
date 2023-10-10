@@ -3,6 +3,8 @@ package ntutifm.game.google.ui.map
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.Location
 import android.net.http.SslError
 import android.os.Build
@@ -25,8 +27,10 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,12 +39,19 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.maps.android.clustering.ClusterManager
+import com.google.maps.android.clustering.view.DefaultClusterRenderer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ntutifm.game.google.*
 import ntutifm.game.google.R
 import ntutifm.game.google.apiClass.Camera
@@ -62,6 +73,7 @@ import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.*
 import java.util.Locale
+import java.util.concurrent.Delayed
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
@@ -116,15 +128,13 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
+            loadingView()
+        }
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
-
-        binding.cover.visibility = View.GONE
         binding.menuButton.setOnClickListener(menuButtonListener)
-
         textToSpeech = TextToSpeech(requireContext(), this)
-
         titleInit()
         cameraInit()
         favoriteInit()
@@ -133,7 +143,12 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         searchListInit()
         webViewInit()
         incidentCheck()
-
+    }
+    private suspend fun loadingView(){
+        delay(6000)
+        withContext(Dispatchers.Main) {
+            binding.cover.visibility = View.GONE
+        }
     }
 
     override fun onResume() {
@@ -163,7 +178,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         }
     }
 
-    private fun speakText(textToSpeak:String) {
+    private fun speakText(textToSpeak: String) {
         textToSpeech?.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null, null)
     }
 
@@ -214,7 +229,11 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         binding.spinner.setSelection(0, false)
         binding.spinner.onItemSelectedListener = SpnOnItemSelected(binding)
         binding.webView.webViewClient = object : WebViewClient() {
-            override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
+            override fun onReceivedSslError(
+                view: WebView?,
+                handler: SslErrorHandler?,
+                error: SslError?
+            ) {
                 handler?.proceed()
             }
         }
@@ -242,7 +261,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private fun cameraInit() {
         binding.slButton.setOnClickListener(slButtonListener)
         SyncCamera.camara.observe(viewLifecycleOwner) {
-            fun showCurrent(distance: Int){
+            fun showCurrent(distance: Int) {
                 val text = "前方限速:${it.limit}公里，距離:${distance}公尺"
                 AppUtil.showTopToast(
                     requireActivity(),
@@ -254,38 +273,46 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 binding.slButton.visibility = View.VISIBLE
                 binding.gvSL.text = it.limit
                 when (it.distance) {
-                    in 251 .. 500 ->{
-                        if(lastCamera == null || (it.id != lastCamera!!.id)){
+                    in 251..500 -> {
+                        if (lastCamera == null || (it.id != lastCamera!!.id)) {
                             lastCamera = it
                         }
                     }
+
                     in 151..250 -> {
-                        if((lastCamera!!.distance in 151..250) ||
-                            lastCamera!!.distance < it.distance){
+                        if ((lastCamera!!.distance in 151..250) ||
+                            lastCamera!!.distance < it.distance
+                        ) {
                             return@observe
                         }
                         lastCamera!!.distance = it.distance
                         showCurrent(200)
                     }
-                    in 51 .. 150 -> {
-                        if((lastCamera!!.distance in 51..150) ||
-                            lastCamera!!.distance < it.distance){
+
+                    in 51..150 -> {
+                        if ((lastCamera!!.distance in 51..150) ||
+                            lastCamera!!.distance < it.distance
+                        ) {
                             return@observe
                         }
                         lastCamera!!.distance = it.distance
                         showCurrent(100)
                     }
+
                     in 3..50 -> {
-                        if((lastCamera!!.distance in 3..50) ||
-                            lastCamera!!.distance < it.distance){
+                        if ((lastCamera!!.distance in 3..50) ||
+                            lastCamera!!.distance < it.distance
+                        ) {
                             return@observe
                         }
                         lastCamera!!.distance = it.distance
 //                        showCurrent(50)
                     }
+
                     in 0..2 -> {
-                        if((lastCamera!!.distance in 0..2) ||
-                            lastCamera!!.distance < it.distance){
+                        if ((lastCamera!!.distance in 0..2) ||
+                            lastCamera!!.distance < it.distance
+                        ) {
                             return@observe
                         }
                         lastCamera!!.distance = it.distance
@@ -527,7 +554,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                         val bundle = Bundle()
                         bundle.putDouble("lat", it.latitude)
                         bundle.putDouble("long", it.longitude)
-                        Navigation.findNavController(binding.root).navigate(R.id.action_mapFragment_to_weatherFragment)
+                        Navigation.findNavController(binding.root)
+                            .navigate(R.id.action_mapFragment_to_weatherFragment)
                     }
                 }
         } else {
@@ -857,55 +885,65 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         mClusterManager = ClusterManager(context, map)
         mClusterManager?.renderer = CustomClusterRenderer(requireActivity(), map, mClusterManager!!)
 
-        SyncPosition.parkingLists.observe(viewLifecycleOwner) {
-            for (p in it) {
-                mClusterManager?.addItem(
-                    MyItem(
-                        p.latitude,
-                        p.longitude,
-                        "停車場: " + p.parkingName,
-                        0
-                    )
-                )
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                SyncPosition.parkingLists.collect {
+                    for (p in it) {
+                        mClusterManager?.addItem(
+                            MyItem(
+                                p.latitude,
+                                p.longitude,
+                                "停車場: " + p.parkingName,
+                                0
+                            )
+                        )
+                    }
 
-            }
-        }
-
-        SyncCamera.cameraLists.observe(viewLifecycleOwner) {
-            for (p in it) {
-                if (BuildConfig.DEBUG) {
-                MyLog.d(p.road + p.longitude + p.latitude)
                 }
-                mClusterManager?.addItem(
-                    MyItem(
-                        p.latitude,
-                        p.longitude,
-                        "測速: " + p.road + p.introduction,
-                        1
-                    )
-                )
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                SyncCamera.cameraLists.collect {
+                    for (p in it) {
+                        if (BuildConfig.DEBUG) {
+                            MyLog.d(p.road + p.longitude + p.latitude)
+                        }
+                        mClusterManager?.addItem(
+                            MyItem(
+                                p.latitude,
+                                p.longitude,
+                                "測速: " + p.road + p.introduction,
+                                1
+                            )
+                        )
+                    }
+                }
             }
         }
 
-        SyncPosition.oilStation.observe(viewLifecycleOwner) {
-            for (p in it) {
-                mClusterManager?.addItem(
-                    MyItem(
-                        p.latitude,
-                        p.logitude,
-                        "加油站: " + p.address,
-                        2
-                    )
-                )
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                SyncPosition.oilStation.collect {
+                    for (p in it) {
+                        mClusterManager?.addItem(
+                            MyItem(
+                                p.latitude,
+                                p.logitude,
+                                "加油站: " + p.address,
+                                2
+                            )
+                        )
 
+                    }
+                }
             }
         }
 
         map.setOnCameraIdleListener(mClusterManager)
-        SyncPosition.parkingApi(this, this)
-        SyncCamera.cameraMarkApi(this, this)
-        SyncPosition.oilStationApi(this, this)
-        SyncPosition.parkingApi(this, this)
+        SyncPosition.parkingApi()
+        SyncCamera.cameraMarkApi()
+        SyncPosition.oilStationApi()
         mClusterManager?.setOnClusterItemClickListener {
             false
         }

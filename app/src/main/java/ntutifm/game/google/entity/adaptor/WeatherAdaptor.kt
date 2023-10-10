@@ -38,6 +38,8 @@ class WeatherAdaptor(private var mList: List<Weather>?) :
         holder.phenomenon.text = mList?.get(position)?.wx1 ?: ""
         holder.temperature.text = mList?.get(position)?.t1 ?: ""
 
+
+
     }
 
     override fun getItemCount(): Int {

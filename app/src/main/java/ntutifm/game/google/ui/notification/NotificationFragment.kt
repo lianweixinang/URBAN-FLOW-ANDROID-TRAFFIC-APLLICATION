@@ -1,5 +1,6 @@
 package ntutifm.game.google.ui.notification
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,9 +12,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ntutifm.game.google.MyActivity
+import ntutifm.game.google.R
 import ntutifm.game.google.databinding.FragmentNotificationBinding
 import ntutifm.game.google.entity.sync.SyncIncident
 import ntutifm.game.google.entity.adaptor.NotificationAdaptor
+import ntutifm.game.google.entity.sync.SyncPosition
+import ntutifm.game.google.entity.sync.SyncWeather
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.ApiCallBack
 import ntutifm.game.google.ui.oil.NotificationViewModel
@@ -37,11 +41,8 @@ class NotificationFragment : Fragment(), ApiCallBack {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         incidentListInit()
-        SyncIncident.incidentLists.observe(viewLifecycleOwner){
-            MyLog.e("updateIncident")
-            adaptor?.setFilteredList(it)
-        }
-        SyncIncident.getIncident(this,this)
+
+        notificationTextInit()
 
     }
     @RequiresApi(Build.VERSION_CODES.O)
@@ -51,6 +52,16 @@ class NotificationFragment : Fragment(), ApiCallBack {
         recycleView?.layoutManager = LinearLayoutManager(MyActivity().context)
         adaptor = NotificationAdaptor(listOf())
         recycleView?.adapter = adaptor
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun notificationTextInit() {
+        SyncIncident.incidentLists.observe(viewLifecycleOwner) {
+            MyLog.e("updateIncident")
+            adaptor?.setFilteredList(it)
+            adaptor?.notifyDataSetChanged()
+        }
+        SyncIncident.getIncident(this,this)
     }
     override fun onSuccess(successData: ArrayList<String>){}
 

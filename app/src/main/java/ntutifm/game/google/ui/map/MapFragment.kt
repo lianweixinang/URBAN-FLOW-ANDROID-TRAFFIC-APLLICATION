@@ -3,8 +3,6 @@ package ntutifm.game.google.ui.map
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.location.Location
 import android.net.http.SslError
 import android.os.Build
@@ -39,15 +37,10 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.maps.android.clustering.ClusterManager
-import com.google.maps.android.clustering.view.DefaultClusterRenderer
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Delay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -75,7 +68,6 @@ import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.*
 import java.util.Locale
-import java.util.concurrent.Delayed
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
@@ -86,7 +78,7 @@ import kotlin.math.sqrt
 
 class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
-    ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack, TextToSpeech.OnInitListener {
+    ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack {
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
     private val viewModel: MapViewModel by lazy {
@@ -106,6 +98,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var favoriteFlag: Boolean = false
     private var weatherState: Boolean = true
     private var permissionDenied: Boolean = false
+    private var isTTSInitialized = false
 
     private var searchData: SearchHistory? = null
     private var oldIncident: List<Incident>? = null
@@ -136,7 +129,18 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         binding.menuButton.setOnClickListener(menuButtonListener)
-        textToSpeech = TextToSpeech(requireContext(), this)
+        textToSpeech = TextToSpeech(requireActivity()) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                val result = textToSpeech?.setLanguage(Locale.CHINESE)
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Log.e("TTS", "該語言不被支持或缺少數據")
+                } else {
+                    textToSpeech?.speak("老頭子你回來了喔", TextToSpeech.QUEUE_FLUSH, null, null)
+                }
+            } else {
+                Log.e("TTS", "初始化失敗")
+            }
+        }
         titleInit()
         cameraInit()
         favoriteInit()
@@ -168,20 +172,10 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         super.onDestroyView()
     }
 
-    override fun onInit(status: Int) {
-        if (status == TextToSpeech.SUCCESS) {
-            val result = textToSpeech?.setLanguage(Locale.getDefault())
-
-            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Log.e("YourFragment", "Language not supported")
-            }
-        } else {
-            Log.e("YourFragment", "TTS initialization failed")
-        }
-    }
-
     private fun speakText(textToSpeak: String) {
-        textToSpeech?.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null, null)
+        if(isTTSInitialized) {
+            textToSpeech?.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null, null)
+        }
     }
 
     /** 標題初始化 */

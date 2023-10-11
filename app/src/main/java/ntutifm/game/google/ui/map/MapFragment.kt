@@ -54,8 +54,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ntutifm.game.google.*
 import ntutifm.game.google.R
+import ntutifm.game.google.apiClass.CCTV
 import ntutifm.game.google.apiClass.Camera
 import ntutifm.game.google.apiClass.Incident
+import ntutifm.game.google.apiClass.RoadFavorite
 import ntutifm.game.google.apiClass.SearchHistory
 import ntutifm.game.google.databinding.FragmentMapBinding
 import ntutifm.game.google.entity.*
@@ -443,15 +445,18 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     /** 收藏初始化 */
     @RequiresApi(Build.VERSION_CODES.O)
     private fun favoriteInit() {
-//        favoriteFlag = dbFavDisplay(Road("南京東路"), requireActivity())
-        binding.fragmentHome.favoriteBtn.apply {
-            if (favoriteFlag) {
-                this.setImageResource(R.drawable.ic_baseline_star_25)
-            } else {
-                this.setImageResource(R.drawable.ic_baseline_star_24)
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.favoriteState.collect {
+                    if(it){
+                        binding.fragmentHome.favoriteBtn.setImageResource(R.drawable.ic_baseline_star_25)
+                    } else {
+                        binding.fragmentHome.favoriteBtn.setImageResource(R.drawable.ic_baseline_star_24)
+                    }
+                }
             }
-            binding.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
         }
+        binding.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
     }
 
     /** 收藏切換 */
@@ -464,13 +469,12 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             if (favoriteFlag) {
                 this.setImageResource(R.drawable.ic_baseline_star_24)
                 if (searchData != null) {
-//                    dbAddFavRoad(searchData!!, requireActivity())
+                    viewModel.addFavorite(RoadFavorite(null, searchData!!.roadId, searchData!!.roadName))
                 }
             } else {
                 this.setImageResource(R.drawable.ic_baseline_star_25)
                 if (searchData != null) {
-                    val data = Road(searchData!!.roadName)
-//                    dbFavCDelete(data, requireActivity())
+                    viewModel.deleteFavorite(searchData!!.roadName)
                 }
             }
             favoriteFlag = !favoriteFlag
@@ -710,6 +714,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 binding.fragmentSearch.root.visibility = View.GONE
                 binding.fragmentHome.root.visibility = View.VISIBLE
                 binding.fragmentHome.textView.text = searchData!!.roadName
+                viewModel.checkFavorite(searchData!!.roadName)
                 isOpen = false
                 AppUtil.showTopToast(requireActivity(), "搜尋中...")
             }

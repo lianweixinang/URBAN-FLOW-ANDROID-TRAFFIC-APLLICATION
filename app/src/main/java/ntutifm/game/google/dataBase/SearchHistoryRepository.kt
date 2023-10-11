@@ -6,7 +6,7 @@ import ntutifm.game.google.apiClass.SearchHistory
 
 class SearchHistoryRepository(context: Context) {
     private val searchHistoryDao : SearchHistoryDao by lazy {
-        MapDatabase.getDatabase(context.applicationContext).getDao()
+        MapDatabase.getDatabase(context.applicationContext).getSearchHistoryDao()
     }
     val searchHistory:LiveData<List<SearchHistory>> by lazy {
         searchHistoryDao.getAllHistory()

@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import ntutifm.game.google.entity.CCTV
+import ntutifm.game.google.apiClass.CCTV
 
 class RoadAdaptor(
     context: Context,

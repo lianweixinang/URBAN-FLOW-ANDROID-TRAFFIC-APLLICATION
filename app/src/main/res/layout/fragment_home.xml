@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:context="ntutifm.game.google.ui.home.HomeFragment">
+    android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -52,7 +51,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="九份老街"
+                    android:text="中山北路-通河街口"
                     android:textColor="#272727"
                     android:textSize="15sp" />
 

@@ -44,6 +44,9 @@ class WeatherFragment : Fragment(), ApiCallBack {
             val index = SyncPosition.districtToIndex()
             binding.weatherIcon.setImageResource(
                 when (it[index].wx1) {
+                    "晴天" ->R.drawable.sun
+                    "雨天" ->R.drawable.heavy_rain
+                    "短暫陣雨" ->R.drawable.heavy_rain
                     "多雲短暫陣雨" ->R.drawable.heavy_rain
                     "陰時多雲短暫陣雨" ->R.drawable.heavy_rain
                     "多雲午後短暫陣雨" ->R.drawable.heavy_rain

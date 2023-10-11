@@ -10,6 +10,7 @@ class SpnOnItemSelected(val binding: FragmentMapBinding) : AdapterView.OnItemSel
         val selectedItem = parent?.getItemAtPosition(position) as? CCTV
         selectedItem?.let {
             binding.webView.loadUrl(it.url)
+            binding.fragmentHome.textView.text = it.name
         }
 
     }

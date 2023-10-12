@@ -42,12 +42,12 @@ class AppUtil {
         }
 
         @JvmStatic
-        fun showSoftKeyboard(context: Context?, view: View?) {
+        fun showSoftKeyboard(context: Context?, view: View) {
             if (context == null) {
                 return
             }
             val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm?.showSoftInput(view, 0)
+            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
         }
 
         @JvmStatic

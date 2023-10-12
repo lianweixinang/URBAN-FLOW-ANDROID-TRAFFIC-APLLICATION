@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.webkit.SslErrorHandler
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -99,6 +100,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var weatherState: Boolean = true
     private var permissionDenied: Boolean = false
     private var isTTSInitialized = false
+    private var isInitialized = false
 
     private var searchData: SearchHistory? = null
     private var oldIncident: List<Incident>? = null
@@ -110,12 +112,14 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var adaptor: SearchAdaptor? = null
     private var adapter: RoadAdaptor? = null
 
-
     /** 根據layout建構畫面 */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
+        arguments?.let { bundle ->
+            isInitialized = bundle.getBoolean("notReset")
+        }
         return binding.root
     }
 
@@ -123,9 +127,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
-            loadingView()
-        }
+        loadingView()
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         binding.menuButton.setOnClickListener(menuButtonListener)
@@ -135,7 +137,12 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Log.e("TTS", "該語言不被支持或缺少數據")
                 } else {
-                    textToSpeech?.speak("老頭子你回來了喔", TextToSpeech.QUEUE_FLUSH, null, null)
+                    textToSpeech?.speak(
+                        "老頭子你回來了喔",
+                        TextToSpeech.QUEUE_FLUSH,
+                        null,
+                        null
+                    )
                 }
             } else {
                 Log.e("TTS", "初始化失敗")
@@ -143,18 +150,11 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         }
         titleInit()
         cameraInit()
+        searchInit()
         favoriteInit()
         bottomSheetInit()
-        searchViewInit()
-        searchListInit()
         webViewInit()
         incidentCheck()
-    }
-    private suspend fun loadingView(){
-        delay(6000)
-        withContext(Dispatchers.Main) {
-            binding.cover.visibility = View.GONE
-        }
     }
 
     override fun onResume() {
@@ -172,8 +172,23 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         super.onDestroyView()
     }
 
+    /** 關掉cover */
+    private fun loadingView() {
+        if (!isInitialized) {
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
+                delay(6000)
+                withContext(Dispatchers.Main) {
+                    binding.cover.visibility = View.GONE
+                }
+            }
+        } else {
+            binding.cover.visibility = View.GONE
+        }
+    }
+
+    /** 撥放語音 */
     private fun speakText(textToSpeak: String) {
-        if(isTTSInitialized) {
+        if (isTTSInitialized) {
             textToSpeech?.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null, null)
         }
     }
@@ -238,7 +253,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             override fun onReceivedSslError(
                 view: WebView?,
                 handler: SslErrorHandler?,
-                error: SslError?
+                error: SslError?,
             ) {
                 handler?.proceed()
             }
@@ -445,7 +460,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.favoriteState.collect {
-                    if(it){
+                    if (it) {
                         binding.fragmentHome.favoriteBtn.setImageResource(R.drawable.ic_baseline_star_25)
                     } else {
                         binding.fragmentHome.favoriteBtn.setImageResource(R.drawable.ic_baseline_star_24)
@@ -466,7 +481,13 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             if (favoriteFlag) {
                 this.setImageResource(R.drawable.ic_baseline_star_24)
                 if (searchData != null) {
-                    viewModel.addFavorite(RoadFavorite(null, searchData!!.roadId, searchData!!.roadName))
+                    viewModel.addFavorite(
+                        RoadFavorite(
+                            null,
+                            searchData!!.roadId,
+                            searchData!!.roadName
+                        )
+                    )
                 }
             } else {
                 this.setImageResource(R.drawable.ic_baseline_star_25)
@@ -543,7 +564,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         if (BuildConfig.DEBUG) {
             MyLog.d("openDrawer")
         }
-        val drawerView = requireActivity()?.findViewById<View>(R.id.drawerLayout1) as DrawerLayout
+        val drawerView =
+            requireActivity()?.findViewById<View>(R.id.drawerLayout1) as DrawerLayout
         drawerView.openDrawer(GravityCompat.START)
     }
 
@@ -607,19 +629,18 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         binding.imageView3.visibility = View.GONE
         binding.spinner.visibility = View.GONE
         binding.fragmentSearch.searchView.apply {
+            this.clearFocus()
             this.requestFocus()
             this.onActionViewExpanded()
+            AppUtil.showSoftKeyboard(requireActivity(), this)
         }
+        behavior?.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
-    /** 搜尋初始化 */
-    private fun searchViewInit() {
-        binding.fragmentSearch.searchView.setOnQueryTextListener(queryTextListener)
-    }
-
-    /** 初始化搜尋清單 */
+    /** 初始化搜尋 */
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun searchListInit() {
+    private fun searchInit() {
+        binding.fragmentSearch.searchView.setOnQueryTextListener(queryTextListener)
         recycleView = binding.fragmentSearch.recycleView
         recycleView?.setHasFixedSize(true)
         recycleView?.layoutManager = LinearLayoutManager(MyActivity().context)
@@ -736,7 +757,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.isTrafficEnabled = true
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        mFusedLocationClient =
+            LocationServices.getFusedLocationProviderClient(requireActivity())
         map.uiSettings.isMyLocationButtonEnabled = true
         map.setOnMyLocationButtonClickListener(this)
         map.setOnMyLocationClickListener(this)
@@ -887,7 +909,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     /** 批量生成mark */
     private fun initMark() {
         mClusterManager = ClusterManager(context, map)
-        mClusterManager?.renderer = CustomClusterRenderer(requireActivity(), map, mClusterManager!!)
+        mClusterManager?.renderer =
+            CustomClusterRenderer(requireActivity(), map, mClusterManager!!)
 
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             repeatOnLifecycle(Lifecycle.State.CREATED) {

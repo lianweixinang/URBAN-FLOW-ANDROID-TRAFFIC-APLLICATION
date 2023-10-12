@@ -108,8 +108,11 @@
                         android:id="@+id/privacy_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:text="陳一心應用程式隱私權政策\n生效日期：2023/09/24\n 感謝您使用陳一心應用程式（以下簡稱「本應用程式」）。我們非常重視您的隱私權並致力於保護您的個人資料。本隱私權政策旨在向您說明我們如何收集、使用、存儲和保護您的個人資料。
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:text="應用程式隱私權政策\n生效日期：2023/09/24\n 感謝您使用交通資訊應用程式（以下簡稱「本應用程式」）。我們非常重視您的隱私權並致力於保護您的個人資料。本隱私權政策旨在向您說明我們如何收集、使用、存儲和保護您的個人資料。
                                         \n1. 收集和使用個人資料
                                         \n當您使用本應用程式時，我們可能會收集與您有關的某些個人資料。這些資料可能包括但不限於：
                                         \n      - 姓名
@@ -133,7 +136,7 @@
                                         \n電子郵件：yichong.chen@gmail.com
                                         \n電話：0989432829
                                         \n地址:新北市板橋區僑中一街80巷3弄一號4樓
-                                        \n感謝您閱讀並理解陳一心應用程式的隱私權政策。希望您能放心使用我們的產品和服務。"
+                                        \n感謝您閱讀並理解本應用程式的隱私權政策。希望您能放心使用我們的產品和服務。"
                         android:textColor="#000000"
                         android:textSize="12dp" />
                 </RelativeLayout>

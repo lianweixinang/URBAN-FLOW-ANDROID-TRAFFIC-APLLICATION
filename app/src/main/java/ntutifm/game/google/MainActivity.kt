@@ -6,21 +6,13 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
-import androidx.lifecycle.MutableLiveData
-import androidx.navigation.Navigation
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import ntutifm.game.google.databinding.ActivityMainBinding
-import ntutifm.game.google.global.AppUtil
-import ntutifm.game.google.ui.map.MapFragment
-import ntutifm.game.google.ui.notification.NotificationFragment
-import ntutifm.game.google.ui.oil.AboutFragment
-import ntutifm.game.google.ui.oil.InstructionFragment
-import ntutifm.game.google.ui.oil.OilFragment
-import ntutifm.game.google.ui.route.RouteFragment
-import ntutifm.game.google.ui.weather.WeatherFragment
+
 open class MainActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener{
 
@@ -42,37 +34,39 @@ open class MainActivity : AppCompatActivity(),
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         val navController = navHostFragment.navController
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(R.id.mapFragment, true)
+            .build()
+        val bundle = Bundle()
+        bundle.putBoolean("notReset", true)
         when (item.itemId) {
             R.id.nav_map -> {
-                navController.navigate(R.id.mapFragment)
-//                AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, MapFragment())
+                navController.navigate(R.id.mapFragment, bundle, navOptions)
             }
             R.id.nav_oil -> {
-                navController.navigate(R.id.oilFragment)
+                navController.navigate(R.id.oilFragment, bundle, navOptions)
             }
             R.id.nav_weather -> {
-                navController.navigate(R.id.weatherFragment)
+                navController.navigate(R.id.weatherFragment, bundle, navOptions)
             }
             R.id.nav_route -> {
-                navController.navigate(R.id.routeFragment)
+                navController.navigate(R.id.routeFragment, bundle, navOptions)
             }
             R.id.nav_notification -> {
-                navController.navigate(R.id.notificationFragment)
+                navController.navigate(R.id.notificationFragment, bundle, navOptions)
             }
             R.id.nav_about -> {
-                navController.navigate(R.id.aboutFragment)
-            }
-            R.id.nav_instruction -> {
-                navController.navigate(R.id.instructionFragment)
+                navController.navigate(R.id.aboutFragment, bundle, navOptions)
             }
         }
+        //AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, MapFragment())
 
         binding.drawerLayout1.closeDrawer(GravityCompat.START)
         return true
     }
 
     private fun setNavigationViewListener() {
-        val navigationView = findViewById(R.id.nav_view) as NavigationView
+        val navigationView = findViewById<NavigationView>(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
     }
 

@@ -97,7 +97,7 @@ class NotificationFragment : Fragment(), ApiCallBack {
                     incident.solved
                 } else {" 未排除"} ) + ")"
         detailSource.text = "來源:" + incident.auth
-        detailTime.text = incident.raiseTime
+        detailTime.text = "時間:" + incident.raiseTime
 
 
         val popupWindow = PopupWindow(

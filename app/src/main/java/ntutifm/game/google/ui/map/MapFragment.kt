@@ -207,21 +207,26 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             SyncWeather.weatherDataApi(this, this)
         }
         SyncWeather.weatherLists.observe(viewLifecycleOwner) {
-            when (it[SyncPosition.districtToIndex()].wx1) {
-                "多雲短暫陣雨" ->R.drawable.heavy_rain
-                "陰時多雲短暫陣雨" ->R.drawable.heavy_rain
-                "多雲午後短暫陣雨" ->R.drawable.heavy_rain
-                "晴時多雲" ->R.drawable.cloudy
-                "多雲晴時" ->R.drawable.cloudy
-                "午後短暫雷陣雨" ->R.drawable.storm
-                "短暫陣雨或雷雨" ->R.drawable.storm
-                "多雲午後短暫雷陣雨" ->R.drawable.storm
-                "多雲" -> R.drawable.cloudy_nosun
-                "多雲時陰" -> R.drawable.cloudy_nosun
-                "多雲時晴" -> R.drawable.cloudy_nosun
-                "陰時多雲" -> R.drawable.cloudy_nosun
-                else -> R.drawable.cloudy_nosun
-            }
+            binding.weatherButton.setImageResource(
+                when (it[SyncPosition.districtToIndex()].wx1) {
+                    "晴天" ->R.drawable.sun
+                    "雨天" ->R.drawable.heavy_rain
+                    "短暫陣雨" ->R.drawable.heavy_rain
+                    "多雲短暫陣雨" ->R.drawable.heavy_rain
+                    "陰時多雲短暫陣雨" ->R.drawable.heavy_rain
+                    "多雲午後短暫陣雨" ->R.drawable.heavy_rain
+                    "晴時多雲" ->R.drawable.cloudy
+                    "多雲晴時" ->R.drawable.cloudy
+                    "午後短暫雷陣雨" ->R.drawable.storm
+                    "短暫陣雨或雷雨" ->R.drawable.storm
+                    "多雲午後短暫雷陣雨" ->R.drawable.storm
+                    "多雲" -> R.drawable.cloudy_nosun
+                    "多雲時陰" -> R.drawable.cloudy_nosun
+                    "多雲時晴" -> R.drawable.cloudy_nosun
+                    "陰時多雲" -> R.drawable.cloudy_nosun
+                    else -> R.drawable.cloudy_nosun
+                }
+            )
         }
     }
 
@@ -258,7 +263,11 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 handler?.proceed()
             }
         }
-        binding.webView.settings.javaScriptEnabled = true
+        binding.webView.settings.apply {
+            this.javaScriptEnabled = true
+            this.loadWithOverviewMode = true;
+            this.useWideViewPort = true
+        }
         binding.webView.loadUrl("https://cctvatis4.ntpc.gov.tw/C000232")
     }
 
@@ -292,7 +301,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             }
             if (it != null && it.distance < 500) {
                 binding.cameraSpeedButton.setImageResource(R.drawable.slnull)
-                binding.cameraSpeedNumber.apply{
+                binding.cameraSpeedNumber.apply {
                     this.visibility = View.VISIBLE
                     this.text = it.limit
                 }

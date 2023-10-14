@@ -153,23 +153,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         binding.menuButton.setOnClickListener(menuButtonListener)
-        textToSpeech = TextToSpeech(requireActivity()) { status ->
-            if (status == TextToSpeech.SUCCESS) {
-                val result = textToSpeech?.setLanguage(Locale.CHINESE)
-                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    Log.e("TTS", "該語言不被支持或缺少數據")
-                } else {
-                    textToSpeech?.speak(
-                        "修偉幹我",
-                        TextToSpeech.QUEUE_FLUSH,
-                        null,
-                        null
-                    )
-                }
-            } else {
-                Log.e("TTS", "初始化失敗")
-            }
-        }
+        speechInit()
         titleInit()
         cameraInit()
         searchInit()
@@ -193,6 +177,27 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         textToSpeech?.stop()
         textToSpeech?.shutdown()
         super.onDestroyView()
+    }
+
+    /** 初始化文字轉語音 */
+    private fun speechInit(){
+        textToSpeech = TextToSpeech(requireActivity()) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                val result = textToSpeech?.setLanguage(Locale.CHINESE)
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Log.e("TTS", "該語言不被支持或缺少數據")
+                } else {
+                    textToSpeech?.speak(
+                        "修偉幹我",
+                        TextToSpeech.QUEUE_FLUSH,
+                        null,
+                        null
+                    )
+                }
+            } else {
+                Log.e("TTS", "初始化失敗")
+            }
+        }
     }
 
     /** 關掉cover */

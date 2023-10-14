@@ -6,7 +6,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import ntutifm.game.google.apiClass.CCTV
 import ntutifm.game.google.apiClass.Camera
-import ntutifm.game.google.apiClass.CitySpeed
 import ntutifm.game.google.apiClass.OilStation
 import ntutifm.game.google.apiClass.Parking
 import ntutifm.game.google.apiClass.RoadFavorite
@@ -18,7 +17,7 @@ abstract class MapDatabase: RoomDatabase() {
     abstract fun getCameraDao():CameraDao
     abstract fun getParkingDao():ParkingDao
     abstract fun getOilStationDao():OilStationDao
-    abstract fun getCCTVDao():cctvDao
+    abstract fun getCCTVDao():CCTVDao
     companion object {
         private var instance: MapDatabase? = null
         fun getDatabase(context: Context): MapDatabase {

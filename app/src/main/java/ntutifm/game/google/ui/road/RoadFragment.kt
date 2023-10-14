@@ -1,4 +1,4 @@
-package ntutifm.game.google.ui.parking
+package ntutifm.game.google.ui.road
 
 import android.os.Build
 import android.os.Bundle
@@ -15,17 +15,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
 import ntutifm.game.google.MyActivity
 import ntutifm.game.google.apiClass.Incident
-import ntutifm.game.google.databinding.FragmentParkingBinding
-import ntutifm.game.google.entity.adaptor.ParkingAdaptor
-import ntutifm.game.google.entity.contract.ParkingContract
+import ntutifm.game.google.databinding.FragmentRoadBinding
+import ntutifm.game.google.entity.adaptor.RoadAdaptor
+import ntutifm.game.google.entity.adaptor.RoadFavoriteAdaptor
+import ntutifm.game.google.entity.contract.RoadContract
 import ntutifm.game.google.global.MyLog
 
-class ParkingFragment:Fragment() {
-    private var _binding: FragmentParkingBinding? = null
+class RoadFragment:Fragment() {
+    private var _binding: FragmentRoadBinding? = null
     private val binding get() = _binding!!
-    private var adapter: ParkingAdaptor? = null
-    private val viewModel: ParkingViewModel by lazy {
-        ViewModelProvider(this)[ParkingViewModel::class.java]
+    private var adapter: RoadFavoriteAdaptor? = null
+    private val viewModel: RoadViewModel by lazy {
+        ViewModelProvider(this)[RoadViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -33,7 +34,7 @@ class ParkingFragment:Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentParkingBinding.inflate(inflater, container, false)
+        _binding = FragmentRoadBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -41,8 +42,8 @@ class ParkingFragment:Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initObservers()
-        if (viewModel.currentState.postsState is ParkingContract.ParkingState.Idle)
-            viewModel.setEvent(ParkingContract.Event.OnFetchParkings)
+        if (viewModel.currentState.postsState is RoadContract.RoadState.Idle)
+            viewModel.setEvent(RoadContract.Event.OnFetchRoads)
     }
     override fun onDestroyView() {
         super.onDestroyView()
@@ -50,13 +51,13 @@ class ParkingFragment:Fragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun parkingListInit() {
+    private fun roadListInit() {
         binding.recycleIncidentView.setHasFixedSize(true)
         binding.recycleIncidentView.layoutManager = LinearLayoutManager(MyActivity().context)
-        adapter = ParkingAdaptor(listOf(), parkingBtnListener)
+        adapter = RoadFavoriteAdaptor(listOf(), roadBtnListener)
         binding.recycleIncidentView.adapter = adapter
     }
-    private val parkingBtnListener = View.OnClickListener() {
+    private val roadBtnListener = View.OnClickListener() {
         val data = it.tag as Incident
         //切換
     }
@@ -66,11 +67,11 @@ class ParkingFragment:Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect {
                     when (val state = it.postsState) {
-                        is ParkingContract.ParkingState.Idle -> {
+                        is RoadContract.RoadState.Idle -> {
                         }
-                        is ParkingContract.ParkingState.Loading -> {
+                        is RoadContract.RoadState.Loading -> {
                         }
-                        is ParkingContract.ParkingState.Success -> {
+                        is RoadContract.RoadState.Success -> {
                             val data = state.posts
                             adapter?.submitList(data)
                         }
@@ -83,7 +84,7 @@ class ParkingFragment:Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.effect.collect { effect ->
                     when (effect) {
-                        is ParkingContract.Effect.ShowError -> {
+                        is RoadContract.Effect.ShowError -> {
                             val msg = effect.message
                             msg?.let {
                                 MyLog.e(it) }

@@ -4,11 +4,10 @@ import android.content.Context
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import ntutifm.game.google.apiClass.CCTV
-import ntutifm.game.google.apiClass.Parking
 import ntutifm.game.google.global.Resource
 
-class cctvRepository(context: Context) {
-    private val cctvDao : cctvDao by lazy {
+class CCTVRepository(context: Context) {
+    private val cctvDao : CCTVDao by lazy {
         MapDatabase.getDatabase(context.applicationContext).getCCTVDao()
     }
 

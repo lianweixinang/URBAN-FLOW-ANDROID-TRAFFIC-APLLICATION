@@ -4,10 +4,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import ntutifm.game.google.apiClass.CCTV
-import ntutifm.game.google.apiClass.Camera
 
 @Dao
-interface cctvDao{
+interface CCTVDao{
 
     @Insert
      suspend fun insertFavorite(vararg cctv: CCTV)

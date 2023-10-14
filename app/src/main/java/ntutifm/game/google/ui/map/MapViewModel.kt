@@ -19,7 +19,7 @@ import ntutifm.game.google.dataBase.OilStationRepository
 import ntutifm.game.google.dataBase.ParkingRepository
 import ntutifm.game.google.dataBase.RoadFavoriteRepository
 import ntutifm.game.google.dataBase.SearchHistoryRepository
-import ntutifm.game.google.dataBase.cctvRepository
+import ntutifm.game.google.dataBase.CCTVRepository
 
 class MapViewModel(application: Application) : ViewModel() {
 
@@ -38,8 +38,8 @@ class MapViewModel(application: Application) : ViewModel() {
     private val oilStationRepository: OilStationRepository by lazy{
         OilStationRepository(application)
     }
-    private val cctvRepository:cctvRepository by lazy {
-        cctvRepository(application)
+    private val cctvRepository:CCTVRepository by lazy {
+        CCTVRepository(application)
     }
     val searchHistory = searchHistoryRepository.searchHistory
     private val _favoriteState = MutableStateFlow(false)

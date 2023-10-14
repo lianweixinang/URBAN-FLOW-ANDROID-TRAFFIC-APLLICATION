@@ -95,7 +95,8 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 
-class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener,OnMapReadyCallback,
+class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
+    GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
     ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack {
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
@@ -124,7 +125,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
     private var mFusedLocationClient: FusedLocationProviderClient? = null
     private var lastLatLng: LatLng? = null
     private var lastCamera: Camera? = null
-    private var azimuth:Float?=null
+    private var azimuth: Float? = null
 
     private var recycleView: RecyclerView? = null
     private var adaptor: SearchAdaptor? = null
@@ -228,17 +229,17 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
         SyncWeather.weatherLists.observe(viewLifecycleOwner) {
             binding.weatherButton.setImageResource(
                 when (it[SyncPosition.districtToIndex()].wx1) {
-                    "晴天" ->R.drawable.sun
-                    "雨天" ->R.drawable.heavy_rain
-                    "短暫陣雨" ->R.drawable.heavy_rain
-                    "多雲短暫陣雨" ->R.drawable.heavy_rain
-                    "陰時多雲短暫陣雨" ->R.drawable.heavy_rain
-                    "多雲午後短暫陣雨" ->R.drawable.heavy_rain
-                    "晴時多雲" ->R.drawable.cloudy
-                    "多雲晴時" ->R.drawable.cloudy
-                    "午後短暫雷陣雨" ->R.drawable.storm
-                    "短暫陣雨或雷雨" ->R.drawable.storm
-                    "多雲午後短暫雷陣雨" ->R.drawable.storm
+                    "晴天" -> R.drawable.sun
+                    "雨天" -> R.drawable.heavy_rain
+                    "短暫陣雨" -> R.drawable.heavy_rain
+                    "多雲短暫陣雨" -> R.drawable.heavy_rain
+                    "陰時多雲短暫陣雨" -> R.drawable.heavy_rain
+                    "多雲午後短暫陣雨" -> R.drawable.heavy_rain
+                    "晴時多雲" -> R.drawable.cloudy
+                    "多雲晴時" -> R.drawable.cloudy
+                    "午後短暫雷陣雨" -> R.drawable.storm
+                    "短暫陣雨或雷雨" -> R.drawable.storm
+                    "多雲午後短暫雷陣雨" -> R.drawable.storm
                     "多雲" -> R.drawable.cloudy_nosun
                     "多雲時陰" -> R.drawable.cloudy_nosun
                     "多雲時晴" -> R.drawable.cloudy_nosun
@@ -289,6 +290,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
         }
         binding.webView.loadUrl("https://cctv.bote.gov.taipei:8501/mjpeg/232")
     }
+
     private fun accident(c: FragmentActivity, incident: Incident) {
         // 載入自定義的 layout
         val inflater = c.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -302,9 +304,11 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
 
 
         // 創建 PopupWindow
-        val popupWindow = PopupWindow(popupView,
+        val popupWindow = PopupWindow(
+            popupView,
             ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply {
             isOutsideTouchable = true
 
         }
@@ -318,7 +322,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
                 .build()
             val bundle = Bundle()
             bundle.putBoolean("notReset", true)
-                    navController.navigate(R.id.notificationFragment, bundle, navOptions)
+            navController.navigate(R.id.notificationFragment, bundle, navOptions)
         }
 // 顯示彈跳視窗
         popupWindow.showAtLocation(popupView, Gravity.TOP, 0, 300)
@@ -819,8 +823,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
         }
     }
 
-    private fun initSensor(){
-        val sensorManager = requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    private fun initSensor() {
+        val sensorManager =
+            requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val rotationMatrix = FloatArray(9)
         val orientationValues = FloatArray(3)
 
@@ -860,67 +865,29 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
         setLocationInitBtn()
         weatherInit()
     }
-    data class DirectionsResponse(
-        val routes: List<Route>
-    )
 
-    data class Route(
-        val legs: List<Leg>
-    )
-
-    data class Leg(
-        val steps: List<Step>
-    )
-
-    data class Step(
-        val polyline: Polyline
-    )
-
-    data class Polyline(
-        val points: String
-    )
-
-    interface DirectionsService {
-        @GET("directions/json")
-        suspend fun getDirections(
-            @Query("origin") origin: String,
-            @Query("destination") destination: String,
-            @Query("mode") mode: String,
-            @Query("key") apiKey: String
-        ): DirectionsResponse
-    }
-    private fun getNavigation(origin:LatLng, destination:LatLng) {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://maps.googleapis.com/maps/api/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val service = retrofit.create(DirectionsService::class.java)
-
+    private fun getNavigation(origin: LatLng, destination: LatLng) {
+        val service = NavigationAPI.api
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val response = service.getDirections(
+                val response = service?.getDirections(
                     "${origin.latitude},${origin.longitude}",
                     "${destination.latitude},${destination.longitude}",
                     "driving",
                     "AIzaSyDRjDWqLgUb2xrIOzhKNixOOLbn249kAto"
                 )
-
-                val route = response.routes[0]
-                val steps = route.legs[0].steps
-
-                val routePoints = mutableListOf<LatLng>()
-
-                for (step in steps) {
-                    val points = step.polyline.points
-                    val decodedPoints = PolyUtil.decode(points)
-                    routePoints.addAll(decodedPoints)
-                }
-
-                MyLog.e(routePoints.toString())
-
-                withContext(Dispatchers.Main) {
-                    drawRoute(routePoints)
+                if (response != null) {
+                    val route = response.routes[0]
+                    val steps = route.legs[0].steps
+                    val routePoints = mutableListOf<LatLng>()
+                    for (step in steps) {
+                        val points = step.polyline.points
+                        val decodedPoints = PolyUtil.decode(points)
+                        routePoints.addAll(decodedPoints)
+                    }
+                    withContext(Dispatchers.Main) {
+                        drawRoute(routePoints)
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -964,7 +931,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
         return false
     }
 
-    private fun rotateCamera(){
+    private fun rotateCamera() {
         val currentCameraPosition = map.cameraPosition
         azimuth?.let {
             MyLog.e("角度: $azimuth")
@@ -991,7 +958,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
                             )
                         }
                         MyLog.e("Start Navigation")
-                        getNavigation(newLatLng, LatLng(25.0141,121.5181))
+                        getNavigation(newLatLng, LatLng(25.0141, 121.5181))
                         val targetLatLng =
                             LatLng(newLatLng.latitude - 0.00006, newLatLng.longitude)
                         val targetZoomLevel = 18f
@@ -1121,7 +1088,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
                             MyItem(
                                 p.latitude,
                                 p.longitude,
-                                1,p
+                                1, p
                             )
                         )
                     }
@@ -1137,7 +1104,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
                             MyItem(
                                 p.latitude,
                                 p.logitude,
-                                2,p
+                                2, p
                             )
                         )
 
@@ -1169,8 +1136,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
         map.animateCamera(cameraUpdate, 1000, null)
     }
 
-    private fun showInfoWindowForItem(item: MyItem<Any>){
-        val targetlastLatLng = LatLng(item.position.latitude-0.0005, item.position.longitude)
+    private fun showInfoWindowForItem(item: MyItem<Any>) {
+        val targetlastLatLng = LatLng(item.position.latitude - 0.0005, item.position.longitude)
         val targetZoomLevel = 18f
         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(targetlastLatLng, targetZoomLevel)
         map.animateCamera(cameraUpdate, 1000, null)
@@ -1178,26 +1145,28 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
         val title = infoWindowView.findViewById<TextView>(R.id.title)
         val description = infoWindowView.findViewById<TextView>(R.id.description)
 
-        if(item.data::class == Parking::class) {
+        if (item.data::class == Parking::class) {
             val data = item.data as Parking
-            title.text = "停車場: "+  data.parkingName
+            title.text = "停車場: " + data.parkingName
             description.text = "連結"
         }
-        if(item.data::class == Camera::class) {
+        if (item.data::class == Camera::class) {
             val data = item.data as Camera
-            title.text = "測速照相: "+ data.road
-            description.text = "限速: "+ data.limit
+            title.text = "測速照相: " + data.road
+            description.text = "限速: " + data.limit
         }
-        if(item.data::class == OilStation::class) {
+        if (item.data::class == OilStation::class) {
             val data = item.data as OilStation
-            title.text = "加油站: "+ data.station
+            title.text = "加油站: " + data.station
             description.text = data.address
         }
 
         // 創建 PopupWindow
-        val popupWindow = PopupWindow(infoWindowView,
+        val popupWindow = PopupWindow(
+            infoWindowView,
             WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT).apply {
+            WindowManager.LayoutParams.WRAP_CONTENT
+        ).apply {
             isOutsideTouchable = true
         }
 

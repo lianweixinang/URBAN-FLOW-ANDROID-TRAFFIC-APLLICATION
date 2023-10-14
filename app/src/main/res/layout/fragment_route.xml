@@ -53,6 +53,7 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
+                android:id="@+id/nav_Road"
                 android:layout_height="100dp"
                 android:layout_marginTop="20dp"
                 android:layout_gravity="center"
@@ -99,6 +100,7 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
+                android:id="@+id/nav_OilStation"
                 android:layout_height="100dp"
                 android:layout_marginTop="20dp"
                 app:cardBackgroundColor="#FFFFFF"
@@ -145,6 +147,7 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
+                android:id="@+id/nav_camera"
                 android:layout_height="100dp"
                 android:layout_marginTop="20dp"
                 app:cardBackgroundColor="#FFFFFF"
@@ -189,6 +192,7 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
+                android:id="@+id/nav_cctv"
                 android:layout_height="180dp"
                 android:layout_marginTop="20dp"
                 app:cardBackgroundColor="#FFFFFF"
@@ -241,6 +245,7 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
+                android:id="@+id/nav_park"
                 android:layout_height="100dp"
                 android:layout_marginTop="20dp"
                 app:cardBackgroundColor="#FFFFFF"

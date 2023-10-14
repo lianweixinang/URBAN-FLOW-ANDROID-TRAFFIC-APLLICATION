@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -13,7 +15,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
+import ntutifm.game.google.BuildConfig
 import ntutifm.game.google.MyActivity
+import ntutifm.game.google.R
 import ntutifm.game.google.apiClass.Incident
 import ntutifm.game.google.databinding.FragmentRoadBinding
 import ntutifm.game.google.entity.adaptor.RoadFavoriteAdaptor

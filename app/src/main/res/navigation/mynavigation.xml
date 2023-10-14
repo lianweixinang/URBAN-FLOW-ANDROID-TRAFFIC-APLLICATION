@@ -74,5 +74,60 @@
         <action
             android:id="@+id/action_routeFragment_to_mapFragment"
             app:destination="@id/mapFragment" />
+        <action
+            android:id="@+id/action_routeFragment_to_CCTVFragment"
+            app:destination="@id/CCTVFragment" />
+        <action
+            android:id="@+id/action_routeFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+        <action
+            android:id="@+id/action_routeFragment_to_roadFragment"
+            app:destination="@id/roadFragment" />
+        <action
+            android:id="@+id/action_routeFragment_to_oilStationFragment"
+            app:destination="@id/oilStationFragment" />
+        <action
+            android:id="@+id/action_routeFragment_to_parkingFragment"
+            app:destination="@id/parkingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/CCTVFragment"
+        android:name="ntutifm.game.google.ui.parking.CCTVFragment"
+        android:label="CCTVFragment" >
+        <action
+            android:id="@+id/action_CCTVFragment_to_routeFragment"
+            app:destination="@id/routeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="ntutifm.game.google.ui.camera.CameraFragment"
+        android:label="CameraFragment" >
+        <action
+            android:id="@+id/action_cameraFragment_to_routeFragment"
+            app:destination="@id/routeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/roadFragment"
+        android:name="ntutifm.game.google.ui.road.RoadFragment"
+        android:label="RoadFragment" >
+        <action
+            android:id="@+id/action_roadFragment_to_routeFragment"
+            app:destination="@id/routeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/oilStationFragment"
+        android:name="ntutifm.game.google.ui.oilStation.OilStationFragment"
+        android:label="OilStationFragment" >
+        <action
+            android:id="@+id/action_oilStationFragment_to_routeFragment"
+            app:destination="@id/routeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/parkingFragment"
+        android:name="ntutifm.game.google.ui.parking.ParkingFragment"
+        android:label="ParkingFragment" >
+        <action
+            android:id="@+id/action_parkingFragment_to_routeFragment"
+            app:destination="@id/routeFragment" />
     </fragment>
 </navigation>

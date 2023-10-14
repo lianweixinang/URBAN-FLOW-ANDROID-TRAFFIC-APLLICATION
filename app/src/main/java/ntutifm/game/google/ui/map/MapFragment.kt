@@ -143,7 +143,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
                     Log.e("TTS", "該語言不被支持或缺少數據")
                 } else {
                     textToSpeech?.speak(
-                        "老頭子你回來了喔",
+                        "修偉幹我",
                         TextToSpeech.QUEUE_FLUSH,
                         null,
                         null
@@ -275,19 +275,26 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
         }
         binding.webView.loadUrl("https://cctv.bote.gov.taipei:8501/mjpeg/232")
     }
-    private fun accident(c: FragmentActivity, title: String) {
+    private fun accident(c: FragmentActivity, incident: Incident) {
         // 載入自定義的 layout
         val inflater = c.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = inflater.inflate(R.layout.accident_item, null)
+        val popupText2 = popupView.findViewById<TextView>(R.id.popup_text2)
         val popupText = popupView.findViewById<TextView>(R.id.popup_text)
-        popupText.text = title
+        val popupText1 = popupView.findViewById<TextView>(R.id.popup_text1)
+        popupText2.text = incident.part
+        popupText.text = incident.title
+        popupText1.text = incident.solved
+
 
         // 創建 PopupWindow
         val popupWindow = PopupWindow(popupView,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT).apply {
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT).apply {
             isOutsideTouchable = true
+
         }
+
 // 設定點擊事件
         popupText.setOnClickListener {
             popupWindow.dismiss()
@@ -300,7 +307,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
                     navController.navigate(R.id.notificationFragment, bundle, navOptions)
         }
 // 顯示彈跳視窗
-        popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0)
+        popupWindow.showAtLocation(popupView, Gravity.TOP, 0, 300)
 
 // 設定一段時間後自動關閉
         Handler(Looper.getMainLooper()).postDelayed({
@@ -313,7 +320,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
     private fun incidentCheck() {
         SyncIncident.incidentLists.observe(viewLifecycleOwner) {
             if (it != null && it.isNotEmpty() && it[0] != oldIncident?.get(0)) {
-                accident(requireActivity(), it[0].title)
+                accident(requireActivity(), it[0])
                 oldIncident = it
             }
         }

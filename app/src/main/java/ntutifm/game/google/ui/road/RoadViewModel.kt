@@ -65,7 +65,7 @@ class RoadViewModel(application: Application) : BaseViewModel<RoadContract.Event
     class RoadViewModelFactory(private val application: Application): ViewModelProvider.AndroidViewModelFactory(application) {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
-            return RoadCameraViewModel(
+            return RoadViewModel(
                 application
             ) as T
         }

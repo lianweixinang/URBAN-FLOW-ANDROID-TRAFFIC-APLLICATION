@@ -1,4 +1,4 @@
-package ntutifm.game.google.ui.gas
+package ntutifm.game.google.ui.oilStation
 
 import android.os.Build
 import android.os.Bundle
@@ -16,17 +16,16 @@ import kotlinx.coroutines.launch
 import ntutifm.game.google.MyActivity
 import ntutifm.game.google.apiClass.Incident
 import ntutifm.game.google.databinding.FragmentNotificationBinding
-import ntutifm.game.google.entity.adaptor.ParkingAdaptor
-import ntutifm.game.google.entity.contract.ParkingContract
+import ntutifm.game.google.entity.adaptor.OilStationAdaptor
+import ntutifm.game.google.entity.contract.OilStationContract
 import ntutifm.game.google.global.MyLog
-import ntutifm.game.google.ui.parking.GasViewModel
 
-class GasFragment:Fragment() {
+class OilStationFragment:Fragment() {
     private var _binding: FragmentNotificationBinding? = null
     private val binding get() = _binding!!
-    private var adapter: ParkingAdaptor? = null
-    private val viewModel: GasViewModel by lazy {
-        ViewModelProvider(this)[GasViewModel::class.java]
+    private var adapter: OilStationAdaptor? = null
+    private val viewModel: OilStationViewModel by lazy {
+        ViewModelProvider(this)[OilStationViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -42,8 +41,8 @@ class GasFragment:Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initObservers()
-        if (viewModel.currentState.postsState is ParkingContract.ParkingState.Idle)
-            viewModel.setEvent(ParkingContract.Event.OnFetchParkings)
+        if (viewModel.currentState.postsState is OilStationContract.OilStationState.Idle)
+            viewModel.setEvent(OilStationContract.Event.OnFetchOilStations)
     }
     override fun onDestroyView() {
         super.onDestroyView()
@@ -54,7 +53,7 @@ class GasFragment:Fragment() {
     private fun parkingListInit() {
         binding.recycleIncidentView.setHasFixedSize(true)
         binding.recycleIncidentView.layoutManager = LinearLayoutManager(MyActivity().context)
-        adapter = ParkingAdaptor(listOf(), parkingBtnListener)
+        adapter = OilStationAdaptor(listOf(), parkingBtnListener)
         binding.recycleIncidentView.adapter = adapter
     }
     private val parkingBtnListener = View.OnClickListener() {
@@ -67,11 +66,11 @@ class GasFragment:Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect {
                     when (val state = it.postsState) {
-                        is ParkingContract.ParkingState.Idle -> {
+                        is OilStationContract.OilStationState.Idle -> {
                         }
-                        is ParkingContract.ParkingState.Loading -> {
+                        is OilStationContract.OilStationState.Loading -> {
                         }
-                        is ParkingContract.ParkingState.Success -> {
+                        is OilStationContract.OilStationState.Success -> {
                             val data = state.posts
                             adapter?.submitList(data)
                         }
@@ -84,7 +83,7 @@ class GasFragment:Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.effect.collect { effect ->
                     when (effect) {
-                        is ParkingContract.Effect.ShowError -> {
+                        is OilStationContract.Effect.ShowError -> {
                             val msg = effect.message
                             msg?.let {
                                 MyLog.e(it) }

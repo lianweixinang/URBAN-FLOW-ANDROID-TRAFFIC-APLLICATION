@@ -1,4 +1,4 @@
-package ntutifm.game.google.ui.parking
+package ntutifm.game.google.ui.oilStation
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
@@ -8,25 +8,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import ntutifm.game.google.dataBase.ParkingRepository
-import ntutifm.game.google.entity.contract.ParkingContract
+import ntutifm.game.google.dataBase.OilStationRepository
+import ntutifm.game.google.entity.contract.OilStationContract
 import ntutifm.game.google.global.BaseViewModel
 import ntutifm.game.google.global.Resource
 
-class GasViewModel(application: Application) : BaseViewModel<ParkingContract.Event, ParkingContract.State, ParkingContract.Effect>(){
+class OilStationViewModel(application: Application) : BaseViewModel<OilStationContract.Event, OilStationContract.State, OilStationContract.Effect>(){
 
-    private val repository: ParkingRepository by lazy{
-        ParkingRepository(application)
+    private val repository: OilStationRepository by lazy{
+        OilStationRepository(application)
     }
-    override fun createInitialState(): ParkingContract.State {
-        return ParkingContract.State(
-            postsState = ParkingContract.ParkingState.Idle,
+    override fun createInitialState(): OilStationContract.State {
+        return OilStationContract.State(
+            postsState = OilStationContract.OilStationState.Idle,
         )
     }
 
-    override fun handleEvent(event: ParkingContract.Event) {
+    override fun handleEvent(event: OilStationContract.Event) {
         when (event) {
-            is ParkingContract.Event.OnFetchParkings -> {
+            is OilStationContract.Event.OnFetchOilStations -> {
                 fetchPosts()
             }
         }
@@ -37,35 +37,35 @@ class GasViewModel(application: Application) : BaseViewModel<ParkingContract.Eve
      */
     private fun fetchPosts() {
         viewModelScope.launch {
-            repository.getAllStation().flowOn(Dispatchers.IO)
+            repository.getAllOilStation().flowOn(Dispatchers.IO)
                 .onStart { emit(Resource.Loading) }
                 .collect {
                     when (it) {
                         is Resource.Loading -> {
                             // Set State
-                            setState { copy(postsState = ParkingContract.ParkingState.Loading) }
+                            setState { copy(postsState = OilStationContract.OilStationState.Loading) }
                         }
                         is Resource.Empty -> {
                             // Set State
-                            setState { copy(postsState = ParkingContract.ParkingState.Idle) }
+                            setState { copy(postsState = OilStationContract.OilStationState.Idle) }
                         }
                         is Resource.Success -> {
                             // Set State
-                            setState { copy(postsState = ParkingContract.ParkingState.Success(posts = it.data)) }
+                            setState { copy(postsState = OilStationContract.OilStationState.Success(posts = it.data)) }
                         }
                         is Resource.Error -> {
                             // Set Effect
-                            setEffect { ParkingContract.Effect.ShowError(message = it.exception.message) }
+                            setEffect { OilStationContract.Effect.ShowError(message = it.exception.message) }
                         }
                     }
                 }
         }
     }
 
-    class ParkingViewModelFactory(private val application: Application): ViewModelProvider.AndroidViewModelFactory(application) {
+    class OilStationViewModelFactory(private val application: Application): ViewModelProvider.AndroidViewModelFactory(application) {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
-            return GasViewModel(
+            return OilStationViewModel(
                 application
             ) as T
         }

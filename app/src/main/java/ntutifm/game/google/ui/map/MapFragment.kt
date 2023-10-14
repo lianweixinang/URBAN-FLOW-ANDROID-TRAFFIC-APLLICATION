@@ -597,7 +597,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
             }
             behavior?.state = BottomSheetBehavior.STATE_EXPANDED
             binding.webView.visibility = View.VISIBLE
-            binding.carDirection.visibility = View.VISIBLE
+            binding.carDirection1.visibility = View.VISIBLE
             binding.trafficFlow.visibility = View.VISIBLE
             binding.imageView3.visibility = View.VISIBLE
             binding.spinner.visibility = View.VISIBLE
@@ -669,14 +669,14 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
             //全開
             3 -> {
                 if (isOpen) {
-                    binding.carDirection.visibility = View.VISIBLE
+                    binding.carDirection1.visibility = View.VISIBLE
                     binding.trafficFlow.visibility = View.VISIBLE
                 }
             }
             //半開
             6 -> {
                 if (isOpen) {
-                    binding.carDirection.visibility = View.GONE
+                    binding.carDirection1.visibility = View.GONE
                     binding.trafficFlow.visibility = View.GONE
                 }
             }
@@ -690,7 +690,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
         binding.fragmentSearch.root.visibility = View.VISIBLE
         binding.fragmentHome.root.visibility = View.GONE
         binding.webView.visibility = View.GONE
-        binding.carDirection.visibility = View.GONE
+        binding.carDirection1.visibility = View.GONE
         binding.trafficFlow.visibility = View.GONE
         binding.imageView3.visibility = View.GONE
         binding.spinner.visibility = View.GONE

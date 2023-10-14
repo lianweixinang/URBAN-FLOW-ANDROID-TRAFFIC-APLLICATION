@@ -60,9 +60,8 @@
             android:layout_below="@id/raiseTime1"
             android:layout_marginLeft="10dp"
             android:text="動畫「山道猴子的一生」最近爆紅重機族跑山也受到關注，其中之一是車噪，暑假期間...."
-            android:textColor="#4D4D4E"
+            android:textColor="#000000"
             android:textSize="18sp" />
-
 
     </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

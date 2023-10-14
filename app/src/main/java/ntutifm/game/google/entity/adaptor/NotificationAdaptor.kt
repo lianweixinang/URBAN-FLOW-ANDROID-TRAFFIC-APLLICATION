@@ -1,15 +1,18 @@
 package ntutifm.game.google.entity.adaptor
+import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import ntutifm.game.google.R
 import ntutifm.game.google.databinding.IncidentItemBinding
 import ntutifm.game.google.apiClass.Incident
 import ntutifm.game.google.entity.sync.SyncPosition
 import org.w3c.dom.Text
 
-class NotificationAdaptor(private var mList: List<Incident>?) :
+class NotificationAdaptor(private var mList: List<Incident>?, private val itemOnClickListener: View.OnClickListener) :
     RecyclerView.Adapter<NotificationAdaptor.IncidentHolder>() {
 
     inner class IncidentHolder(binding: IncidentItemBinding): RecyclerView.ViewHolder(binding.root){
@@ -18,6 +21,7 @@ class NotificationAdaptor(private var mList: List<Incident>?) :
         val from : TextView = itemView.findViewById(R.id.source1)
         val state : TextView = itemView.findViewById(R.id.state1)
         val description : TextView = itemView.findViewById(R.id.content1)
+        val root : MaterialCardView = itemView.findViewById(R.id.root)
     }
 
     fun setFilteredList(mList: List<Incident>){
@@ -41,6 +45,8 @@ class NotificationAdaptor(private var mList: List<Incident>?) :
                   mList?.get(position)?.solved
               } else {" 未排除"} )  +
          ")"
+        holder.root.tag = mList?.get(position) ?: "22"
+        holder.root.setOnClickListener(itemOnClickListener)
 
         val index = SyncPosition.districtToIndex()
     }

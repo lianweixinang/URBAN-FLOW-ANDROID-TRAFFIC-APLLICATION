@@ -1,24 +1,24 @@
 package ntutifm.game.google.entity.contract
 
-import ntutifm.game.google.apiClass.Camera
+import ntutifm.game.google.apiClass.CCTV
 import ntutifm.game.google.global.UiEffect
 import ntutifm.game.google.global.UiEvent
 import ntutifm.game.google.global.UiState
 
-class CameraContract {
+class CCTVContract {
 
     sealed class Event : UiEvent {
-        object OnFetchCameras : Event()
+        object OnFetchCCTVs : Event()
     }
 
     data class State(
-        val postsState: CameraState
+        val postsState: CCTVState
     ) : UiState
 
-    sealed class CameraState {
-        object Idle : CameraState()
-        object Loading : CameraState()
-        data class Success(val posts : List<Camera>) : CameraState()
+    sealed class CCTVState {
+        object Idle : CCTVState()
+        object Loading : CCTVState()
+        data class Success(val posts : List<CCTV>) : CCTVState()
     }
 
     sealed class Effect : UiEffect {

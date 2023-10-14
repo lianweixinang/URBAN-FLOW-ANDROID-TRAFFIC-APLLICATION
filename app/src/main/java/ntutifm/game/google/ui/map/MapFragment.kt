@@ -1210,13 +1210,13 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private val cameraMarkListener = View.OnClickListener {
         val data = it.tag as Camera
         val image = it as ImageView
-            if (markLike) {
-                viewModel.deleteMarkCamera(data.cameraId)
-                image.setImageResource(R.drawable.ic_baseline_star_24)
-            } else {
-                viewModel.addMarkCamera(data)
-                image.setImageResource(R.drawable.ic_baseline_star_25)
-            }
+        if (markLike) {
+            viewModel.deleteMarkCamera(data.cameraId)
+            image.setImageResource(R.drawable.ic_baseline_star_24)
+        } else {
+            viewModel.addMarkCamera(data)
+            image.setImageResource(R.drawable.ic_baseline_star_25)
+        }
         markLike = !markLike
     }
     private val parkingMarkListener = View.OnClickListener {

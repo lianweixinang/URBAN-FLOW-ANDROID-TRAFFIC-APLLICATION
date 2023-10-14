@@ -1,4 +1,4 @@
-package ntutifm.game.google.ui.parking
+package ntutifm.game.google.ui.gas
 
 import android.os.Build
 import android.os.Bundle
@@ -19,8 +19,9 @@ import ntutifm.game.google.databinding.FragmentNotificationBinding
 import ntutifm.game.google.entity.adaptor.ParkingAdaptor
 import ntutifm.game.google.entity.contract.ParkingContract
 import ntutifm.game.google.global.MyLog
+import ntutifm.game.google.ui.parking.GasViewModel
 
-class ParkingFragment:Fragment() {
+class GasFragment:Fragment() {
     private var _binding: FragmentNotificationBinding? = null
     private val binding get() = _binding!!
     private var adapter: ParkingAdaptor? = null

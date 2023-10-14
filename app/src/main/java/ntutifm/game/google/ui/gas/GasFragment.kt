@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
 import ntutifm.game.google.MyActivity
 import ntutifm.game.google.apiClass.Incident
@@ -25,8 +24,8 @@ class ParkingFragment:Fragment() {
     private var _binding: FragmentNotificationBinding? = null
     private val binding get() = _binding!!
     private var adapter: ParkingAdaptor? = null
-    private val viewModel: ParkingViewModel by lazy {
-        ViewModelProvider(this)[ParkingViewModel::class.java]
+    private val viewModel: GasViewModel by lazy {
+        ViewModelProvider(this)[GasViewModel::class.java]
     }
 
     override fun onCreateView(

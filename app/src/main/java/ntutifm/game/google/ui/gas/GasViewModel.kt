@@ -13,7 +13,7 @@ import ntutifm.game.google.entity.contract.ParkingContract
 import ntutifm.game.google.global.BaseViewModel
 import ntutifm.game.google.global.Resource
 
-class ParkingViewModel(application: Application) : BaseViewModel<ParkingContract.Event, ParkingContract.State, ParkingContract.Effect>(){
+class GasViewModel(application: Application) : BaseViewModel<ParkingContract.Event, ParkingContract.State, ParkingContract.Effect>(){
 
     private val repository: ParkingRepository by lazy{
         ParkingRepository(application)

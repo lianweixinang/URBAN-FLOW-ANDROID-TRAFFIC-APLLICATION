@@ -188,7 +188,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                     Log.e("TTS", "該語言不被支持或缺少數據")
                 } else {
                     textToSpeech?.speak(
-                        "謝樹人",
+                        "範文立",
                         TextToSpeech.QUEUE_FLUSH,
                         null,
                         null

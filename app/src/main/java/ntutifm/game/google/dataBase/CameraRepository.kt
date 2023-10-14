@@ -1,7 +1,11 @@
 package ntutifm.game.google.dataBase
 
 import android.content.Context
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import ntutifm.game.google.apiClass.CCTV
 import ntutifm.game.google.apiClass.Camera
+import ntutifm.game.google.global.Resource
 
 class CameraRepository(context: Context) {
     private val cameraDao : CameraDao by lazy {
@@ -17,7 +21,13 @@ class CameraRepository(context: Context) {
     suspend fun isRoadFavorite(data: String):Boolean{
         return cameraDao.isCameraFavorite(data)
     }
-    suspend fun getAllCamera():List<Camera>{
-        return cameraDao.getAllCamera()
+    suspend fun getAllCamera(): Flow<Resource<List<Camera>>> {
+        return flow {
+            try {
+                emit(Resource.Success(cameraDao.getAllCamera()))
+            } catch (ex: Exception) {
+                emit(Resource.Error(ex))
+            }
+        }
     }
 }

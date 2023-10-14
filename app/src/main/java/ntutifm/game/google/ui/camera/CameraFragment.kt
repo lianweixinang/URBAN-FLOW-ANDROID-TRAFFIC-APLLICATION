@@ -1,4 +1,4 @@
-package ntutifm.game.google.ui.road
+ package ntutifm.game.google.ui.camera
 
 import android.os.Build
 import android.os.Bundle
@@ -15,17 +15,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
 import ntutifm.game.google.MyActivity
 import ntutifm.game.google.apiClass.Incident
-import ntutifm.game.google.databinding.FragmentRoadBinding
-import ntutifm.game.google.entity.adaptor.RoadFavoriteAdaptor
-import ntutifm.game.google.entity.contract.RoadContract
+import ntutifm.game.google.databinding.FragmentCameraBinding
+import ntutifm.game.google.entity.adaptor.CameraAdaptor
+import ntutifm.game.google.entity.contract.CameraContract
 import ntutifm.game.google.global.MyLog
 
-class RoadFragment:Fragment() {
-    private var _binding: FragmentRoadBinding? = null
+ class CameraFragment:Fragment() {
+    private var _binding: FragmentCameraBinding? = null
     private val binding get() = _binding!!
-    private var adapter: RoadFavoriteAdaptor? = null
-    private val viewModel: RoadViewModel by lazy {
-        ViewModelProvider(this)[RoadViewModel::class.java]
+    private var adapter: CameraAdaptor? = null
+    private val viewModel: CameraViewModel by lazy {
+        ViewModelProvider(this)[CameraViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -33,16 +33,17 @@ class RoadFragment:Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentRoadBinding.inflate(inflater, container, false)
+        _binding = FragmentCameraBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        cameraListInit()
         initObservers()
-        if (viewModel.currentState.postsState is RoadContract.RoadState.Idle)
-            viewModel.setEvent(RoadContract.Event.OnFetchRoads)
+        if (viewModel.currentState.postsState is CameraContract.CameraState.Idle)
+            viewModel.setEvent(CameraContract.Event.OnFetchCameras)
     }
     override fun onDestroyView() {
         super.onDestroyView()
@@ -50,13 +51,13 @@ class RoadFragment:Fragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun roadListInit() {
+    private fun cameraListInit() {
         binding.recycleIncidentView.setHasFixedSize(true)
         binding.recycleIncidentView.layoutManager = LinearLayoutManager(MyActivity().context)
-        adapter = RoadFavoriteAdaptor(listOf(), roadBtnListener)
+        adapter = CameraAdaptor(listOf(), roadcameraBtnListener)
         binding.recycleIncidentView.adapter = adapter
     }
-    private val roadBtnListener = View.OnClickListener() {
+    private val roadcameraBtnListener = View.OnClickListener() {
         val data = it.tag as Incident
         //切換
     }
@@ -66,11 +67,11 @@ class RoadFragment:Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect {
                     when (val state = it.postsState) {
-                        is RoadContract.RoadState.Idle -> {
+                        is CameraContract.CameraState.Idle -> {
                         }
-                        is RoadContract.RoadState.Loading -> {
+                        is CameraContract.CameraState.Loading -> {
                         }
-                        is RoadContract.RoadState.Success -> {
+                        is CameraContract.CameraState.Success -> {
                             val data = state.posts
                             adapter?.submitList(data)
                         }
@@ -83,7 +84,7 @@ class RoadFragment:Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.effect.collect { effect ->
                     when (effect) {
-                        is RoadContract.Effect.ShowError -> {
+                        is CameraContract.Effect.ShowError -> {
                             val msg = effect.message
                             msg?.let {
                                 MyLog.e(it) }

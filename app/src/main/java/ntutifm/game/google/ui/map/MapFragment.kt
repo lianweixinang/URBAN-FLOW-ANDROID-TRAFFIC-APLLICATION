@@ -42,11 +42,14 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
+import com.google.maps.android.PolyUtil
 import com.google.maps.android.clustering.ClusterManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -74,6 +77,10 @@ import ntutifm.game.google.entity.sync.SyncWeather
 import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.*
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Query
 import java.util.Locale
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -820,6 +827,81 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
         setLocationInitBtn()
         weatherInit()
     }
+    data class DirectionsResponse(
+        val routes: List<Route>
+    )
+
+    data class Route(
+        val legs: List<Leg>
+    )
+
+    data class Leg(
+        val steps: List<Step>
+    )
+
+    data class Step(
+        val polyline: Polyline
+    )
+
+    data class Polyline(
+        val points: String
+    )
+
+    interface DirectionsService {
+        @GET("directions/json")
+        suspend fun getDirections(
+            @Query("origin") origin: String,
+            @Query("destination") destination: String,
+            @Query("mode") mode: String,
+            @Query("key") apiKey: String
+        ): DirectionsResponse
+    }
+    private fun getNavigation(origin:LatLng, destination:LatLng) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://maps.googleapis.com/maps/api/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val service = retrofit.create(DirectionsService::class.java)
+
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val response = service.getDirections(
+                    "${origin.latitude},${origin.longitude}",
+                    "${destination.latitude},${destination.longitude}",
+                    "driving",
+                    "AIzaSyDRjDWqLgUb2xrIOzhKNixOOLbn249kAto"
+                )
+
+                val route = response.routes[0]
+                val steps = route.legs[0].steps
+
+                val routePoints = mutableListOf<LatLng>()
+
+                for (step in steps) {
+                    val points = step.polyline.points
+                    val decodedPoints = PolyUtil.decode(points)
+                    routePoints.addAll(decodedPoints)
+                }
+
+                MyLog.e(routePoints.toString())
+
+                withContext(Dispatchers.Main) {
+                    drawRoute(routePoints)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun drawRoute(routePoints: List<LatLng>) {
+        val lineOptions = PolylineOptions()
+        lineOptions.addAll(routePoints)
+        lineOptions.width(10f) // 路线宽度
+        lineOptions.color(R.color.purple_700) // 路线颜色
+        map.addPolyline(lineOptions)
+    }
 
     /** 定位按鈕位置 */
     @SuppressLint("UseRequireInsteadOfGet")
@@ -863,6 +945,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
                                 newLatLng
                             )
                         }
+                        MyLog.e("Start Navigation")
+                        getNavigation(newLatLng, LatLng(25.0141,121.5181))
                         val targetLatLng =
                             LatLng(newLatLng.latitude - 0.00006, newLatLng.longitude)
                         val targetZoomLevel = 18f
@@ -1025,7 +1109,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
             showInfoWindowForItem(it)
             true
         }
-
     }
 
     /** 點擊mark動作 */

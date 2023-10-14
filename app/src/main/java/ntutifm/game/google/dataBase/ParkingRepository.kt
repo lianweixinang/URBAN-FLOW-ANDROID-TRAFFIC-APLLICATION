@@ -8,13 +8,16 @@ class ParkingRepository(context: Context) {
         MapDatabase.getDatabase(context.applicationContext).getParkingDao()
     }
 
-    fun deleteFavorite(data:String){
+    suspend fun deleteFavorite(data:String){
         parkingDao.deleteFavorite(data)
     }
-    fun addFavorite(data:Parking){
+    suspend fun addFavorite(data:Parking){
         parkingDao.insertFavorite(data)
     }
-    fun isRoadFavorite(data: String):Boolean{
+    suspend fun isRoadFavorite(data: String):Boolean{
         return parkingDao.isParkingFavorite(data)
+    }
+    suspend fun getAllStation():List<Parking>{
+        return parkingDao.getAllParking()
     }
 }

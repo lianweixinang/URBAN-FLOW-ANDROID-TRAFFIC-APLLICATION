@@ -9,9 +9,11 @@ import ntutifm.game.google.apiClass.Camera
 interface CameraDao{
 
     @Insert
-    fun insertFavorite(vararg camera: Camera)
+     suspend fun insertFavorite(vararg camera: Camera)
     @Query("DELETE FROM Camera WHERE cameraId  = :cameraId")
-    fun deleteFavorite(cameraId: String)
+    suspend fun deleteFavorite(cameraId: String)
     @Query("SELECT EXISTS (SELECT 1 FROM Camera WHERE cameraId= :cameraId LIMIT 1)")
-    fun isCameraFavorite(cameraId: String): Boolean
+    suspend fun isCameraFavorite(cameraId: String): Boolean
+    @Query("SELECT * FROM Camera")
+    suspend fun getAllCamera() : List<Camera>
 }

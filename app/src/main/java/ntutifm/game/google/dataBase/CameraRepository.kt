@@ -8,13 +8,16 @@ class CameraRepository(context: Context) {
         MapDatabase.getDatabase(context.applicationContext).getCameraDao()
     }
 
-    fun deleteFavorite(data:String){
+    suspend fun deleteFavorite(data:String){
         cameraDao.deleteFavorite(data)
     }
-    fun addFavorite(data: Camera){
+    suspend fun addFavorite(data: Camera){
         cameraDao.insertFavorite(data)
     }
-    fun isRoadFavorite(data: String):Boolean{
+    suspend fun isRoadFavorite(data: String):Boolean{
         return cameraDao.isCameraFavorite(data)
+    }
+    suspend fun getAllCamera():List<Camera>{
+        return cameraDao.getAllCamera()
     }
 }

@@ -9,13 +9,16 @@ class OilStationRepository(context: Context) {
         MapDatabase.getDatabase(context.applicationContext).getOilStationDao()
     }
 
-    fun deleteFavorite(data:String){
+    suspend fun deleteFavorite(data:String){
         oilStationDao.deleteFavorite(data)
     }
-    fun addFavorite(data:OilStation){
+    suspend fun addFavorite(data:OilStation){
         oilStationDao.insertFavorite(data)
     }
-    fun isRoadFavorite(data: String):Boolean{
+    suspend fun isRoadFavorite(data: String):Boolean{
         return oilStationDao.isOilStationFavorite(data)
+    }
+    suspend fun getAllOilStation():List<OilStation>{
+        return oilStationDao.getAllStation()
     }
 }

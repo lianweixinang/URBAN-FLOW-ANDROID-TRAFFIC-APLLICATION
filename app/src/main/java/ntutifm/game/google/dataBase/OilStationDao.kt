@@ -9,9 +9,11 @@ import ntutifm.game.google.apiClass.OilStation
 interface OilStationDao{
 
     @Insert
-    fun insertFavorite(vararg oilStation: OilStation)
+    suspend fun insertFavorite(vararg oilStation: OilStation)
     @Query("DELETE FROM OilStation WHERE station = :station")
-    fun deleteFavorite(station: String)
+    suspend fun deleteFavorite(station: String)
     @Query("SELECT EXISTS (SELECT 1 FROM OilStation WHERE station= :station LIMIT 1)")
-    fun isOilStationFavorite(station: String): Boolean
+    suspend fun isOilStationFavorite(station: String): Boolean
+    @Query("SELECT * FROM OilStation")
+    suspend fun getAllStation():List<OilStation>
 }

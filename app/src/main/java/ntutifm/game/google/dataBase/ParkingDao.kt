@@ -9,9 +9,11 @@ import ntutifm.game.google.apiClass.Parking
 interface ParkingDao{
 
     @Insert
-    fun insertFavorite(vararg parking: Parking)
+    suspend fun insertFavorite(vararg parking: Parking)
     @Query("DELETE FROM Parking WHERE parkingName = :parkingName")
-    fun deleteFavorite(parkingName: String)
+    suspend fun deleteFavorite(parkingName: String)
     @Query("SELECT EXISTS (SELECT 1 FROM Parking WHERE parkingName= :parkingName LIMIT 1)")
-    fun isParkingFavorite(parkingName: String): Boolean
+    suspend fun isParkingFavorite(parkingName: String): Boolean
+    @Query("SELECT * FROM parking")
+    suspend fun getAllParking() : List<Parking>
 }

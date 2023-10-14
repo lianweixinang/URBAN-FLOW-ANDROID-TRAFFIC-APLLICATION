@@ -4,6 +4,10 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.location.Location
 import android.net.http.SslError
 import android.os.Build
@@ -41,6 +45,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.MarkerOptions
@@ -119,6 +124,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
     private var mFusedLocationClient: FusedLocationProviderClient? = null
     private var lastLatLng: LatLng? = null
     private var lastCamera: Camera? = null
+    private var azimuth:Float?=null
 
     private var recycleView: RecyclerView? = null
     private var adaptor: SearchAdaptor? = null
@@ -167,6 +173,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
         bottomSheetInit()
         webViewInit()
         incidentCheck()
+        initSensor()
     }
 
     override fun onResume() {
@@ -812,6 +819,31 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
         }
     }
 
+    private fun initSensor(){
+        val sensorManager = requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val rotationMatrix = FloatArray(9)
+        val orientationValues = FloatArray(3)
+
+        val rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+
+        sensorManager.registerListener(object : SensorEventListener {
+            override fun onSensorChanged(event: SensorEvent) {
+                if (event.sensor == rotationSensor) {
+                    SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values)
+                    SensorManager.getOrientation(rotationMatrix, orientationValues)
+                    azimuth = Math.toDegrees(orientationValues[0].toDouble()).toFloat()
+
+                    // 在这里处理方向角度（azimuth）
+                    // 可以使用角度来旋转地图
+                }
+            }
+
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+                // 当传感器精度变化时的处理
+            }
+        }, rotationSensor, SensorManager.SENSOR_DELAY_NORMAL)
+    }
+
     /** 設置地圖 */
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
@@ -819,6 +851,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
         mFusedLocationClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
         map.uiSettings.isMyLocationButtonEnabled = true
+        map.uiSettings.isRotateGesturesEnabled = true
         map.setOnMyLocationButtonClickListener(this)
         map.setOnMyLocationClickListener(this)
         enableMyLocation()
@@ -927,7 +960,19 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, Googl
     /** 點擊定位 */
     override fun onMyLocationButtonClick(): Boolean {
         moveToCurrentLocation()
+        rotateCamera()
         return false
+    }
+
+    private fun rotateCamera(){
+        val currentCameraPosition = map.cameraPosition
+        azimuth?.let {
+            MyLog.e("角度: $azimuth")
+            val newCameraPosition = CameraPosition.builder(currentCameraPosition)
+                .bearing(it)
+                .build()
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(newCameraPosition))
+        }
     }
 
     /** 通用移動到現在位置 */

@@ -1,0 +1,17 @@
+package ntutifm.game.google.dataBase
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import ntutifm.game.google.apiClass.Camera
+
+@Dao
+interface CameraDao{
+
+    @Insert
+    fun insertFavorite(vararg camera: Camera)
+    @Query("DELETE FROM Camera WHERE cameraId  = :cameraId")
+    fun deleteFavorite(cameraId: String)
+    @Query("SELECT EXISTS (SELECT 1 FROM Camera WHERE cameraId= :cameraId LIMIT 1)")
+    fun isCameraFavorite(cameraId: String): Boolean
+}

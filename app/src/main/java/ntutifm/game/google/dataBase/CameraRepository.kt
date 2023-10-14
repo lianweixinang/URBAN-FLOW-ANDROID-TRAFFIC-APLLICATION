@@ -2,7 +2,6 @@ package ntutifm.game.google.dataBase
 
 import android.content.Context
 import ntutifm.game.google.apiClass.Camera
-import ntutifm.game.google.apiClass.RoadFavorite
 
 class CameraRepository(context: Context) {
     private val cameraDao : CameraDao by lazy {

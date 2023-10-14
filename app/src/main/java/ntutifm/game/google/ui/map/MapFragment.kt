@@ -20,6 +20,7 @@ import android.view.*
 import android.webkit.SslErrorHandler
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -48,13 +49,11 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.maps.android.PolyUtil
 import com.google.maps.android.clustering.ClusterManager
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -82,10 +81,6 @@ import ntutifm.game.google.entity.sync.SyncWeather
 import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.*
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Query
 import java.util.Locale
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -111,6 +106,12 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var behavior: BottomSheetBehavior<View>? = null
     private lateinit var map: GoogleMap
     private var textToSpeech: TextToSpeech? = null
+    private val infoWindowView :View by lazy{
+        layoutInflater.inflate(R.layout.mark_detail, null)
+    }
+    private val markFavorite : ImageView by lazy {
+        infoWindowView.findViewById<View>(R.id.mark_like) as ImageView
+    }
 
     private var isOpen: Boolean = false
     private var sitMode: Boolean = false
@@ -119,6 +120,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var permissionDenied: Boolean = false
     private var isTTSInitialized = false
     private var isInitialized = false
+    private var markLike = false
 
     private var searchData: SearchHistory? = null
     private var oldIncident: List<Incident>? = null
@@ -130,6 +132,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var recycleView: RecyclerView? = null
     private var adaptor: SearchAdaptor? = null
     private var adapter: RoadAdaptor? = null
+
 
     /** 根據layout建構畫面 */
     override fun onCreateView(
@@ -536,6 +539,20 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                         binding.fragmentHome.favoriteBtn.setImageResource(R.drawable.ic_baseline_star_25)
                     } else {
                         binding.fragmentHome.favoriteBtn.setImageResource(R.drawable.ic_baseline_star_24)
+                    }
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.markState.collect {
+                    MyLog.d("收藏:$it")
+                    markLike = if (it) {
+                        markFavorite.setImageResource(R.drawable.ic_baseline_star_25)
+                        true
+                    } else {
+                        markFavorite.setImageResource(R.drawable.ic_baseline_star_24)
+                        false
                     }
                 }
             }
@@ -1136,29 +1153,41 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         map.animateCamera(cameraUpdate, 1000, null)
     }
 
-    private fun showInfoWindowForItem(item: MyItem<Any>) {
-        val targetlastLatLng = LatLng(item.position.latitude - 0.0005, item.position.longitude)
+    private fun showInfoWindowForItem(item: MyItem<Any>){
+        val targetLatLng = LatLng(item.position.latitude-0.0005, item.position.longitude)
         val targetZoomLevel = 18f
-        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(targetlastLatLng, targetZoomLevel)
+        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(targetLatLng, targetZoomLevel)
         map.animateCamera(cameraUpdate, 1000, null)
-        val infoWindowView = layoutInflater.inflate(R.layout.mark_detail, null)
         val title = infoWindowView.findViewById<TextView>(R.id.title)
         val description = infoWindowView.findViewById<TextView>(R.id.description)
 
         if (item.data::class == Parking::class) {
             val data = item.data as Parking
+            viewModel.checkMarkParking(data.parkingName)
+            title.text = "停車場: "+  data.parkingName
             title.text = "停車場: " + data.parkingName
             description.text = "連結"
+
+            markFavorite.tag = data
+            markFavorite.setOnClickListener(parkingMarkListener)
         }
         if (item.data::class == Camera::class) {
             val data = item.data as Camera
-            title.text = "測速照相: " + data.road
-            description.text = "限速: " + data.limit
+            viewModel.checkMarkCamera(data.cameraId)
+            title.text = "測速照相: "+ data.road
+            description.text = "限速: "+ data.limit
+
+            markFavorite.tag = data
+            markFavorite.setOnClickListener(cameraMarkListener)
         }
         if (item.data::class == OilStation::class) {
             val data = item.data as OilStation
+            viewModel.checkMarkOil(data.station)
             title.text = "加油站: " + data.station
             description.text = data.address
+
+            markFavorite.tag = data
+            markFavorite.setOnClickListener(oilStationMarkListener)
         }
 
         // 創建 PopupWindow
@@ -1172,6 +1201,42 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
         popupWindow.showAtLocation(infoWindowView, Gravity.TOP, 0, 300)
 
+    }
+    private val cameraMarkListener = View.OnClickListener {
+        val data = it.tag as Camera
+        val image = it as ImageView
+            if (markLike) {
+                viewModel.deleteMarkCamera(data.cameraId)
+                image.setImageResource(R.drawable.ic_baseline_star_24)
+            } else {
+                viewModel.addMarkCamera(data)
+                image.setImageResource(R.drawable.ic_baseline_star_25)
+            }
+        markLike = !markLike
+    }
+    private val parkingMarkListener = View.OnClickListener {
+        val data = it.tag as Parking
+        val image = it as ImageView
+        if (markLike) {
+            viewModel.deleteMarkParking(data.parkingName)
+            image.setImageResource(R.drawable.ic_baseline_star_24)
+        } else {
+            viewModel.addMarkParking(data)
+            image.setImageResource(R.drawable.ic_baseline_star_25)
+        }
+        markLike = !markLike
+    }
+    private val oilStationMarkListener = View.OnClickListener {
+        val data = it.tag as OilStation
+        val image = it as ImageView
+        if (markLike) {
+            viewModel.deleteMarkOil(data.station)
+            image.setImageResource(R.drawable.ic_baseline_star_24)
+        } else {
+            viewModel.addMarkOil(data)
+            image.setImageResource(R.drawable.ic_baseline_star_25)
+        }
+        markLike = !markLike
     }
 
     /** API CALLBACK */

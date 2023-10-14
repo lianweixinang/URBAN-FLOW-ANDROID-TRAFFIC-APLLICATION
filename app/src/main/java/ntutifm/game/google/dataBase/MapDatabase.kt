@@ -15,6 +15,8 @@ abstract class MapDatabase: RoomDatabase() {
     abstract fun getSearchHistoryDao(): SearchHistoryDao
     abstract fun getRoadFavoriteDao(): RoadFavoriteDao
     abstract fun getCameraDao():CameraDao
+    abstract fun getParkingDao():ParkingDao
+    abstract fun getOilStationDao():OilStationDao
     companion object {
         private var instance: MapDatabase? = null
         fun getDatabase(context: Context): MapDatabase {

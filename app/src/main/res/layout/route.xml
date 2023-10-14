@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView
-    android:id="@+id/root"
+    android:id="@+id/route"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginTop="10dp"
@@ -14,26 +14,26 @@
         android:padding="5dp">
 
         <TextView
-            android:id="@+id/title1"
+            android:id="@+id/route1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="北部 事故"
+            android:text="承德路 X 市民大道"
             android:gravity="center"
             android:textColor="#000000"
             android:textSize="18sp"
-            android:textStyle="bold" />
-
+            android:textStyle="normal" />
 
         <TextView
-            android:id="@+id/content1"
+            android:id="@+id/route2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/title1"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:text="動畫「山道猴子的一生」最近爆紅重機族跑山也受到關注，其中之一是車噪，暑假期間...."
+            android:text="文化路 X 中正路"
+            android:gravity="center"
+            android:layout_marginTop="30dp"
             android:textColor="#000000"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textStyle="normal" />
+
 
     </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

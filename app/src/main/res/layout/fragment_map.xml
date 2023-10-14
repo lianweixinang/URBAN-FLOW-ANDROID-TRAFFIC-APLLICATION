@@ -203,7 +203,7 @@
                             android:layout_height="30dp"
                             android:layout_marginLeft="70dp"
                             android:layout_marginTop="40dp"
-                            android:text="83 Cars"
+                            android:text="0 Cars"
                             android:textColor="#000000"
                             android:textSize="20sp"
                             android:textStyle="bold" />
@@ -234,7 +234,7 @@
                             android:layout_height="30dp"
                             android:layout_marginStart="260dp"
                             android:layout_marginTop="40dp"
-                            android:text="56 Cars"
+                            android:text="0 Cars"
                             android:textColor="#000000"
                             android:textSize="20sp"
                             android:textStyle="bold" />
@@ -254,7 +254,7 @@
                             android:layout_height="30dp"
                             android:layout_marginStart="70dp"
                             android:layout_marginTop="120dp"
-                            android:text="25 km/h"
+                            android:text="0 km/h"
                             android:textColor="#000000"
                             android:textSize="20sp"
                             android:textStyle="bold" />
@@ -274,7 +274,7 @@
                             android:layout_height="30dp"
                             android:layout_marginStart="260dp"
                             android:layout_marginTop="120dp"
-                            android:text="31 km/h"
+                            android:text="0 km/h"
                             android:textColor="#000000"
                             android:textSize="20sp"
                             android:textStyle="bold" />

@@ -188,7 +188,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                     Log.e("TTS", "該語言不被支持或缺少數據")
                 } else {
                     textToSpeech?.speak(
-                        "修偉幹我",
+                        "謝樹人",
                         TextToSpeech.QUEUE_FLUSH,
                         null,
                         null
@@ -308,7 +308,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         val popupText1 = popupView.findViewById<TextView>(R.id.popup_text1)
         popupText2.text = incident.part
         popupText.text = incident.title
-        popupText1.text = incident.solved
+        popupText1.text = if (incident.solved == "nxx") "尚未排除" else incident.solved
 
 
         // 創建 PopupWindow

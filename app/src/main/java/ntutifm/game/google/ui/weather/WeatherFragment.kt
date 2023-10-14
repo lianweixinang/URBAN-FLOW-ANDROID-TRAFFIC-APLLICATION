@@ -41,27 +41,27 @@ class WeatherFragment : Fragment(), ApiCallBack {
 
     private fun weatherTextInit() {
         SyncWeather.weatherLists.observe(viewLifecycleOwner) {
-            val index = SyncPosition.districtToIndex()
-            binding.weatherIcon.setImageResource(
-                when (it[index].wx1) {
-                    "晴天" ->R.drawable.sun
-                    "雨天" ->R.drawable.heavy_rain
-                    "短暫陣雨" ->R.drawable.heavy_rain
-                    "多雲短暫陣雨" ->R.drawable.heavy_rain
-                    "陰時多雲短暫陣雨" ->R.drawable.heavy_rain
-                    "多雲午後短暫陣雨" ->R.drawable.heavy_rain
-                    "晴時多雲" ->R.drawable.cloudy
-                    "多雲晴時" ->R.drawable.cloudy
-                    "午後短暫雷陣雨" ->R.drawable.storm
-                    "短暫陣雨或雷雨" ->R.drawable.storm
-                    "多雲午後短暫雷陣雨" ->R.drawable.storm
-                    "多雲" -> R.drawable.cloudy_nosun
-                    "多雲時陰" -> R.drawable.cloudy_nosun
-                    "多雲時晴" -> R.drawable.cloudy_nosun
-                    "陰時多雲" -> R.drawable.cloudy_nosun
+            fun getWeatherIconResource(weather: String): Int {
+                return when (weather) {
+                    "晴天" -> R.drawable.sun
+                    "雨天", "短暫陣雨", "多雲短暫陣雨", "陰時多雲短暫陣雨", "多雲午後短暫陣雨" -> R.drawable.heavy_rain
+                    "晴時多雲", "多雲晴時" -> R.drawable.cloudy
+                    "午後短暫雷陣雨", "短暫陣雨或雷雨", "多雲午後短暫雷陣雨" -> R.drawable.storm
+                    "多雲", "多雲時陰", "多雲時晴", "陰時多雲" -> R.drawable.cloudy_nosun
                     else -> R.drawable.cloudy_nosun
                 }
-            )
+            }
+            val index = SyncPosition.districtToIndex()
+            binding.weatherIcon.setImageResource(getWeatherIconResource(it[index].wx1))
+            binding.pic1.setImageResource(getWeatherIconResource(it[index].wx1))
+            binding.pic2.setImageResource(getWeatherIconResource(it[index].wx1))
+            binding.pic3.setImageResource(getWeatherIconResource(it[index].wx1))
+            binding.pic4.setImageResource(getWeatherIconResource(it[index].wx1))
+            binding.pic5.setImageResource(getWeatherIconResource(it[index].wx1))
+            binding.pic6.setImageResource(getWeatherIconResource(it[index].wx1))
+            binding.pic7.setImageResource(getWeatherIconResource(it[index].wx1))
+            binding.pic8.setImageResource(getWeatherIconResource(it[index].wx1))
+
 
             MyLog.e("Weather Updated")
             binding.position.text = it[index].locationName

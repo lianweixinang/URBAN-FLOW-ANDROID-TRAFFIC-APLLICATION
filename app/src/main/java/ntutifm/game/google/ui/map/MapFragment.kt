@@ -2,22 +2,23 @@ package ntutifm.game.google.ui.map
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.Looper
 import android.speech.tts.TextToSpeech
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
+import android.view.*
 import android.webkit.SslErrorHandler
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.PopupWindow
 import android.widget.RelativeLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
@@ -26,11 +27,14 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.*
@@ -270,12 +274,45 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         }
         binding.webView.loadUrl("https://cctv.bote.gov.taipei:8501/mjpeg/232")
     }
+    private fun accident(c: FragmentActivity, title: String) {
+        // 載入自定義的 layout
+        val inflater = c.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val popupView = inflater.inflate(R.layout.accident_item, null)
+        val popupText = popupView.findViewById<TextView>(R.id.popup_text)
+        popupText.text = title
+
+        // 創建 PopupWindow
+        val popupWindow = PopupWindow(popupView,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT).apply {
+            isOutsideTouchable = true
+        }
+// 設定點擊事件
+        popupText.setOnClickListener {
+            popupWindow.dismiss()
+            val navController = Navigation.findNavController(binding.root)
+            val navOptions = NavOptions.Builder()
+                .setPopUpTo(R.id.mapFragment, true)
+                .build()
+            val bundle = Bundle()
+            bundle.putBoolean("notReset", true)
+                    navController.navigate(R.id.notificationFragment, bundle, navOptions)
+        }
+// 顯示彈跳視窗
+        popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0)
+
+// 設定一段時間後自動關閉
+        Handler(Looper.getMainLooper()).postDelayed({
+            popupWindow.dismiss()
+        }, 5000)  // 這裡是5秒後自動關閉
+
+    }
 
     /** 事故觀察及定時 */
     private fun incidentCheck() {
         SyncIncident.incidentLists.observe(viewLifecycleOwner) {
             if (it != null && it.isNotEmpty() && it[0] != oldIncident?.get(0)) {
-                AppUtil.showTopToast(requireActivity(), it[0].title)
+                accident(requireActivity(), it[0].title)
                 oldIncident = it
             }
         }

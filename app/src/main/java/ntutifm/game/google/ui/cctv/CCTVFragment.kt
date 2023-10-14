@@ -21,6 +21,7 @@ import ntutifm.game.google.entity.contract.CCTVContract
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.ui.cctv.CCTVViewModel
 
+
 class CCTVFragment:Fragment() {
     private var _binding: FragmentCctvBinding? = null
     private val binding get() = _binding!!

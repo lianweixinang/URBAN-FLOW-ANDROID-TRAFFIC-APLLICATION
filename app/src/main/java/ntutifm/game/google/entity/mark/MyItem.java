@@ -5,31 +5,20 @@ import androidx.annotation.Nullable;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
-    public class MyItem implements ClusterItem {
+    public class MyItem<T> implements ClusterItem {
         private LatLng mPosition;
-        private String mTitle;
-        private String mSnippet;
         private Integer mtype;
+        private T mData;
         public MyItem(double lat,  double lng) {
             mPosition = new LatLng(lat,lng);
-            mTitle = null;
-            mSnippet = null;
         }
 
-        public MyItem(double lat,  double lng, String title,Integer type) {
+        public MyItem(double lat,  double lng, Integer type, T data) {
             mPosition = new LatLng(lat,lng);
-            mTitle = title;
-            mSnippet = null;
             mtype = type;
+            mData = data;
         }
 
-        public void setTitle(String title) {
-            mTitle = title;
-        }
-
-        public void setSnippet(String snippet) {
-            mSnippet = snippet;
-        }
 
         @NonNull
         @Override
@@ -40,15 +29,16 @@ import com.google.maps.android.clustering.ClusterItem;
         @Nullable
         @Override
         public String getTitle() {
-            return mTitle;
+            return null;
         }
 
         @Nullable
         @Override
         public String getSnippet() {
-            return mSnippet;
+            return null;
         }
 
         public Integer getType(){return mtype;}
+        public T getData(){return mData;}
     }
 

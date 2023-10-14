@@ -34,7 +34,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.*
@@ -43,6 +42,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.maps.android.clustering.ClusterManager
@@ -55,6 +55,8 @@ import ntutifm.game.google.R
 import ntutifm.game.google.apiClass.CCTV
 import ntutifm.game.google.apiClass.Camera
 import ntutifm.game.google.apiClass.Incident
+import ntutifm.game.google.apiClass.OilStation
+import ntutifm.game.google.apiClass.Parking
 import ntutifm.game.google.apiClass.RoadFavorite
 import ntutifm.game.google.apiClass.SearchHistory
 import ntutifm.game.google.databinding.FragmentMapBinding
@@ -81,8 +83,7 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 
-class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
-    GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
+class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener,OnMapReadyCallback,
     ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack {
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
@@ -93,7 +94,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         )[MapViewModel::class.java]
     }
 
-    private var mClusterManager: ClusterManager<MyItem>? = null
+    private var mClusterManager: ClusterManager<MyItem<Any>>? = null
     private var behavior: BottomSheetBehavior<View>? = null
     private lateinit var map: GoogleMap
     private var textToSpeech: TextToSpeech? = null
@@ -344,7 +345,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 }
                 when (it.distance) {
                     in 251..500 -> {
-                        if (lastCamera == null || (it.id != lastCamera!!.id)) {
+                        if (lastCamera == null || (it.cameraId != lastCamera!!.cameraId)) {
                             lastCamera = it
                         }
                     }
@@ -964,8 +965,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                             MyItem(
                                 p.latitude,
                                 p.longitude,
-                                "停車場: " + p.parkingName,
-                                0
+                                0,
+                                p
                             )
                         )
                     }
@@ -984,8 +985,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                             MyItem(
                                 p.latitude,
                                 p.longitude,
-                                "測速: " + p.road + p.introduction,
-                                1
+                                1,p
                             )
                         )
                     }
@@ -1001,8 +1001,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                             MyItem(
                                 p.latitude,
                                 p.logitude,
-                                "加油站: " + p.address,
-                                2
+                                2,p
                             )
                         )
 
@@ -1016,8 +1015,10 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         SyncCamera.cameraMarkApi()
         SyncPosition.oilStationApi()
         mClusterManager?.setOnClusterItemClickListener {
-            false
+            showInfoWindowForItem(it)
+            true
         }
+
     }
 
     /** 點擊mark動作 */
@@ -1031,6 +1032,42 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         val targetZoomLevel = 18f
         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(targetlastLatLng, targetZoomLevel)
         map.animateCamera(cameraUpdate, 1000, null)
+    }
+
+    private fun showInfoWindowForItem(item: MyItem<Any>){
+        val targetlastLatLng = LatLng(item.position.latitude-0.0005, item.position.longitude)
+        val targetZoomLevel = 18f
+        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(targetlastLatLng, targetZoomLevel)
+        map.animateCamera(cameraUpdate, 1000, null)
+        val infoWindowView = layoutInflater.inflate(R.layout.mark_detail, null)
+        val title = infoWindowView.findViewById<TextView>(R.id.title)
+        val description = infoWindowView.findViewById<TextView>(R.id.description)
+
+        if(item.data::class == Parking::class) {
+            val data = item.data as Parking
+            title.text = "停車場: "+  data.parkingName
+            description.text = "連結"
+        }
+        if(item.data::class == Camera::class) {
+            val data = item.data as Camera
+            title.text = "測速照相: "+ data.road
+            description.text = "限速: "+ data.limit
+        }
+        if(item.data::class == OilStation::class) {
+            val data = item.data as OilStation
+            title.text = "加油站: "+ data.station
+            description.text = data.address
+        }
+
+        // 創建 PopupWindow
+        val popupWindow = PopupWindow(infoWindowView,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT).apply {
+            isOutsideTouchable = true
+        }
+
+        popupWindow.showAtLocation(infoWindowView, Gravity.TOP, 0, 300)
+
     }
 
     /** API CALLBACK */

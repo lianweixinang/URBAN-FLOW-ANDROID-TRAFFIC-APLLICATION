@@ -1,9 +1,14 @@
 package ntutifm.game.google.apiClass
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
+@Entity
 data class Parking(
-    @SerializedName("CarParkName") val parkingName: String,
+    @PrimaryKey(autoGenerate = true)
+    val id :Int?,
+    @SerializedName("CarParkName") val parkingName:String,
     @SerializedName("PositionLat") val latitude: Double,
     @SerializedName("PositionLon") val longitude: Double
 )

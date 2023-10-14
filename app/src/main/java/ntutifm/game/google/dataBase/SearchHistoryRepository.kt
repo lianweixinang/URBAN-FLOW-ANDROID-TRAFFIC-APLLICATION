@@ -12,7 +12,7 @@ class SearchHistoryRepository(context: Context) {
         searchHistoryDao.getAllHistory()
     }
     fun deleteHistory(data:SearchHistory){
-        searchHistoryDao.deleteAllHistory()
+        searchHistoryDao.deleteHistory(data.roadName)
     }
     fun insertHistory(data:SearchHistory){
         searchHistoryDao.deleteHistory(data.roadName)

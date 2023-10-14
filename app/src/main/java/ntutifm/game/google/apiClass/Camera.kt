@@ -1,9 +1,14 @@
 package ntutifm.game.google.apiClass
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
+@Entity
 data class Camera(
-    @SerializedName("ID") val id: String,
+    @PrimaryKey(autoGenerate = true)
+    val id :Int?,
+    @SerializedName("ID") val cameraId: String,
     @SerializedName("Type") val type: String,
     @SerializedName("Road") val road: String?,
     @SerializedName("Introduction") val introduction: String,

@@ -1,8 +1,12 @@
 package ntutifm.game.google.apiClass
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-
+@Entity
 data class OilStation (
+    @PrimaryKey(autoGenerate = true)
+    val id :Int?,
     @SerializedName("Station") val station: String,
     @SerializedName("Longitude") val logitude: Double,
     @SerializedName("Latitude") val latitude: Double,

@@ -17,13 +17,13 @@ import ntutifm.game.google.entity.mark.MyItem
 class CustomClusterRenderer(
     context: Context,
     map: GoogleMap,
-    clusterManager: ClusterManager<MyItem>
-) : DefaultClusterRenderer<MyItem>(context, map, clusterManager) {
+    clusterManager: ClusterManager<MyItem<Any>>
+) : DefaultClusterRenderer<MyItem<Any>>(context, map, clusterManager) {
     val r = context.resources
     val displayMetrics = context.resources.displayMetrics
     val dpWidth = displayMetrics.widthPixels / displayMetrics.density
     val iconSize:Int = (dpWidth / 4).toInt()
-    override fun onBeforeClusterItemRendered(item: MyItem, markerOptions: MarkerOptions) {
+    override fun onBeforeClusterItemRendered(item: MyItem<Any>, markerOptions: MarkerOptions) {
         // 根據 item 的 type 設置 markerOptions 的圖示
         when (item.type) {
             0 -> {
@@ -49,31 +49,31 @@ class CustomClusterRenderer(
 
 
 
-    override fun onClustersChanged(clusters: MutableSet<out Cluster<MyItem>>?) {
+    override fun onClustersChanged(clusters: MutableSet<out Cluster<MyItem<Any>>>?) {
         super.onClustersChanged(clusters)
     }
 
-    override fun setOnClusterClickListener(listener: ClusterManager.OnClusterClickListener<MyItem>?) {
+    override fun setOnClusterClickListener(listener: ClusterManager.OnClusterClickListener<MyItem<Any>>?) {
         super.setOnClusterClickListener(listener)
     }
 
-    override fun setOnClusterInfoWindowClickListener(listener: ClusterManager.OnClusterInfoWindowClickListener<MyItem>?) {
+    override fun setOnClusterInfoWindowClickListener(listener: ClusterManager.OnClusterInfoWindowClickListener<MyItem<Any>>?) {
         super.setOnClusterInfoWindowClickListener(listener)
     }
 
-    override fun setOnClusterInfoWindowLongClickListener(listener: ClusterManager.OnClusterInfoWindowLongClickListener<MyItem>?) {
+    override fun setOnClusterInfoWindowLongClickListener(listener: ClusterManager.OnClusterInfoWindowLongClickListener<MyItem<Any>>?) {
         super.setOnClusterInfoWindowLongClickListener(listener)
     }
 
-    override fun setOnClusterItemClickListener(listener: ClusterManager.OnClusterItemClickListener<MyItem>?) {
+    override fun setOnClusterItemClickListener(listener: ClusterManager.OnClusterItemClickListener<MyItem<Any>>?) {
         super.setOnClusterItemClickListener(listener)
     }
 
-    override fun setOnClusterItemInfoWindowClickListener(listener: ClusterManager.OnClusterItemInfoWindowClickListener<MyItem>?) {
+    override fun setOnClusterItemInfoWindowClickListener(listener: ClusterManager.OnClusterItemInfoWindowClickListener<MyItem<Any>>?) {
         super.setOnClusterItemInfoWindowClickListener(listener)
     }
 
-    override fun setOnClusterItemInfoWindowLongClickListener(listener: ClusterManager.OnClusterItemInfoWindowLongClickListener<MyItem>?) {
+    override fun setOnClusterItemInfoWindowLongClickListener(listener: ClusterManager.OnClusterItemInfoWindowLongClickListener<MyItem<Any>>?) {
         super.setOnClusterItemInfoWindowLongClickListener(listener)
     }
 

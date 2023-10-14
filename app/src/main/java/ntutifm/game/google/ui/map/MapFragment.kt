@@ -268,7 +268,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             this.loadWithOverviewMode = true;
             this.useWideViewPort = true
         }
-        binding.webView.loadUrl("https://cctvatis4.ntpc.gov.tw/C000232")
+        binding.webView.loadUrl("https://cctv.bote.gov.taipei:8501/mjpeg/232")
     }
 
     /** 事故觀察及定時 */
@@ -725,7 +725,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                             if (BuildConfig.DEBUG) {
                                 MyLog.e("searchResult:$name")
                             }
-                            CCTV(name, url = "https://cctvatis4.ntpc.gov.tw/C000$no")
+                            CCTV(name, url = "https://cctv.bote.gov.taipei:8501/mjpeg/$no")
                         }
                         searchSet.addAll(roadList)
                     }

@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import ntutifm.game.google.apiClass.CCTV
 import ntutifm.game.google.apiClass.Camera
 import ntutifm.game.google.apiClass.OilStation
 import ntutifm.game.google.apiClass.Parking
@@ -18,6 +19,7 @@ import ntutifm.game.google.dataBase.OilStationRepository
 import ntutifm.game.google.dataBase.ParkingRepository
 import ntutifm.game.google.dataBase.RoadFavoriteRepository
 import ntutifm.game.google.dataBase.SearchHistoryRepository
+import ntutifm.game.google.dataBase.cctvRepository
 
 class MapViewModel(application: Application) : ViewModel() {
 
@@ -35,6 +37,9 @@ class MapViewModel(application: Application) : ViewModel() {
     }
     private val oilStationRepository: OilStationRepository by lazy{
         OilStationRepository(application)
+    }
+    private val cctvRepository:cctvRepository by lazy {
+        cctvRepository(application)
     }
     val searchHistory = searchHistoryRepository.searchHistory
     private val _favoriteState = MutableStateFlow(false)
@@ -121,6 +126,23 @@ class MapViewModel(application: Application) : ViewModel() {
     fun addMarkParking(data: Parking){
         viewModelScope.launch(Dispatchers.Default) {
             parkingRepository.addFavorite(data)
+            _markState.value = true
+        }
+    }
+    fun checkCCTV(data:String){
+        viewModelScope.launch(Dispatchers.Default) {
+            _markState.value = cctvRepository.isCCTVFavorite(data)
+        }
+    }
+    fun deleteCCTV(data:String){
+        viewModelScope.launch(Dispatchers.Default) {
+            cctvRepository.deleteFavorite(data)
+            _markState.value = false
+        }
+    }
+    fun addCCTV(data: CCTV){
+        viewModelScope.launch(Dispatchers.Default) {
+            cctvRepository.addFavorite(data)
             _markState.value = true
         }
     }

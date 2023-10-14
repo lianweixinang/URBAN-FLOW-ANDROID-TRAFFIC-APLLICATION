@@ -13,11 +13,14 @@ class RoadAdaptor(
     resource: Int,
     objects: MutableList<CCTV> = mutableListOf(
         CCTV(
+            id = null,
             "中山北路-通河街口",
             url = "https://cctv.bote.gov.taipei:8501/mjpeg/232"
         ),
-        CCTV("至善路-福林路口", url = "https://cctv.bote.gov.taipei:8501/mjpeg/233"),
+        CCTV(id = null,
+            "至善路-福林路口", url = "https://cctv.bote.gov.taipei:8501/mjpeg/233"),
         CCTV(
+            id = null,
             "福林路-雨農路-中正路口",
             url = "https://cctv.bote.gov.taipei:8501/mjpeg/234"
         )

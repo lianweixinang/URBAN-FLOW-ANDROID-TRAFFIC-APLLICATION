@@ -1,3 +1,12 @@
 package ntutifm.game.google.apiClass
 
-class CCTV(val name:String, val url:String)
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
+
+@Entity
+data class CCTV(
+    @PrimaryKey(autoGenerate = true)
+    @SerializedName("ID") val id: Int?,
+    @SerializedName("Name") val name:String,
+    @SerializedName("URL") val url:String)

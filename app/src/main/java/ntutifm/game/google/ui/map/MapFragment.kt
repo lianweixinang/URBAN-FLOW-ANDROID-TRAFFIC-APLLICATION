@@ -808,7 +808,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                             if (BuildConfig.DEBUG) {
                                 MyLog.e("searchResult:$name")
                             }
-                            CCTV(name, url = "https://cctv.bote.gov.taipei:8501/mjpeg/$no")
+                            CCTV(id = null,name =name, url = "https://cctv.bote.gov.taipei:8501/mjpeg/$no")
                         }
                         searchSet.addAll(roadList)
                     }
@@ -1239,6 +1239,18 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             image.setImageResource(R.drawable.ic_baseline_star_24)
         } else {
             viewModel.addMarkOil(data)
+            image.setImageResource(R.drawable.ic_baseline_star_25)
+        }
+        markLike = !markLike
+    }
+    private val CCTVListener = View.OnClickListener {
+        val data = it.tag as CCTV
+        val image = infoWindowView.findViewById<View>(R.id.favoriteBtn) as ImageView
+        if (markLike) {
+            viewModel.deleteCCTV(data.name)
+            image.setImageResource(R.drawable.ic_baseline_star_24)
+        } else {
+            viewModel.addCCTV(data)
             image.setImageResource(R.drawable.ic_baseline_star_25)
         }
         markLike = !markLike

@@ -23,8 +23,8 @@
                 <ImageButton
                     android:id="@+id/close_btn"
                     android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_marginLeft="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="280dp"
                     android:background="@android:color/transparent"
                     android:src='@drawable/ic_baseline_cancel_24' />
 
@@ -40,8 +40,8 @@
 
                 <TextView
                     android:id="@+id/detail_state1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
                     android:layout_marginLeft="160dp"
                     android:text="(狀況: 已排除)"
                     android:textColor="#000000"

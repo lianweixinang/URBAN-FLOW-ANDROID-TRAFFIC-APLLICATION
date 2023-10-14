@@ -1,7 +1,11 @@
 package ntutifm.game.google.dataBase
 
 import android.content.Context
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import ntutifm.game.google.apiClass.CCTV
+import ntutifm.game.google.apiClass.Parking
+import ntutifm.game.google.global.Resource
 
 class cctvRepository(context: Context) {
     private val cctvDao : cctvDao by lazy {
@@ -17,7 +21,13 @@ class cctvRepository(context: Context) {
     suspend fun isCCTVFavorite(data: String):Boolean{
         return cctvDao.isCCTVFavorite(data)
     }
-    suspend fun getAllcctv():List<CCTV>{
-        return cctvDao.getAllcctv()
+    suspend fun getAllCCTV(): Flow<Resource<List<CCTV>>> {
+        return flow {
+            try {
+                emit(Resource.Success(cctvDao.getAllcctv()))
+            } catch (ex: Exception) {
+                emit(Resource.Error(ex))
+            }
+        }
     }
 }

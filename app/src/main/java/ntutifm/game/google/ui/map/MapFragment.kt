@@ -281,7 +281,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         adapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinner.adapter = adapter
         binding.spinner.setSelection(0, false)
-        binding.spinner.onItemSelectedListener = SpnOnItemSelected(binding)
+        binding.spinner.onItemSelectedListener = SpnOnItemSelected(binding, viewModel)
         binding.webView.webViewClient = object : WebViewClient() {
             override fun onReceivedSslError(
                 view: WebView?,

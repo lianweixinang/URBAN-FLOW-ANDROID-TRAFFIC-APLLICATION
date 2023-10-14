@@ -131,7 +131,7 @@ class MapViewModel(application: Application) : ViewModel() {
     }
     fun checkCCTV(data:String){
         viewModelScope.launch(Dispatchers.Default) {
-            _markState.value = cctvRepository.isCCTVFavorite(data)
+            _favoriteState.value = cctvRepository.isCCTVFavorite(data)
         }
     }
     fun deleteCCTV(data:String){

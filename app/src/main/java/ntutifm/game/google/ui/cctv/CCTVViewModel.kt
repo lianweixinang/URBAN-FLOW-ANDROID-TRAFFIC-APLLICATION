@@ -1,4 +1,4 @@
-package ntutifm.game.google.ui.parking
+package ntutifm.game.google.ui.cctv
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
@@ -8,26 +8,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import ntutifm.game.google.dataBase.ParkingRepository
-import ntutifm.game.google.entity.contract.ParkingContract
+import ntutifm.game.google.dataBase.CCTVRepository
+import ntutifm.game.google.entity.contract.CCTVContract
 import ntutifm.game.google.global.BaseViewModel
 import ntutifm.game.google.global.Resource
-import ntutifm.game.google.ui.cctv.CCTVViewModel
 
-class ParkingViewModel(application: Application) : BaseViewModel<ParkingContract.Event, ParkingContract.State, ParkingContract.Effect>(){
+class CCTVViewModel(application: Application) : BaseViewModel<CCTVContract.Event, CCTVContract.State, CCTVContract.Effect>(){
 
-    private val repository: ParkingRepository by lazy{
-        ParkingRepository(application)
+    private val repository: CCTVRepository by lazy{
+        CCTVRepository(application)
     }
-    override fun createInitialState(): ParkingContract.State {
-        return ParkingContract.State(
-            postsState = ParkingContract.ParkingState.Idle,
+    override fun createInitialState(): CCTVContract.State {
+        return CCTVContract.State(
+            postsState = CCTVContract.CCTVState.Idle,
         )
     }
 
-    override fun handleEvent(event: ParkingContract.Event) {
+    override fun handleEvent(event: CCTVContract.Event) {
         when (event) {
-            is ParkingContract.Event.OnFetchParkings -> {
+            is CCTVContract.Event.OnFetchCCTVs -> {
                 fetchPosts()
             }
         }
@@ -38,35 +37,35 @@ class ParkingViewModel(application: Application) : BaseViewModel<ParkingContract
      */
     private fun fetchPosts() {
         viewModelScope.launch {
-            repository.getAllStation().flowOn(Dispatchers.IO)
+            repository.getAllCCTV().flowOn(Dispatchers.IO)
                 .onStart { emit(Resource.Loading) }
                 .collect {
                     when (it) {
                         is Resource.Loading -> {
                             // Set State
-                            setState { copy(postsState = ParkingContract.ParkingState.Loading) }
+                            setState { copy(postsState = CCTVContract.CCTVState.Loading) }
                         }
                         is Resource.Empty -> {
                             // Set State
-                            setState { copy(postsState = ParkingContract.ParkingState.Idle) }
+                            setState { copy(postsState = CCTVContract.CCTVState.Idle) }
                         }
                         is Resource.Success -> {
                             // Set State
-                            setState { copy(postsState = ParkingContract.ParkingState.Success(posts = it.data)) }
+                            setState { copy(postsState = CCTVContract.CCTVState.Success(posts = it.data)) }
                         }
                         is Resource.Error -> {
                             // Set Effect
-                            setEffect { ParkingContract.Effect.ShowError(message = it.exception.message) }
+                            setEffect { CCTVContract.Effect.ShowError(message = it.exception.message) }
                         }
                     }
                 }
         }
     }
 
-    class ParkingViewModelFactory(private val application: Application): ViewModelProvider.AndroidViewModelFactory(application) {
+    class CCTVViewModelFactory(private val application: Application): ViewModelProvider.AndroidViewModelFactory(application) {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
-            return ParkingViewModel(
+            return CCTVViewModel(
                 application
             ) as T
         }

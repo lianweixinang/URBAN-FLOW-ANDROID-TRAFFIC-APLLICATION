@@ -554,8 +554,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                     newState == BottomSheetBehavior.STATE_EXPANDED
                 binding.imageView3.isVisible =
                     newState == BottomSheetBehavior.STATE_EXPANDED
-                binding.direction.isVisible =
-                    newState == BottomSheetBehavior.STATE_EXPANDED
             } else {
                 binding.webView.isVisible = false
                 binding.trafficFlow.isVisible = false

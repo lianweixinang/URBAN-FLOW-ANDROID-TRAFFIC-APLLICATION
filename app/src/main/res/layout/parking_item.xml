@@ -22,19 +22,6 @@
             android:textColor="#000000"
             android:textSize="18sp"
             android:textStyle="normal" />
-
-        <TextView
-            android:id="@+id/route2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="綠寶石停車場"
-            android:gravity="center"
-            android:layout_marginTop="30dp"
-            android:textColor="#000000"
-            android:textSize="18sp"
-            android:textStyle="normal" />
-
-
     </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>
 

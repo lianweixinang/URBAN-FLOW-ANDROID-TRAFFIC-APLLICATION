@@ -19,13 +19,14 @@ import ntutifm.game.google.databinding.FragmentParkingBinding
 import ntutifm.game.google.entity.adaptor.ParkingAdaptor
 import ntutifm.game.google.entity.contract.ParkingContract
 import ntutifm.game.google.global.MyLog
+import ntutifm.game.google.ui.camera.CameraViewModel
 
 class ParkingFragment:Fragment() {
     private var _binding: FragmentParkingBinding? = null
     private val binding get() = _binding!!
     private var adapter: ParkingAdaptor? = null
     private val viewModel: ParkingViewModel by lazy {
-        ViewModelProvider(this)[ParkingViewModel::class.java]
+        ViewModelProvider(this,ParkingViewModel.ParkingViewModelFactory(requireActivity().application))[ParkingViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -40,6 +41,7 @@ class ParkingFragment:Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        parkingListInit()
         initObservers()
         if (viewModel.currentState.postsState is ParkingContract.ParkingState.Idle)
             viewModel.setEvent(ParkingContract.Event.OnFetchParkings)
@@ -51,10 +53,10 @@ class ParkingFragment:Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun parkingListInit() {
-        binding.recycleIncidentView.setHasFixedSize(true)
-        binding.recycleIncidentView.layoutManager = LinearLayoutManager(MyActivity().context)
+        binding.recycleView.setHasFixedSize(true)
+        binding.recycleView.layoutManager = LinearLayoutManager(MyActivity().context)
         adapter = ParkingAdaptor(listOf(), parkingBtnListener)
-        binding.recycleIncidentView.adapter = adapter
+        binding.recycleView.adapter = adapter
     }
     private val parkingBtnListener = View.OnClickListener() {
         val data = it.tag as Incident

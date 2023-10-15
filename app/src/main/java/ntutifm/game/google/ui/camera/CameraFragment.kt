@@ -19,13 +19,14 @@ import ntutifm.game.google.databinding.FragmentCameraBinding
 import ntutifm.game.google.entity.adaptor.CameraAdaptor
 import ntutifm.game.google.entity.contract.CameraContract
 import ntutifm.game.google.global.MyLog
+import ntutifm.game.google.ui.map.MapViewModel
 
  class CameraFragment:Fragment() {
     private var _binding: FragmentCameraBinding? = null
     private val binding get() = _binding!!
     private var adapter: CameraAdaptor? = null
     private val viewModel: CameraViewModel by lazy {
-        ViewModelProvider(this)[CameraViewModel::class.java]
+        ViewModelProvider(this, CameraViewModel.CameraViewModelFactory(requireActivity().application))[CameraViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -52,10 +53,10 @@ import ntutifm.game.google.global.MyLog
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun cameraListInit() {
-        binding.recycleIncidentView.setHasFixedSize(true)
-        binding.recycleIncidentView.layoutManager = LinearLayoutManager(MyActivity().context)
+        binding.recycleView.setHasFixedSize(true)
+        binding.recycleView.layoutManager = LinearLayoutManager(MyActivity().context)
         adapter = CameraAdaptor(listOf(), roadcameraBtnListener)
-        binding.recycleIncidentView.adapter = adapter
+        binding.recycleView.adapter = adapter
     }
     private val roadcameraBtnListener = View.OnClickListener() {
         val data = it.tag as Incident

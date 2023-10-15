@@ -35,19 +35,19 @@
                 app:contentPadding="10dp">
 
                 <ImageView
-                    android:id="@+id/rdcamicon"
+                    android:id="@+id/gasicon2"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginLeft="150dp"
-                    android:src='@drawable/security_camera'
+                    android:src='@drawable/speed_camera'
                     app:cardCornerRadius="10dp" />
                 <TextView
-                    android:id="@+id/gastxt2"
+                    android:id="@+id/spdcamtxt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:layout_marginLeft="200dp"
-                    android:text="路況即時影像"
+                    android:text="測速照相"
                     android:textColor="#000000"
                     android:textSize="20sp"
                     android:textStyle="bold"/>
@@ -56,7 +56,7 @@
 
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycleIncidentView"
+                android:id="@+id/recycleView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="2dp"

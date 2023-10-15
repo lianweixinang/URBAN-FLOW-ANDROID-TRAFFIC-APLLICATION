@@ -5,18 +5,15 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
-import ntutifm.game.google.R
 import ntutifm.game.google.apiClass.Parking
 import ntutifm.game.google.databinding.ParkingItemBinding
-import ntutifm.game.google.entity.sync.SyncPosition
 
 class ParkingAdaptor(private var mList: List<Parking>, private val itemOnClickListener: View.OnClickListener) :
     RecyclerView.Adapter<ParkingAdaptor.ParkingHolder>() {
 
     inner class ParkingHolder(binding: ParkingItemBinding): RecyclerView.ViewHolder(binding.root){
-        val type : TextView = itemView.findViewById(R.id.title1)
-        val description : TextView = itemView.findViewById(R.id.content1)
-        val root : MaterialCardView = itemView.findViewById(R.id.root)
+        val type : TextView = binding.route1
+        val root : MaterialCardView = binding.root
     }
 
     fun submitList(mList: List<Parking>){
@@ -31,16 +28,13 @@ class ParkingAdaptor(private var mList: List<Parking>, private val itemOnClickLi
     }
 
     override fun onBindViewHolder(holder: ParkingAdaptor.ParkingHolder, position: Int) {
-        holder.type.text = mList?.get(position)?.parkingName
-        holder.description.text = mList?.get(position)?.parkingName
-
-        holder.root.tag = mList?.get(position) ?: "22"
+        holder.type.text = mList[position].parkingName
+        holder.root.tag = mList[position]
         holder.root.setOnClickListener(itemOnClickListener)
 
-        val index = SyncPosition.districtToIndex()
     }
 
     override fun getItemCount(): Int {
-        return mList?.size ?: 0
+        return mList.size
     }
 }

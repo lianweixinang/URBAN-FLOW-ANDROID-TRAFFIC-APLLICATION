@@ -16,16 +16,18 @@ import kotlinx.coroutines.launch
 import ntutifm.game.google.MyActivity
 import ntutifm.game.google.apiClass.Incident
 import ntutifm.game.google.databinding.FragmentNotificationBinding
+import ntutifm.game.google.databinding.FragmentOilStationBinding
 import ntutifm.game.google.entity.adaptor.OilStationAdaptor
 import ntutifm.game.google.entity.contract.OilStationContract
 import ntutifm.game.google.global.MyLog
+import ntutifm.game.google.ui.camera.CameraViewModel
 
 class OilStationFragment:Fragment() {
-    private var _binding: FragmentNotificationBinding? = null
+    private var _binding: FragmentOilStationBinding? = null
     private val binding get() = _binding!!
     private var adapter: OilStationAdaptor? = null
     private val viewModel: OilStationViewModel by lazy {
-        ViewModelProvider(this)[OilStationViewModel::class.java]
+        ViewModelProvider(this, OilStationViewModel.OilStationViewModelFactory(requireActivity().application))[OilStationViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -33,13 +35,14 @@ class OilStationFragment:Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentNotificationBinding.inflate(inflater, container, false)
+        _binding = FragmentOilStationBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        parkingListInit()
         initObservers()
         if (viewModel.currentState.postsState is OilStationContract.OilStationState.Idle)
             viewModel.setEvent(OilStationContract.Event.OnFetchOilStations)
@@ -51,10 +54,10 @@ class OilStationFragment:Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun parkingListInit() {
-        binding.recycleIncidentView.setHasFixedSize(true)
-        binding.recycleIncidentView.layoutManager = LinearLayoutManager(MyActivity().context)
+        binding.recycleView.setHasFixedSize(true)
+        binding.recycleView.layoutManager = LinearLayoutManager(MyActivity().context)
         adapter = OilStationAdaptor(listOf(), parkingBtnListener)
-        binding.recycleIncidentView.adapter = adapter
+        binding.recycleView.adapter = adapter
     }
     private val parkingBtnListener = View.OnClickListener() {
         val data = it.tag as Incident

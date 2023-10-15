@@ -19,6 +19,7 @@ import ntutifm.game.google.databinding.FragmentCctvBinding
 import ntutifm.game.google.entity.adaptor.CCTVAdaptor
 import ntutifm.game.google.entity.contract.CCTVContract
 import ntutifm.game.google.global.MyLog
+import ntutifm.game.google.ui.camera.CameraViewModel
 import ntutifm.game.google.ui.cctv.CCTVViewModel
 
 
@@ -27,7 +28,7 @@ class CCTVFragment:Fragment() {
     private val binding get() = _binding!!
     private var adapter: CCTVAdaptor? = null
     private val viewModel: CCTVViewModel by lazy {
-        ViewModelProvider(this)[CCTVViewModel::class.java]
+        ViewModelProvider(this, CCTVViewModel.CCTVViewModelFactory(requireActivity().application))[CCTVViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -42,6 +43,7 @@ class CCTVFragment:Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        cctvListInit()
         initObservers()
         if (viewModel.currentState.postsState is CCTVContract.CCTVState.Idle)
             viewModel.setEvent(CCTVContract.Event.OnFetchCCTVs)
@@ -53,10 +55,10 @@ class CCTVFragment:Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun cctvListInit() {
-        binding.recycleCCTVView.setHasFixedSize(true)
-        binding.recycleCCTVView.layoutManager = LinearLayoutManager(MyActivity().context)
+        binding.recycleView.setHasFixedSize(true)
+        binding.recycleView.layoutManager = LinearLayoutManager(MyActivity().context)
         adapter = CCTVAdaptor(listOf(), cctvBtnListener)
-        binding.recycleCCTVView.adapter = adapter
+        binding.recycleView.adapter = adapter
     }
     private val cctvBtnListener = View.OnClickListener() {
         val data = it.tag as CCTV

@@ -5,18 +5,16 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
-import ntutifm.game.google.R
 import ntutifm.game.google.apiClass.Camera
 import ntutifm.game.google.databinding.CameraItemBinding
-import ntutifm.game.google.entity.sync.SyncPosition
 
 class CameraAdaptor(private var mList: List<Camera>, private val itemOnClickListener: View.OnClickListener) :
     RecyclerView.Adapter<CameraAdaptor.CameraHolder>() {
 
     inner class CameraHolder(binding: CameraItemBinding): RecyclerView.ViewHolder(binding.root){
-        val type : TextView = itemView.findViewById(R.id.title1)
-        val description : TextView = itemView.findViewById(R.id.content1)
-        val root : MaterialCardView = itemView.findViewById(R.id.root)
+        val type : TextView = binding.route1
+        val description : TextView = binding.route2
+        val root : MaterialCardView = binding.root
     }
 
     fun submitList(mList: List<Camera>){
@@ -31,14 +29,13 @@ class CameraAdaptor(private var mList: List<Camera>, private val itemOnClickList
     }
 
     override fun onBindViewHolder(holder: CameraAdaptor.CameraHolder, position: Int) {
-        holder.type.text = mList?.get(position)?.road
-        holder.root.tag = mList?.get(position) ?: "22"
+        holder.type.text = mList[position].road
+        holder.description.text = mList[position].introduction
+        holder.root.tag = mList[position]
         holder.root.setOnClickListener(itemOnClickListener)
-
-        val index = SyncPosition.districtToIndex()
     }
 
     override fun getItemCount(): Int {
-        return mList?.size ?: 0
+        return mList.size
     }
 }

@@ -23,13 +23,14 @@ import ntutifm.game.google.databinding.FragmentRoadBinding
 import ntutifm.game.google.entity.adaptor.RoadFavoriteAdaptor
 import ntutifm.game.google.entity.contract.RoadContract
 import ntutifm.game.google.global.MyLog
+import ntutifm.game.google.ui.camera.CameraViewModel
 
 class RoadFragment:Fragment() {
     private var _binding: FragmentRoadBinding? = null
     private val binding get() = _binding!!
     private var adapter: RoadFavoriteAdaptor? = null
     private val viewModel: RoadViewModel by lazy {
-        ViewModelProvider(this)[RoadViewModel::class.java]
+        ViewModelProvider(this, RoadViewModel.RoadViewModelFactory(requireActivity().application))[RoadViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -44,6 +45,7 @@ class RoadFragment:Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        roadListInit()
         initObservers()
         if (viewModel.currentState.postsState is RoadContract.RoadState.Idle)
             viewModel.setEvent(RoadContract.Event.OnFetchRoads)
@@ -55,10 +57,10 @@ class RoadFragment:Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun roadListInit() {
-        binding.recycleIncidentView.setHasFixedSize(true)
-        binding.recycleIncidentView.layoutManager = LinearLayoutManager(MyActivity().context)
+        binding.recycleView.setHasFixedSize(true)
+        binding.recycleView.layoutManager = LinearLayoutManager(MyActivity().context)
         adapter = RoadFavoriteAdaptor(listOf(), roadBtnListener)
-        binding.recycleIncidentView.adapter = adapter
+        binding.recycleView.adapter = adapter
     }
     private val roadBtnListener = View.OnClickListener() {
         val data = it.tag as Incident

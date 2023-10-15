@@ -6,7 +6,7 @@ import ntutifm.game.google.apiClass.CCTV
 import ntutifm.game.google.databinding.FragmentMapBinding
 import ntutifm.game.google.ui.map.MapViewModel
 
-class SpnOnItemSelected(val binding: FragmentMapBinding, private val viewModel: MapViewModel) : AdapterView.OnItemSelectedListener {
+class SpnOnItemSelected(val binding: FragmentMapBinding, private val viewModel: MapViewModel, private val listener:()->Unit) : AdapterView.OnItemSelectedListener {
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val selectedItem = parent?.getItemAtPosition(position) as? CCTV
         selectedItem?.let {
@@ -14,7 +14,7 @@ class SpnOnItemSelected(val binding: FragmentMapBinding, private val viewModel: 
             binding.fragmentHome.textView.text = it.name
             viewModel.checkCCTV(it.name)
         }
-
+        listener()
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {

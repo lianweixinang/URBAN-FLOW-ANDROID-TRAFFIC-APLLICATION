@@ -58,7 +58,7 @@ class MapViewModel(application: Application) : ViewModel() {
     }
     fun checkFavorite(data:String){
         viewModelScope.launch(Dispatchers.Default) {
-            _favoriteState.emit(roadFavoriteRepository.isRoadFavorite(data))
+            _favoriteState.value = roadFavoriteRepository.isRoadFavorite(data)
         }
     }
     fun deleteFavorite(data:String){
@@ -137,13 +137,13 @@ class MapViewModel(application: Application) : ViewModel() {
     fun deleteCCTV(data:String){
         viewModelScope.launch(Dispatchers.Default) {
             cctvRepository.deleteFavorite(data)
-            _markState.value = false
+            _favoriteState.value = false
         }
     }
     fun addCCTV(data: CCTV){
         viewModelScope.launch(Dispatchers.Default) {
             cctvRepository.addFavorite(data)
-            _markState.value = true
+            _favoriteState.value = true
         }
     }
 

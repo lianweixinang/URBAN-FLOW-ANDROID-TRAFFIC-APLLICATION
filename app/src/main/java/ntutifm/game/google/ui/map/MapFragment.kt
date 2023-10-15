@@ -48,6 +48,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
@@ -134,6 +135,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var adaptor: SearchAdaptor? = null
     private var adapter: RoadAdaptor? = null
 
+    private var destination: LatLng? = null
+
 
     /** 根據layout建構畫面 */
     override fun onCreateView(
@@ -142,6 +145,10 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         arguments?.let { bundle ->
             isInitialized = bundle.getBoolean("notReset")
+            destination = LatLng(
+                bundle.getDouble("latitude"),
+                bundle.getDouble("longitude")
+            )
         }
         return binding.root
     }
@@ -912,9 +919,29 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         initMark()
         setLocationInitBtn()
         weatherInit()
+        if (destination != null) {
+            MyLog.d("開啟導航")
+            getNavigation(destination!!)
+        }
     }
 
-    private fun getNavigation(origin: LatLng, destination: LatLng) {
+    @SuppressLint("MissingPermission")
+    private fun getNavigation(destination: LatLng) {
+        if (!permissionDenied) {
+            MyLog.d("獲取當前位置1")
+            mFusedLocationClient?.lastLocation
+                ?.addOnSuccessListener { location: Location? ->
+                    MyLog.d("獲取當前位置2")
+                    location?.let {
+                        MyLog.d("獲取當前位置3")
+                        val origin = LatLng(location.latitude, location.longitude)
+                        getDestination(origin, destination)
+                    }
+                }
+        }
+    }
+
+    private fun getDestination(origin: LatLng, destination: LatLng) {
         val service = NavigationAPI.api
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
@@ -933,6 +960,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                         val decodedPoints = PolyUtil.decode(points)
                         routePoints.addAll(decodedPoints)
                     }
+                    MyLog.d("$routePoints")
                     withContext(Dispatchers.Main) {
                         drawRoute(routePoints)
                     }
@@ -946,9 +974,12 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private fun drawRoute(routePoints: List<LatLng>) {
         val lineOptions = PolylineOptions()
         lineOptions.addAll(routePoints)
-        lineOptions.width(10f) // 路线宽度
+        lineOptions.width(40f) // 路线宽度
         lineOptions.color(R.color.purple_700) // 路线颜色
+        lineOptions.zIndex(20f)
+        map.isTrafficEnabled = false
         map.addPolyline(lineOptions)
+        MyLog.d("繪製完成")
     }
 
     /** 定位按鈕位置 */
@@ -1006,7 +1037,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                             )
                         }
                         MyLog.e("Start Navigation")
-                        getNavigation(newLatLng, LatLng(25.0141, 121.5181))
+//                        getNavigation(LatLng(25.0141, 121.5181))
                         val targetLatLng =
                             LatLng(newLatLng.latitude - 0.00006, newLatLng.longitude)
                         val targetZoomLevel = 18f
@@ -1157,7 +1188,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                         mClusterManager?.addItem(
                             MyItem(
                                 p.latitude,
-                                p.logitude,
+                                p.longitude,
                                 2, p
                             )
                         )

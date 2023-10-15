@@ -11,10 +11,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavOptions
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
 import ntutifm.game.google.MyActivity
+import ntutifm.game.google.R
 import ntutifm.game.google.apiClass.CCTV
+import ntutifm.game.google.apiClass.Parking
 import ntutifm.game.google.databinding.FragmentCctvBinding
 import ntutifm.game.google.entity.adaptor.CCTVAdaptor
 import ntutifm.game.google.entity.contract.CCTVContract
@@ -62,7 +66,15 @@ class CCTVFragment:Fragment() {
     }
     private val cctvBtnListener = View.OnClickListener() {
         val data = it.tag as CCTV
-        //切換
+        val navController = Navigation.findNavController(binding.root)
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(R.id.mapFragment, true)
+            .build()
+        val bundle = Bundle()
+        bundle.putBoolean("notReset", true)
+        bundle.putString("name", data.name)
+        bundle.putString("url", data.url)
+        navController.navigate(R.id.mapFragment, bundle, navOptions)
     }
 
     private fun initObservers() {

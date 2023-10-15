@@ -13,12 +13,16 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavOptions
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
 import ntutifm.game.google.BuildConfig
 import ntutifm.game.google.MyActivity
 import ntutifm.game.google.R
 import ntutifm.game.google.apiClass.Incident
+import ntutifm.game.google.apiClass.Parking
+import ntutifm.game.google.apiClass.RoadFavorite
 import ntutifm.game.google.databinding.FragmentRoadBinding
 import ntutifm.game.google.entity.adaptor.RoadFavoriteAdaptor
 import ntutifm.game.google.entity.contract.RoadContract
@@ -63,8 +67,14 @@ class RoadFragment:Fragment() {
         binding.recycleView.adapter = adapter
     }
     private val roadBtnListener = View.OnClickListener() {
-        val data = it.tag as Incident
-        //切換
+        val data = it.tag as RoadFavorite
+        val navController = Navigation.findNavController(binding.root)
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(R.id.mapFragment, true)
+            .build()
+        val bundle = Bundle()
+        bundle.putBoolean("notReset", true)
+        navController.navigate(R.id.mapFragment, bundle, navOptions)
     }
 
     private fun initObservers() {

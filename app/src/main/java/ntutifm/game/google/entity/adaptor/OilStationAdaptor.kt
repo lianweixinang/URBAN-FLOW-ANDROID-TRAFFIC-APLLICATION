@@ -13,7 +13,6 @@ class OilStationAdaptor(private var mList: List<OilStation>, private val itemOnC
 
     inner class OilStationHolder(binding: OilStationItemBinding): RecyclerView.ViewHolder(binding.root){
         val title : TextView = binding.route1
-        val content : TextView = binding.route2
         val root : MaterialCardView = binding.root
     }
 
@@ -30,7 +29,6 @@ class OilStationAdaptor(private var mList: List<OilStation>, private val itemOnC
 
     override fun onBindViewHolder(holder: OilStationHolder, position: Int) {
         holder.title.text = mList[position].station
-        holder.content.text = mList[position].address
         holder.root.tag = mList[position]
         holder.root.setOnClickListener(itemOnClickListener)
     }

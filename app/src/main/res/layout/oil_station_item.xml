@@ -1,40 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    android:id="@+id/gas"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginTop="10dp"
+    android:id="@+id/gas"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
     android:background="#FFFFFF">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FFFFFF"
-        android:padding="5dp">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="16dp">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/route1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cpc_icon" />
 
         <TextView
             android:id="@+id/route1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="183dp"
+            android:layout_height="29dp"
             android:text="台灣中油 永和站 (直營)"
-            android:gravity="center"
             android:textColor="#000000"
             android:textSize="18sp"
-            android:textStyle="normal" />
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.55"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/route2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="台灣中油 皮皮站 (加盟)"
-            android:gravity="center"
-            android:layout_marginTop="30dp"
-            android:textColor="#000000"
-            android:textSize="18sp"
-            android:textStyle="normal" />
+        <ImageView
+            android:id="@+id/OilstationItemCancel"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cancel" />
 
+</androidx.constraintlayout.widget.ConstraintLayout>
 
-    </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>
 

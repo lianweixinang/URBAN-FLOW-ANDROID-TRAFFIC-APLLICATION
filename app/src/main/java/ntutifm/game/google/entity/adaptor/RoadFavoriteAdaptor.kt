@@ -13,7 +13,6 @@ class RoadFavoriteAdaptor(private var mList: List<RoadFavorite>, private val ite
 
     inner class RoadHolder(binding: RoadItemBinding): RecyclerView.ViewHolder(binding.root){
         val road : TextView = binding.route1
-        val description : TextView = binding.route2
         val root : MaterialCardView = binding.root
     }
 
@@ -30,8 +29,6 @@ class RoadFavoriteAdaptor(private var mList: List<RoadFavorite>, private val ite
 
     override fun onBindViewHolder(holder: RoadFavoriteAdaptor.RoadHolder, position: Int) {
         holder.road.text = mList[position].roadName
-        holder.description.text = mList[position].roadId
-
         holder.root.tag = mList[position]
         holder.root.setOnClickListener(itemOnClickListener)
     }

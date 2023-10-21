@@ -4,7 +4,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.card.MaterialCardView
 import ntutifm.game.google.apiClass.Camera
 import ntutifm.game.google.databinding.CameraItemBinding
 
@@ -12,9 +11,11 @@ class CameraAdaptor(private var mList: List<Camera>, private val itemOnClickList
     RecyclerView.Adapter<CameraAdaptor.CameraHolder>() {
 
     inner class CameraHolder(binding: CameraItemBinding): RecyclerView.ViewHolder(binding.root){
-        val type : TextView = binding.route1
-        val description : TextView = binding.route2
-        val root : MaterialCardView = binding.root
+        val district : TextView = binding.routeDtr
+        val road : TextView = binding.route
+        val description : TextView = binding.routeDes
+        val type : TextView = binding.type
+        val limit : TextView = binding.limit
     }
 
     fun submitList(mList: List<Camera>){
@@ -29,10 +30,11 @@ class CameraAdaptor(private var mList: List<Camera>, private val itemOnClickList
     }
 
     override fun onBindViewHolder(holder: CameraAdaptor.CameraHolder, position: Int) {
-        holder.type.text = mList[position].road
+        holder.district.text = "台北市" + mList[position].session + "區"
+        holder.road.text = mList[position].road
         holder.description.text = mList[position].introduction
-        holder.root.tag = mList[position]
-        holder.root.setOnClickListener(itemOnClickListener)
+        holder.type.text = mList[position].type + "偵測"
+        holder.limit.text = "限速:" + mList[position].limit
     }
 
     override fun getItemCount(): Int {

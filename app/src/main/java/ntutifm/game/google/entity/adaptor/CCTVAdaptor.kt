@@ -12,7 +12,6 @@ class CCTVAdaptor(private var mList: List<CCTV>, private val itemOnClickListener
 
     inner class CCTVHolder(binding: CctvItemBinding): RecyclerView.ViewHolder(binding.root){
         val location : TextView = binding.route1
-        val url : TextView = binding.route2
         val root = binding.root
     }
 
@@ -29,7 +28,6 @@ class CCTVAdaptor(private var mList: List<CCTV>, private val itemOnClickListener
 
     override fun onBindViewHolder(holder: CCTVAdaptor.CCTVHolder, position: Int) {
         holder.location.text = mList[position].name
-        holder.url.text = mList[position].url
         holder.root.tag = mList[position]
         holder.root.setOnClickListener(itemOnClickListener)
     }

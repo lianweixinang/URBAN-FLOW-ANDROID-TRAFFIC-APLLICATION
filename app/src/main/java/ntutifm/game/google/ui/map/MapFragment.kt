@@ -137,7 +137,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var adapter: RoadAdaptor? = null
 
     private var destination: LatLng? = null
-
+    private var cctv: CCTV? = null
 
     /** 根據layout建構畫面 */
     override fun onCreateView(
@@ -149,6 +149,10 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             destination = LatLng(
                 bundle.getDouble("latitude"),
                 bundle.getDouble("longitude")
+            )
+            cctv = CCTV(null,
+                bundle.getString("cctvName",""),
+                bundle.getString("cctvUrl","")
             )
         }
         return binding.root
@@ -288,6 +292,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             android.R.layout.simple_spinner_item
         )
         adapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+
         binding.spinner.adapter = adapter
         binding.spinner.setSelection(0, false)
         binding.spinner.onItemSelectedListener = SpnOnItemSelected(
@@ -308,7 +314,17 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             this.loadWithOverviewMode = true
             this.useWideViewPort = true
         }
-        binding.webView.loadUrl("https://cctv.bote.gov.taipei:8501/mjpeg/232")
+        if(cctv?.url != "" && cctv?.url != null) {
+            adapter?.clear()
+            adapter?.add(cctv)
+            adapter?.notifyDataSetChanged()
+            binding.fragmentHome.textView.text = cctv?.name
+            binding.webView.loadUrl(cctv!!.url)
+            binding.carDirection1.visibility = View.GONE
+            binding.trafficFlow.visibility = View.GONE
+        }else{
+            binding.webView.loadUrl("https://cctv.bote.gov.taipei:8501/mjpeg/232")
+        }
     }
 
     private fun attachCCTVListener() {

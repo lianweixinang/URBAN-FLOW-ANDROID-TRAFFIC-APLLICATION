@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -72,8 +73,8 @@ class CCTVFragment:Fragment() {
             .build()
         val bundle = Bundle()
         bundle.putBoolean("notReset", true)
-        bundle.putString("name", data.name)
-        bundle.putString("url", data.url)
+        bundle.putString("cctvName", data.name)
+        bundle.putString("cctvUrl", data.url)
         navController.navigate(R.id.mapFragment, bundle, navOptions)
     }
 
@@ -88,7 +89,13 @@ class CCTVFragment:Fragment() {
                         }
                         is CCTVContract.CCTVState.Success -> {
                             val data = state.posts
-                            adapter?.submitList(data)
+                            if(state.posts.isEmpty()){
+                                binding.recycleView.visibility = View.GONE
+                                binding.nodata.visibility = View.VISIBLE
+                            }else {
+                                adapter?.submitList(data)
+                                binding.nodata.visibility = View.GONE
+                            }
                         }
                     }
                 }

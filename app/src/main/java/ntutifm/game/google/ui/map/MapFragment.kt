@@ -195,6 +195,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Log.e("TTS", "該語言不被支持或缺少數據")
                 } else {
+                    isTTSInitialized = true
                     textToSpeech?.speak(
                         "範文立",
                         TextToSpeech.QUEUE_FLUSH,
@@ -453,9 +454,13 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private val slButtonListener = View.OnClickListener {
         sitMode = !sitMode
         if (sitMode) {
+            AppUtil.showTopToast(requireActivity(), "開啟測速模式")
+            speakText("開啟測速模式")
             opensl()
             startDistanceMeasurement()
         } else {
+            AppUtil.showTopToast(requireActivity(), "關閉測速模式")
+            speakText("關閉測速模式")
             mFusedLocationClient?.removeLocationUpdates(locationCallback)
             closeSl()
         }

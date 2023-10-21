@@ -2,18 +2,20 @@ package ntutifm.game.google.entity.adaptor
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import ntutifm.game.google.apiClass.RoadFavorite
 import ntutifm.game.google.databinding.RoadItemBinding
 
-class RoadFavoriteAdaptor(private var mList: List<RoadFavorite>, private val itemOnClickListener: View.OnClickListener) :
+class RoadFavoriteAdaptor(private var mList: List<RoadFavorite>, private val itemOnClickListener: View.OnClickListener,private val itemOnDeleteListener: View.OnClickListener) :
     RecyclerView.Adapter<RoadFavoriteAdaptor.RoadHolder>() {
 
     inner class RoadHolder(binding: RoadItemBinding): RecyclerView.ViewHolder(binding.root){
         val road : TextView = binding.route1
         val root : MaterialCardView = binding.root
+        val delete : ImageView = binding.itemCancel
     }
 
     fun submitList(mList: List<RoadFavorite>){
@@ -29,8 +31,10 @@ class RoadFavoriteAdaptor(private var mList: List<RoadFavorite>, private val ite
 
     override fun onBindViewHolder(holder: RoadFavoriteAdaptor.RoadHolder, position: Int) {
         holder.road.text = mList[position].roadName
-        holder.root.tag = mList[position]
-        holder.root.setOnClickListener(itemOnClickListener)
+        holder.road.tag = mList[position]
+        holder.road.setOnClickListener(itemOnClickListener)
+        holder.delete.tag = mList[position]
+        holder.delete.setOnClickListener(itemOnDeleteListener)
     }
 
     override fun getItemCount(): Int {

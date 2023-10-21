@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import ntutifm.game.google.dataBase.CCTVRepository
 import ntutifm.game.google.entity.contract.CCTVContract
+import ntutifm.game.google.entity.contract.ParkingContract
 import ntutifm.game.google.global.BaseViewModel
+import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.global.Resource
 
 class CCTVViewModel(application: Application) : BaseViewModel<CCTVContract.Event, CCTVContract.State, CCTVContract.Effect>(){
@@ -29,6 +31,16 @@ class CCTVViewModel(application: Application) : BaseViewModel<CCTVContract.Event
             is CCTVContract.Event.OnFetchCCTVs -> {
                 fetchPosts()
             }
+            is CCTVContract.Event.OnDeleteItem -> {
+                deletePost(event.dataName)
+            }
+        }
+    }
+    private fun deletePost(data:String){
+        viewModelScope.launch {
+            repository.deleteFavorite(data)
+            MyLog.e("資料被刪")
+            fetchPosts()
         }
     }
 

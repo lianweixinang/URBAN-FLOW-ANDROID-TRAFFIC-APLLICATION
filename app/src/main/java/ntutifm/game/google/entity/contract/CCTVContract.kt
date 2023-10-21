@@ -9,6 +9,7 @@ class CCTVContract {
 
     sealed class Event : UiEvent {
         object OnFetchCCTVs : Event()
+        data class OnDeleteItem(val dataName : String) :Event()
     }
 
     data class State(

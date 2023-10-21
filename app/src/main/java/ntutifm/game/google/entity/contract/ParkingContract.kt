@@ -10,7 +10,7 @@ class ParkingContract {
 
     sealed class Event : UiEvent {
         object OnFetchParkings : Event()
-        data class OnDeleteItem(val dataName : String) : ParkingContract.Event()
+        data class OnDeleteItem(val dataName : String) :Event()
     }
 
     data class State(

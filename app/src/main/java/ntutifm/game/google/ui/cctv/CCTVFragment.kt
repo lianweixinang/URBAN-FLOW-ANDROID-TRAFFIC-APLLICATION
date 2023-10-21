@@ -22,7 +22,9 @@ import ntutifm.game.google.apiClass.CCTV
 import ntutifm.game.google.apiClass.Parking
 import ntutifm.game.google.databinding.FragmentCctvBinding
 import ntutifm.game.google.entity.adaptor.CCTVAdaptor
+import ntutifm.game.google.entity.adaptor.ParkingAdaptor
 import ntutifm.game.google.entity.contract.CCTVContract
+import ntutifm.game.google.entity.contract.ParkingContract
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.ui.camera.CameraViewModel
 import ntutifm.game.google.ui.cctv.CCTVViewModel
@@ -62,7 +64,7 @@ class CCTVFragment:Fragment() {
     private fun cctvListInit() {
         binding.recycleView.setHasFixedSize(true)
         binding.recycleView.layoutManager = LinearLayoutManager(MyActivity().context)
-        adapter = CCTVAdaptor(listOf(), cctvBtnListener)
+        adapter = CCTVAdaptor(listOf(), cctvBtnListener, cctvDeleteListener)
         binding.recycleView.adapter = adapter
     }
     private val cctvBtnListener = View.OnClickListener() {
@@ -76,6 +78,10 @@ class CCTVFragment:Fragment() {
         bundle.putString("cctvName", data.name)
         bundle.putString("cctvUrl", data.url)
         navController.navigate(R.id.mapFragment, bundle, navOptions)
+    }
+    private val cctvDeleteListener = View.OnClickListener() {
+        val data = it.tag as CCTV
+        viewModel.setEvent(CCTVContract.Event.OnDeleteItem(data.name))
     }
 
     private fun initObservers() {

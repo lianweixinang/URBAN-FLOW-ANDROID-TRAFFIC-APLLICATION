@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import ntutifm.game.google.dataBase.CameraRepository
 import ntutifm.game.google.entity.contract.CameraContract
 import ntutifm.game.google.global.BaseViewModel
+import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.global.Resource
 
 class CameraViewModel(application: Application) : BaseViewModel<CameraContract.Event, CameraContract.State, CameraContract.Effect>(){
@@ -28,6 +29,9 @@ class CameraViewModel(application: Application) : BaseViewModel<CameraContract.E
         when (event) {
             is CameraContract.Event.OnFetchCameras -> {
                 fetchPosts()
+            }
+            is CameraContract.Event.OnDeleteItem -> {
+                deletePost(event.dataName)
             }
         }
     }
@@ -59,6 +63,13 @@ class CameraViewModel(application: Application) : BaseViewModel<CameraContract.E
                         }
                     }
                 }
+        }
+    }
+    private fun deletePost(data:String){
+        viewModelScope.launch {
+            repository.deleteFavorite(data)
+            MyLog.e("資料被刪")
+            fetchPosts()
         }
     }
 

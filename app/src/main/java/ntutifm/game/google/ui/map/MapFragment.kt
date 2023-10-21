@@ -157,7 +157,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         bottomSheetInit()
         webViewInit()
         incidentCheck()
-        if(roadFavorite != null) {
+        if(roadFavorite != null && roadFavorite?.roadId != "") {
             searchItem(roadFavorite!!)
         }else{
             searchItem(SearchHistory(null,"600333A","忠孝東路一段",null))
@@ -866,14 +866,14 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     @RequiresApi(Build.VERSION_CODES.O)
     private fun searchItem(data:SearchHistory){
         filterCCTV(data)
-        binding.fragmentHome.favoriteBtn.tag = searchData
+        binding.fragmentHome.favoriteBtn.tag = data
         binding.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
         binding.fragmentSearch.searchView.setQuery("", false)
         SyncSpeed.getCityRoadSpeed(this, data.roadId, this)
 
         binding.fragmentSearch.root.visibility = View.GONE
         binding.fragmentHome.root.visibility = View.VISIBLE
-        binding.fragmentHome.textView.text = searchData!!.roadName
+        binding.fragmentHome.textView.text = data.roadName
         viewModel.checkFavorite(data.roadName)
 
         isOpen = false

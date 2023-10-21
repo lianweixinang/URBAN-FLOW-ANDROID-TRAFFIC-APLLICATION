@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import ntutifm.game.google.dataBase.RoadFavoriteRepository
 import ntutifm.game.google.entity.contract.RoadContract
 import ntutifm.game.google.global.BaseViewModel
+import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.global.Resource
 
 class RoadViewModel(application: Application) : BaseViewModel<RoadContract.Event, RoadContract.State, RoadContract.Effect>(){
@@ -28,6 +29,9 @@ class RoadViewModel(application: Application) : BaseViewModel<RoadContract.Event
         when (event) {
             is RoadContract.Event.OnFetchRoads -> {
                 fetchPosts()
+            }
+            is RoadContract.Event.OnDeleteItem -> {
+                deletePost(event.dataName)
             }
         }
     }
@@ -59,6 +63,14 @@ class RoadViewModel(application: Application) : BaseViewModel<RoadContract.Event
                         }
                     }
                 }
+        }
+    }
+
+    private fun deletePost(data:String){
+        viewModelScope.launch {
+            repository.deleteFavorite(data)
+            MyLog.e("資料被刪")
+            fetchPosts()
         }
     }
 

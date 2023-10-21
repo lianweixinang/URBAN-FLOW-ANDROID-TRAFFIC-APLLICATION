@@ -6,8 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -17,17 +15,13 @@ import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
-import ntutifm.game.google.BuildConfig
 import ntutifm.game.google.MyActivity
 import ntutifm.game.google.R
-import ntutifm.game.google.apiClass.Incident
-import ntutifm.game.google.apiClass.Parking
 import ntutifm.game.google.apiClass.RoadFavorite
 import ntutifm.game.google.databinding.FragmentRoadBinding
 import ntutifm.game.google.entity.adaptor.RoadFavoriteAdaptor
 import ntutifm.game.google.entity.contract.RoadContract
 import ntutifm.game.google.global.MyLog
-import ntutifm.game.google.ui.camera.CameraViewModel
 
 class RoadFragment:Fragment() {
     private var _binding: FragmentRoadBinding? = null
@@ -67,7 +61,7 @@ class RoadFragment:Fragment() {
     private fun roadListInit() {
         binding.recycleView.setHasFixedSize(true)
         binding.recycleView.layoutManager = LinearLayoutManager(MyActivity().context)
-        adapter = RoadFavoriteAdaptor(listOf(), roadBtnListener)
+        adapter = RoadFavoriteAdaptor(listOf(), roadBtnListener,roadDeleteListener)
         binding.recycleView.adapter = adapter
     }
 
@@ -80,6 +74,10 @@ class RoadFragment:Fragment() {
         val bundle = Bundle()
         bundle.putBoolean("notReset", true)
         navController.navigate(R.id.mapFragment, bundle, navOptions)
+    }
+    private val roadDeleteListener = View.OnClickListener() {
+        val data = it.tag as RoadFavorite
+        viewModel.setEvent(RoadContract.Event.OnDeleteItem(data.roadName))
     }
 
     private fun initObservers() {

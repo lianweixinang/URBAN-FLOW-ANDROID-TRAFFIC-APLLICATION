@@ -24,7 +24,7 @@
 
         <TextView
             android:id="@+id/route1"
-            android:layout_width="183dp"
+            android:layout_width="wrap_content"
             android:layout_height="29dp"
             android:text="台灣中油 永和站 (直營)"
             android:textColor="#000000"

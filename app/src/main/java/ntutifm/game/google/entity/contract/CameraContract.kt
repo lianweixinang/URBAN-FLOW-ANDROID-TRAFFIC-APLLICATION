@@ -9,6 +9,7 @@ class CameraContract {
 
     sealed class Event : UiEvent {
         object OnFetchCameras : Event()
+        data class OnDeleteItem(val dataName : String):Event()
     }
 
     data class State(

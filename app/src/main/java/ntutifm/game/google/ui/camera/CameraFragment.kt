@@ -20,9 +20,11 @@ import ntutifm.game.google.R
 import ntutifm.game.google.apiClass.Camera
 import ntutifm.game.google.apiClass.Incident
 import ntutifm.game.google.apiClass.Parking
+import ntutifm.game.google.dataBase.CameraRepository
 import ntutifm.game.google.databinding.FragmentCameraBinding
 import ntutifm.game.google.entity.adaptor.CameraAdaptor
 import ntutifm.game.google.entity.contract.CameraContract
+import ntutifm.game.google.entity.contract.ParkingContract
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.ui.map.MapViewModel
 
@@ -64,7 +66,7 @@ import ntutifm.game.google.ui.map.MapViewModel
      private fun cameraListInit() {
          binding.recycleView.setHasFixedSize(true)
          binding.recycleView.layoutManager = LinearLayoutManager(MyActivity().context)
-         adapter = CameraAdaptor(listOf(), cameraBtnListener)
+         adapter = CameraAdaptor(listOf(), cameraBtnListener,cameraDeleteListener)
          binding.recycleView.adapter = adapter
      }
 
@@ -79,6 +81,10 @@ import ntutifm.game.google.ui.map.MapViewModel
          bundle.putDouble("latitude", data.latitude)
          bundle.putDouble("longitude", data.longitude)
          navController.navigate(R.id.mapFragment, bundle, navOptions)
+     }
+     private val cameraDeleteListener = View.OnClickListener() {
+         val data = it.tag as Camera
+         viewModel.setEvent(CameraContract.Event.OnDeleteItem(data.cameraId))
      }
 
      private fun initObservers() {

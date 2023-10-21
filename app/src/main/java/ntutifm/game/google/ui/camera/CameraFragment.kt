@@ -87,6 +87,7 @@ import ntutifm.game.google.ui.map.MapViewModel
          viewModel.setEvent(CameraContract.Event.OnDeleteItem(data.cameraId))
      }
 
+
      private fun initObservers() {
          viewLifecycleOwner.lifecycleScope.launch {
              repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -104,6 +105,7 @@ import ntutifm.game.google.ui.map.MapViewModel
                              } else {
                                  adapter?.submitList(data)
                                  binding.nodata.visibility = View.GONE
+
                              }
                          }
                      }

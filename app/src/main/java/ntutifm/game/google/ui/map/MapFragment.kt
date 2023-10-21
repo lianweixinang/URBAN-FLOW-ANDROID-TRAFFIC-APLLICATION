@@ -102,6 +102,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var isTTSInitialized: Boolean = false
     private var isInitialized: Boolean = false
     private var markLike: Boolean = false
+    private var noChange: Boolean = false
 
     private var searchData: SearchHistory? = null
     private var oldIncident: List<Incident>? = null
@@ -129,14 +130,17 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 bundle.getDouble("latitude"),
                 bundle.getDouble("longitude")
             )
-            cctv = CCTV(null,
-                bundle.getString("cctvName",""),
-                bundle.getString("cctvUrl","")
+            cctv = CCTV(
+                null,
+                bundle.getString("cctvName", ""),
+                bundle.getString("cctvUrl", "")
             )
-            roadFavorite = SearchHistory(null,
-                bundle.getString("roadId",""),
-                bundle.getString("roadName",""),
-                null)
+            roadFavorite = SearchHistory(
+                null,
+                bundle.getString("roadId", ""),
+                bundle.getString("roadName", ""),
+                null
+            )
         }
         return binding.root
     }
@@ -155,13 +159,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         searchInit()
         favoriteInit()
         bottomSheetInit()
+        incidentInit()
         webViewInit()
-        incidentCheck()
-        if(roadFavorite != null && roadFavorite?.roadId != "") {
-            searchItem(roadFavorite!!)
-        }else{
-            searchItem(SearchHistory(null,"600333A","忠孝東路一段",null))
-        }
+        roadInit()
     }
 
     override fun onResume() {
@@ -177,6 +177,16 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         textToSpeech?.stop()
         textToSpeech?.shutdown()
         super.onDestroyView()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun roadInit() {
+        if (roadFavorite != null && roadFavorite?.roadId != "") {
+            searchItem(roadFavorite!!)
+        } else {
+            noChange = true
+            searchItem(SearchHistory(null, "600333A", "忠孝東路一段", null))
+        }
     }
 
     /** 初始化文字轉語音 */
@@ -296,7 +306,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             this.loadWithOverviewMode = true
             this.useWideViewPort = true
         }
-        if(cctv?.url != "" && cctv?.url != null) {
+        if (cctv?.url != "" && cctv?.url != null) {
             adapter?.clear()
             adapter?.add(cctv)
             adapter?.notifyDataSetChanged()
@@ -305,7 +315,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             binding.webView.loadUrl(cctv!!.url)
             binding.carDirection1.visibility = View.GONE
             binding.trafficFlow.visibility = View.GONE
-        }else{
+        } else {
             binding.webView.loadUrl("https://cctv.bote.gov.taipei:8501/mjpeg/232")
         }
     }
@@ -359,7 +369,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     }
 
     /** 事故觀察及定時 */
-    private fun incidentCheck() {
+    private fun incidentInit() {
         SyncIncident.incidentLists.observe(viewLifecycleOwner) {
             if (it != null && it.isNotEmpty() && it[0] != oldIncident?.get(0)) {
                 accident(requireActivity(), it[0])
@@ -369,8 +379,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
         viewLifecycleOwner.lifecycleScope.launch {
             while (true) {
+                delay(6000)
                 SyncIncident.getIncident(this@MapFragment, this@MapFragment)
-                delay(60000)
             }
         }
     }
@@ -663,12 +673,13 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 binding.cars2.text = "無資料"
                 binding.speed2.text = "無資料"
             }
-            behavior?.state = BottomSheetBehavior.STATE_EXPANDED
-            binding.webView.visibility = View.VISIBLE
-            binding.carDirection1.visibility = View.VISIBLE
-            binding.trafficFlow.visibility = View.VISIBLE
-            binding.imageView3.visibility = View.VISIBLE
-            binding.spinner.visibility = View.VISIBLE
+            if (!noChange) {
+                behavior?.state = BottomSheetBehavior.STATE_EXPANDED
+                binding.webView.visibility = View.VISIBLE
+                binding.carDirection1.visibility = View.VISIBLE
+                binding.trafficFlow.visibility = View.VISIBLE
+                binding.spinner.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -679,12 +690,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 binding.webView.isVisible = true
                 binding.trafficFlow.isVisible =
                     newState == BottomSheetBehavior.STATE_EXPANDED
-                binding.imageView3.isVisible =
-                    newState == BottomSheetBehavior.STATE_EXPANDED
             } else {
                 binding.webView.isVisible = false
                 binding.trafficFlow.isVisible = false
-                binding.imageView3.isVisible = false
             }
         }
 
@@ -760,7 +768,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         binding.webView.visibility = View.GONE
         binding.carDirection1.visibility = View.GONE
         binding.trafficFlow.visibility = View.GONE
-        binding.imageView3.visibility = View.GONE
         binding.spinner.visibility = View.GONE
         binding.fragmentSearch.searchView.apply {
             this.clearFocus()
@@ -831,7 +838,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             MyLog.e(e.toString())
         }
     }
-    private fun filterCCTV(data:SearchHistory){
+
+    private fun filterCCTV(data: SearchHistory) {
         var l = 0
         val searchSet = mutableSetOf<CCTV>()
         while (l < data.roadName.length - 1) {
@@ -863,8 +871,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         }
         updateAdapterData(searchSet.toMutableList())
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun searchItem(data:SearchHistory){
+    private fun searchItem(data: SearchHistory) {
         filterCCTV(data)
         binding.fragmentHome.favoriteBtn.tag = data
         binding.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
@@ -877,7 +886,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         viewModel.checkFavorite(data.roadName)
 
         isOpen = false
-        AppUtil.showTopToast(requireActivity(), "搜尋中...")
+        if (!noChange) {
+            AppUtil.showTopToast(requireActivity(), "搜尋中...")
+        }
     }
 
     /** 刪除歷史紀錄 */
@@ -926,8 +937,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         map.setOnMyLocationButtonClickListener(this)
         map.setOnMyLocationClickListener(this)
         enableMyLocation()
-        moveToCurrentLocation()
-        initMark()
+        currentLocationInit()
+        markInit()
         setLocationInitBtn()
         weatherInit()
         if (destination != null) {
@@ -1031,40 +1042,71 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     }
 
+    /** 初始化位置 */
+
+    private fun currentLocationInit() {
+        getLocation{
+            if (weatherState) {
+                SyncPosition.weatherLocationApi(
+                    this@MapFragment,
+                    this@MapFragment,
+                    it
+                )
+            }
+            MyLog.e("Start Navigation")
+            val targetLatLng =
+                LatLng(it.latitude - 0.00006, it.longitude)
+            val targetZoomLevel = 18f
+            val currentCameraPosition = map.cameraPosition
+
+            val newCameraPosition = CameraPosition.builder(currentCameraPosition)
+                .target(targetLatLng)
+                .bearing(azimuth)
+                .zoom(targetZoomLevel)
+                .build()
+            Handler(Looper.getMainLooper()).post {
+                map.moveCamera(
+                    CameraUpdateFactory.newCameraPosition(
+                        newCameraPosition
+                    )
+                )
+            }
+        }
+    }
+
     /** 通用移動到現在位置 */
     @SuppressLint("MissingPermission")
     private fun moveToCurrentLocation() {
+        getLocation{
+            MyLog.e("Start Navigation")
+            val targetLatLng =
+                LatLng(it.latitude - 0.00006, it.longitude)
+            val targetZoomLevel = 18f
+            val currentCameraPosition = map.cameraPosition
+
+            val newCameraPosition = CameraPosition.builder(currentCameraPosition)
+                .target(targetLatLng)
+                .bearing(azimuth)
+                .zoom(targetZoomLevel)
+                .build()
+            Handler(Looper.getMainLooper()).post {
+                map.animateCamera(
+                    CameraUpdateFactory.newCameraPosition(
+                        newCameraPosition
+                    )
+                )
+
+            }
+        }
+    }
+    /** 拿取現在位置 */
+    @SuppressLint("MissingPermission")
+    private fun getLocation(action:(location:LatLng)->Unit) {
         if (!permissionDenied) {
             mFusedLocationClient?.lastLocation
                 ?.addOnSuccessListener { location: Location? ->
                     location?.let {
-                        val newLatLng = LatLng(location.latitude, location.longitude)
-                        if (weatherState) {
-                            SyncPosition.weatherLocationApi(
-                                this@MapFragment,
-                                this@MapFragment,
-                                newLatLng
-                            )
-                        }
-                        MyLog.e("Start Navigation")
-                        val targetLatLng =
-                            LatLng(newLatLng.latitude - 0.00006, newLatLng.longitude)
-                        val targetZoomLevel = 18f
-                        val currentCameraPosition = map.cameraPosition
-
-                        val newCameraPosition = CameraPosition.builder(currentCameraPosition)
-                            .target(targetLatLng)
-                            .bearing(azimuth)
-                            .zoom(targetZoomLevel)
-                            .build()
-                        Handler(Looper.getMainLooper()).post {
-                            map.animateCamera(
-                                CameraUpdateFactory.newCameraPosition(
-                                    newCameraPosition
-                                )
-                            )
-
-                        }
+                        action(LatLng(location.latitude, location.longitude))
                     }
                 }
         } else {
@@ -1155,7 +1197,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     }
 
     /** 批量生成mark */
-    private fun initMark() {
+    private fun markInit() {
         mClusterManager = ClusterManager(context, map)
         mClusterManager?.renderer =
             CustomClusterRenderer(requireActivity(), map, mClusterManager!!)
@@ -1172,6 +1214,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                                 p
                             )
                         )
+                        delay(100)
                     }
                     withContext(Dispatchers.Main) {
                         SyncCamera.cameraMarkApi()
@@ -1190,7 +1233,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                                 1, p
                             )
                         )
-                        delay(50)
+                        delay(100)
                     }
                     withContext(Dispatchers.Main) {
                         SyncPosition.oilStationApi()
@@ -1210,7 +1253,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                                 2, p
                             )
                         )
-                        delay(50)
+                        delay(100)
                     }
                 }
             }

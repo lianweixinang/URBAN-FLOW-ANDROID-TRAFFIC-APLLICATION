@@ -73,6 +73,8 @@ class RoadFragment:Fragment() {
             .build()
         val bundle = Bundle()
         bundle.putBoolean("notReset", true)
+        bundle.putString("roadId", data.roadId)
+        bundle.putString("roadName", data.roadName)
         navController.navigate(R.id.mapFragment, bundle, navOptions)
     }
     private val roadDeleteListener = View.OnClickListener() {

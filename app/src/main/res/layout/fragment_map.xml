@@ -163,7 +163,7 @@
                     android:id='@+id/trafficFlow'
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="24dp"
                     android:visibility="gone"
                     app:cardBackgroundColor="#FFFFFF"
                     app:cardCornerRadius="15dp"
@@ -282,18 +282,6 @@
 
 
                 </androidx.cardview.widget.CardView>
-
-                <ImageView
-                    android:id='@+id/imageView3'
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="20dp"
-                    android:visibility="gone"
-                    app:cardCornerRadius="10dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf='@+id/trafficFlow'
-                    app:srcCompat="@drawable/distance" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

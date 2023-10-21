@@ -19,7 +19,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/route1"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/cpc_icon" />
+            android:src='@drawable/security_camera' />
 
         <TextView
             android:id="@+id/route1"

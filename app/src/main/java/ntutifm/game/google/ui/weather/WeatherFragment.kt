@@ -83,7 +83,6 @@ class WeatherFragment : Fragment(), ApiCallBack {
             binding.rainText6.text = it[index].pop6h3 + "%"
             binding.rainText7.text = it[index].pop6h4 + "%"
             binding.rainText8.text = it[index].pop6h4 + "%"
-
         }
         SyncWeather.weatherDataApi(this, this)
     }

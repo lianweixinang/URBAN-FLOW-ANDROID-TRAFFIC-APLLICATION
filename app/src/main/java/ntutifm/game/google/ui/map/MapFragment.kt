@@ -200,12 +200,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                     Log.e("TTS", "該語言不被支持或缺少數據")
                 } else {
                     isTTSInitialized = true
-                    textToSpeech?.speak(
-                        "範文立",
-                        TextToSpeech.QUEUE_FLUSH,
-                        null,
-                        null
-                    )
                 }
             } else {
                 Log.e("TTS", "初始化失敗")
@@ -318,6 +312,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             adapter?.clear()
             adapter?.add(cctv)
             adapter?.notifyDataSetChanged()
+            viewModel.checkCCTV(cctv!!.name)
             binding.fragmentHome.textView.text = cctv?.name
             binding.webView.loadUrl(cctv!!.url)
             binding.carDirection1.visibility = View.GONE

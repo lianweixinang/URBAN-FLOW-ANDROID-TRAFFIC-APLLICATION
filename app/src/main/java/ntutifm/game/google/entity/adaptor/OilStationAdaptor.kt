@@ -2,18 +2,20 @@ package ntutifm.game.google.entity.adaptor
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import ntutifm.game.google.apiClass.OilStation
 import ntutifm.game.google.databinding.OilStationItemBinding
 
-class OilStationAdaptor(private var mList: List<OilStation>, private val itemOnClickListener: View.OnClickListener) :
+class OilStationAdaptor(private var mList: List<OilStation>, private val itemOnClickListener: View.OnClickListener, private val itemOnDeleteListener: View.OnClickListener) :
     RecyclerView.Adapter<OilStationAdaptor.OilStationHolder>() {
 
     inner class OilStationHolder(binding: OilStationItemBinding): RecyclerView.ViewHolder(binding.root){
         val title : TextView = binding.route1
         val root : MaterialCardView = binding.root
+        val delete : ImageView = binding.OilstationItemCancel
     }
 
     fun submitList(mList: List<OilStation>){
@@ -29,8 +31,10 @@ class OilStationAdaptor(private var mList: List<OilStation>, private val itemOnC
 
     override fun onBindViewHolder(holder: OilStationHolder, position: Int) {
         holder.title.text = mList[position].station
-        holder.root.tag = mList[position]
-        holder.root.setOnClickListener(itemOnClickListener)
+        holder.title.tag = mList[position]
+        holder.delete.tag = mList[position]
+        holder.title.setOnClickListener(itemOnClickListener)
+        holder.delete.setOnClickListener(itemOnDeleteListener)
     }
 
     override fun getItemCount(): Int {

@@ -9,6 +9,7 @@ class OilStationContract {
 
     sealed class Event : UiEvent {
         object OnFetchOilStations : Event()
+        data class OnDeleteItem(val dataName : String) : Event()
     }
 
     data class State(

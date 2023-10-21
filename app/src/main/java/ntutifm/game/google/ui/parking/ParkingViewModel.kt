@@ -9,8 +9,10 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import ntutifm.game.google.dataBase.ParkingRepository
+import ntutifm.game.google.entity.contract.OilStationContract
 import ntutifm.game.google.entity.contract.ParkingContract
 import ntutifm.game.google.global.BaseViewModel
+import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.global.Resource
 import ntutifm.game.google.ui.cctv.CCTVViewModel
 
@@ -29,6 +31,9 @@ class ParkingViewModel(application: Application) : BaseViewModel<ParkingContract
         when (event) {
             is ParkingContract.Event.OnFetchParkings -> {
                 fetchPosts()
+            }
+            is ParkingContract.Event.OnDeleteItem -> {
+                deletePost(event.dataName)
             }
         }
     }
@@ -60,6 +65,13 @@ class ParkingViewModel(application: Application) : BaseViewModel<ParkingContract
                         }
                     }
                 }
+        }
+    }
+    private fun deletePost(data:String){
+        viewModelScope.launch {
+            repository.deleteFavorite(data)
+            MyLog.e("資料被刪")
+            fetchPosts()
         }
     }
 

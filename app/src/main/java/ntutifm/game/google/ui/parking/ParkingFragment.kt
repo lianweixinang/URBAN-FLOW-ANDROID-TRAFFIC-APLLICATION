@@ -17,15 +17,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
 import ntutifm.game.google.MyActivity
 import ntutifm.game.google.R
-import ntutifm.game.google.apiClass.Incident
 import ntutifm.game.google.apiClass.Parking
 import ntutifm.game.google.databinding.FragmentParkingBinding
 import ntutifm.game.google.entity.adaptor.ParkingAdaptor
 import ntutifm.game.google.entity.contract.ParkingContract
 import ntutifm.game.google.global.MyLog
-import ntutifm.game.google.ui.camera.CameraViewModel
 
-class ParkingFragment:Fragment() {
+class ParkingFragment : Fragment() {
     private var _binding: FragmentParkingBinding? = null
     private val binding get() = _binding!!
     private var adapter: ParkingAdaptor? = null
@@ -63,7 +61,7 @@ class ParkingFragment:Fragment() {
     private fun parkingListInit() {
         binding.recycleView.setHasFixedSize(true)
         binding.recycleView.layoutManager = LinearLayoutManager(MyActivity().context)
-        adapter = ParkingAdaptor(listOf(), parkingBtnListener)
+        adapter = ParkingAdaptor(listOf(), parkingBtnListener, parkingDeleteListener)
         binding.recycleView.adapter = adapter
     }
 
@@ -79,6 +77,10 @@ class ParkingFragment:Fragment() {
         bundle.putDouble("longitude", data.longitude)
         navController.navigate(R.id.mapFragment, bundle, navOptions)
     }
+    private val parkingDeleteListener = View.OnClickListener() {
+        val data = it.tag as Parking
+        viewModel.setEvent(ParkingContract.Event.OnDeleteItem(data.parkingName))
+    }
 
     private fun initObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -87,8 +89,10 @@ class ParkingFragment:Fragment() {
                     when (val state = it.postsState) {
                         is ParkingContract.ParkingState.Idle -> {
                         }
+
                         is ParkingContract.ParkingState.Loading -> {
                         }
+
                         is ParkingContract.ParkingState.Success -> {
                             val data = state.posts
                             if (state.posts.isEmpty()) {
@@ -102,22 +106,23 @@ class ParkingFragment:Fragment() {
                     }
                 }
             }
+        }
 
-            viewLifecycleOwner.lifecycleScope.launch {
-                repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.effect.collect { effect ->
-                        when (effect) {
-                            is ParkingContract.Effect.ShowError -> {
-                                val msg = effect.message
-                                msg?.let {
-                                    MyLog.e(it)
-                                }
-
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.effect.collect { effect ->
+                    when (effect) {
+                        is ParkingContract.Effect.ShowError -> {
+                            val msg = effect.message
+                            msg?.let {
+                                MyLog.e(it)
                             }
+
                         }
                     }
                 }
             }
         }
     }
+
 }

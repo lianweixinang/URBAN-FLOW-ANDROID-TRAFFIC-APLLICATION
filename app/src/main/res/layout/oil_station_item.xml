@@ -13,7 +13,7 @@
     android:paddingVertical="16dp">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/cpc_icon"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginEnd="8dp"
@@ -38,8 +38,8 @@
 
         <ImageView
             android:id="@+id/OilstationItemCancel"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_marginEnd="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

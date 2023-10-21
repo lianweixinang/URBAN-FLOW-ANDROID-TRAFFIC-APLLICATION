@@ -2,18 +2,20 @@ package ntutifm.game.google.entity.adaptor
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import ntutifm.game.google.apiClass.Parking
 import ntutifm.game.google.databinding.ParkingItemBinding
 
-class ParkingAdaptor(private var mList: List<Parking>, private val itemOnClickListener: View.OnClickListener) :
+class ParkingAdaptor(private var mList: List<Parking>, private val itemOnClickListener: View.OnClickListener,private val itemOnDeleteListener: View.OnClickListener) :
     RecyclerView.Adapter<ParkingAdaptor.ParkingHolder>() {
 
     inner class ParkingHolder(binding: ParkingItemBinding): RecyclerView.ViewHolder(binding.root){
         val type : TextView = binding.route1
         val root : MaterialCardView = binding.root
+        val delete : ImageView = binding.ParkItemCancel
     }
 
     fun submitList(mList: List<Parking>){
@@ -29,8 +31,10 @@ class ParkingAdaptor(private var mList: List<Parking>, private val itemOnClickLi
 
     override fun onBindViewHolder(holder: ParkingAdaptor.ParkingHolder, position: Int) {
         holder.type.text = mList[position].parkingName
-        holder.root.tag = mList[position]
-        holder.root.setOnClickListener(itemOnClickListener)
+        holder.type.tag = mList[position]
+        holder.type.setOnClickListener(itemOnClickListener)
+        holder.delete.tag = mList[position]
+        holder.delete.setOnClickListener(itemOnDeleteListener)
 
     }
 

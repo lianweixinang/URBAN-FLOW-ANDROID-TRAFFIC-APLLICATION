@@ -65,7 +65,7 @@ class OilStationFragment:Fragment() {
     private fun parkingListInit() {
         binding.recycleView.setHasFixedSize(true)
         binding.recycleView.layoutManager = LinearLayoutManager(MyActivity().context)
-        adapter = OilStationAdaptor(listOf(), parkingBtnListener)
+        adapter = OilStationAdaptor(listOf(), parkingBtnListener, parkingDeleteListener)
         binding.recycleView.adapter = adapter
     }
 
@@ -80,6 +80,11 @@ class OilStationFragment:Fragment() {
         bundle.putDouble("latitude", data.latitude)
         bundle.putDouble("longitude", data.longitude)
         navController.navigate(R.id.mapFragment, bundle, navOptions)
+    }
+
+    private val parkingDeleteListener = View.OnClickListener() {
+        val data = it.tag as OilStation
+        viewModel.setEvent(OilStationContract.Event.OnDeleteItem(data.station))
     }
 
     private fun initObservers() {

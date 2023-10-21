@@ -651,7 +651,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private fun bottomSheetInit() {
         binding.bg.setOnClickListener(backBtnListener)
         behavior = BottomSheetBehavior.from(binding.bg)
-        behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+        behavior?.state = BottomSheetBehavior.STATE_COLLAPSED
         behavior?.addBottomSheetCallback(bottomSheetCallback)
 
         SyncSpeed.speedLists.observe(viewLifecycleOwner) {

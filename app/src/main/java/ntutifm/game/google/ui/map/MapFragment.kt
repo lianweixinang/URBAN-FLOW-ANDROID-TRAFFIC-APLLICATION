@@ -29,6 +29,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -316,6 +317,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     }
 
     private fun accident(c: FragmentActivity, incident: Incident) {
+        MyLog.e("${incident.title}")
         // 載入自定義的 layout
         val inflater = c.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = inflater.inflate(R.layout.accident_item, null)
@@ -325,8 +327,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         popupText2.text = incident.part
         popupText.text = incident.title
         popupText1.text = if (incident.solved == "nxx") "尚未排除" else incident.solved
-
-
+        MyLog.e("設定PopupWindow資料")
         // 創建 PopupWindow
         val popupWindow = PopupWindow(
             popupView,
@@ -334,10 +335,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             ViewGroup.LayoutParams.WRAP_CONTENT
         ).apply {
             isOutsideTouchable = true
-
         }
 
-        // 設定點擊事件
         popupText.setOnClickListener {
             popupWindow.dismiss()
             val navController = Navigation.findNavController(binding.root)
@@ -348,14 +347,10 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             bundle.putBoolean("notReset", true)
             navController.navigate(R.id.notificationFragment, bundle, navOptions)
         }
-        // 顯示彈跳視窗
-        popupWindow.showAtLocation(popupView, Gravity.TOP, 0, 300)
-
-        //  設定一段時間後自動關閉
+        Handler(Looper.getMainLooper()).post{popupWindow.showAtLocation(popupView, Gravity.TOP, 0, 300)}
         Handler(Looper.getMainLooper()).postDelayed({
             popupWindow.dismiss()
-        }, 5000)  // 這裡是5秒後自動關閉
-
+        }, 5000)
     }
 
     /** 事故觀察及定時 */
@@ -366,6 +361,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 oldIncident = it
             }
         }
+
         viewLifecycleOwner.lifecycleScope.launch {
             while (true) {
                 SyncIncident.getIncident(this@MapFragment, this@MapFragment)
@@ -1167,9 +1163,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 SyncCamera.cameraLists.collect {
                     for (p in it) {
-                        if (BuildConfig.DEBUG) {
-                            MyLog.d(p.road + p.longitude + p.latitude)
-                        }
                         mClusterManager?.addItem(
                             MyItem(
                                 p.latitude,
@@ -1177,7 +1170,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                                 1, p
                             )
                         )
-                        delay(25)
+                        delay(50)
                     }
                     withContext(Dispatchers.Main) {
                         SyncPosition.oilStationApi()
@@ -1197,7 +1190,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                                 2, p
                             )
                         )
-                        delay(25)
+                        delay(50)
                     }
                 }
             }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_route"
@@ -32,75 +31,96 @@
                 app:cardCornerRadius="20dp"
                 app:contentPadding="10dp">
 
-                <ImageView
-                    android:id="@+id/favoriteBtn"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="120dp"
-                    android:src='@drawable/ic_baseline_star_25'
-                    app:cardCornerRadius="10dp" />
-
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="我的最愛"
-                    android:textColor="#000000"
-                    android:textSize="20sp" />
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:id="@+id/nav_Road"
-                android:layout_height="100dp"
-                android:layout_marginTop="20dp"
-                android:layout_gravity="center"
-                app:cardBackgroundColor="#FFA042"
-                app:cardCornerRadius="15dp">
-
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="#FFFFFF"
+                    android:gravity="center"
                     android:padding="5dp">
 
                     <ImageView
-                        android:id="@+id/routeicon"
+                        android:id="@+id/favoriteBtn"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:layout_marginLeft="170dp"
-                        android:src='@drawable/baseline_route_24'
+                        android:layout_marginRight="5dp"
+                        android:layout_toLeftOf="@+id/textView"
+                        android:src='@drawable/ic_baseline_star_25'
                         app:cardCornerRadius="10dp" />
 
                     <TextView
-                        android:id="@+id/t1"
-                        android:layout_width="match_parent"
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="200dp"
-                        android:text="路段"
-                        android:textColor="#000000"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/t2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/t1"
-                        android:layout_marginLeft="10dp"
                         android:gravity="center"
-                        android:text="承德路 X 市民大道"
+                        android:text="我的最愛"
                         android:textColor="#000000"
-                        android:textSize="15sp" />
-
+                        android:textSize="20sp" />
                 </RelativeLayout>
+
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/nav_Road"
                 android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="15dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FFFFFF"
+                        android:gravity="center"
+                        android:padding="5dp">
+
+                        <ImageView
+                            android:id="@+id/routeicon"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_toLeftOf="@+id/t1"
+                            android:src='@drawable/baseline_route_24'
+                            app:cardCornerRadius="10dp" />
+
+                        <TextView
+                            android:id="@+id/t1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="路段"
+                            android:textColor="#000000"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp">
+
+                        <TextView
+                            android:id="@+id/t2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="承德路 X 市民大道"
+                            android:textColor="#000000"
+                            android:textSize="15sp" />
+
+                    </RelativeLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
                 android:id="@+id/nav_OilStation"
+                android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_marginTop="20dp"
                 app:cardBackgroundColor="#FFFFFF"
@@ -136,6 +156,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/gastxt"
                         android:layout_marginLeft="10dp"
+                        android:layout_marginTop="5dp"
                         android:gravity="center"
                         android:text="台灣中油 永和站 (直營)"
                         android:textColor="#000000"
@@ -146,8 +167,8 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
                 android:id="@+id/nav_camera"
+                android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_marginTop="20dp"
                 app:cardBackgroundColor="#FFFFFF"
@@ -183,6 +204,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/spdtxt1"
                         android:layout_marginLeft="10dp"
+                        android:layout_marginTop="5dp"
                         android:gravity="center"
                         android:text="重慶南路三段"
                         android:textColor="#000000"
@@ -191,9 +213,9 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
                 android:id="@+id/nav_cctv"
-                android:layout_height="180dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_marginTop="20dp"
                 app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="15dp">
@@ -228,25 +250,19 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/camtxt"
                         android:layout_marginLeft="10dp"
+                        android:layout_marginTop="5dp"
                         android:gravity="center"
                         android:text="市民大道北向"
                         android:textColor="#000000"
                         android:textSize="15sp" />
 
-                    <ImageView
-                        android:id='@+id/monitor'
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/camtxt2"
-                        app:cardCornerRadius="10dp"
-                        app:srcCompat="@drawable/rcc" />
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
                 android:id="@+id/nav_park"
-                android:layout_height="100dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_marginTop="20dp"
                 app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="15dp">
@@ -281,14 +297,15 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/pktxt"
                         android:layout_marginLeft="10dp"
+                        android:layout_marginTop="5dp"
                         android:gravity="center"
                         android:text="綠寶石停車場"
                         android:textColor="#000000"
                         android:textSize="15sp" />
 
-
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
 
         </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout></FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

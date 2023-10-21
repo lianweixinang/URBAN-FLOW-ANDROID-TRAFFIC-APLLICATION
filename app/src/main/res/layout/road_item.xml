@@ -1,27 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    android:id="@+id/route"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_marginTop="10dp"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
     android:background="#FFFFFF">
-    <RelativeLayout
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FFFFFF"
-        android:padding="5dp">
+        android:layout_height="wrap_content"
+        android:paddingVertical="16dp">
+
+        <ImageView
+            android:id="@+id/cpc_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/route1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cpc_icon" />
 
         <TextView
             android:id="@+id/route1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="忠孝東路一段"
-            android:gravity="center"
+            android:layout_width="183dp"
+            android:layout_height="29dp"
+            android:text="中山北路一段"
             android:textColor="#000000"
             android:textSize="18sp"
-            android:textStyle="normal" />
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.55"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </RelativeLayout>
+        <ImageView
+            android:id="@+id/itemCancel"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/cancel" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </com.google.android.material.card.MaterialCardView>
-

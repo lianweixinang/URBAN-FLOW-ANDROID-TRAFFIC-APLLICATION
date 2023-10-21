@@ -30,7 +30,10 @@ class ParkingFragment:Fragment() {
     private val binding get() = _binding!!
     private var adapter: ParkingAdaptor? = null
     private val viewModel: ParkingViewModel by lazy {
-        ViewModelProvider(this,ParkingViewModel.ParkingViewModelFactory(requireActivity().application))[ParkingViewModel::class.java]
+        ViewModelProvider(
+            this,
+            ParkingViewModel.ParkingViewModelFactory(requireActivity().application)
+        )[ParkingViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -50,6 +53,7 @@ class ParkingFragment:Fragment() {
         if (viewModel.currentState.postsState is ParkingContract.ParkingState.Idle)
             viewModel.setEvent(ParkingContract.Event.OnFetchParkings)
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -62,6 +66,7 @@ class ParkingFragment:Fragment() {
         adapter = ParkingAdaptor(listOf(), parkingBtnListener)
         binding.recycleView.adapter = adapter
     }
+
     private val parkingBtnListener = View.OnClickListener() {
         val data = it.tag as Parking
         val navController = Navigation.findNavController(binding.root)
@@ -86,22 +91,29 @@ class ParkingFragment:Fragment() {
                         }
                         is ParkingContract.ParkingState.Success -> {
                             val data = state.posts
-                            adapter?.submitList(data)
+                            if (state.posts.isEmpty()) {
+                                binding.recycleView.visibility = View.GONE
+                                binding.nodata.visibility = View.VISIBLE
+                            } else {
+                                adapter?.submitList(data)
+                                binding.nodata.visibility = View.GONE
+                            }
                         }
                     }
                 }
             }
-        }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.effect.collect { effect ->
-                    when (effect) {
-                        is ParkingContract.Effect.ShowError -> {
-                            val msg = effect.message
-                            msg?.let {
-                                MyLog.e(it) }
+            viewLifecycleOwner.lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.effect.collect { effect ->
+                        when (effect) {
+                            is ParkingContract.Effect.ShowError -> {
+                                val msg = effect.message
+                                msg?.let {
+                                    MyLog.e(it)
+                                }
 
+                            }
                         }
                     }
                 }

@@ -32,7 +32,10 @@ class OilStationFragment:Fragment() {
     private val binding get() = _binding!!
     private var adapter: OilStationAdaptor? = null
     private val viewModel: OilStationViewModel by lazy {
-        ViewModelProvider(this, OilStationViewModel.OilStationViewModelFactory(requireActivity().application))[OilStationViewModel::class.java]
+        ViewModelProvider(
+            this,
+            OilStationViewModel.OilStationViewModelFactory(requireActivity().application)
+        )[OilStationViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -52,6 +55,7 @@ class OilStationFragment:Fragment() {
         if (viewModel.currentState.postsState is OilStationContract.OilStationState.Idle)
             viewModel.setEvent(OilStationContract.Event.OnFetchOilStations)
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -64,6 +68,7 @@ class OilStationFragment:Fragment() {
         adapter = OilStationAdaptor(listOf(), parkingBtnListener)
         binding.recycleView.adapter = adapter
     }
+
     private val parkingBtnListener = View.OnClickListener() {
         val data = it.tag as OilStation
         val navController = Navigation.findNavController(binding.root)
@@ -88,22 +93,29 @@ class OilStationFragment:Fragment() {
                         }
                         is OilStationContract.OilStationState.Success -> {
                             val data = state.posts
-                            adapter?.submitList(data)
+                            if (state.posts.isEmpty()) {
+                                binding.recycleView.visibility = View.GONE
+                                binding.nodata.visibility = View.VISIBLE
+                            } else {
+                                adapter?.submitList(data)
+                                binding.nodata.visibility = View.GONE
+                            }
                         }
                     }
                 }
             }
-        }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.effect.collect { effect ->
-                    when (effect) {
-                        is OilStationContract.Effect.ShowError -> {
-                            val msg = effect.message
-                            msg?.let {
-                                MyLog.e(it) }
+            viewLifecycleOwner.lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.effect.collect { effect ->
+                        when (effect) {
+                            is OilStationContract.Effect.ShowError -> {
+                                val msg = effect.message
+                                msg?.let {
+                                    MyLog.e(it)
+                                }
 
+                            }
                         }
                     }
                 }

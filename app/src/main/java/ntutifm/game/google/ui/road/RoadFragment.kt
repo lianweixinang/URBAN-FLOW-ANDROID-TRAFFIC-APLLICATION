@@ -34,7 +34,10 @@ class RoadFragment:Fragment() {
     private val binding get() = _binding!!
     private var adapter: RoadFavoriteAdaptor? = null
     private val viewModel: RoadViewModel by lazy {
-        ViewModelProvider(this, RoadViewModel.RoadViewModelFactory(requireActivity().application))[RoadViewModel::class.java]
+        ViewModelProvider(
+            this,
+            RoadViewModel.RoadViewModelFactory(requireActivity().application)
+        )[RoadViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -54,6 +57,7 @@ class RoadFragment:Fragment() {
         if (viewModel.currentState.postsState is RoadContract.RoadState.Idle)
             viewModel.setEvent(RoadContract.Event.OnFetchRoads)
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -66,6 +70,7 @@ class RoadFragment:Fragment() {
         adapter = RoadFavoriteAdaptor(listOf(), roadBtnListener)
         binding.recycleView.adapter = adapter
     }
+
     private val roadBtnListener = View.OnClickListener() {
         val data = it.tag as RoadFavorite
         val navController = Navigation.findNavController(binding.root)
@@ -88,22 +93,29 @@ class RoadFragment:Fragment() {
                         }
                         is RoadContract.RoadState.Success -> {
                             val data = state.posts
-                            adapter?.submitList(data)
+                            if (state.posts.isEmpty()) {
+                                binding.recycleView.visibility = View.GONE
+                                binding.nodata.visibility = View.VISIBLE
+                            } else {
+                                adapter?.submitList(data)
+                                binding.nodata.visibility = View.GONE
+                            }
                         }
                     }
                 }
             }
-        }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.effect.collect { effect ->
-                    when (effect) {
-                        is RoadContract.Effect.ShowError -> {
-                            val msg = effect.message
-                            msg?.let {
-                                MyLog.e(it) }
+            viewLifecycleOwner.lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.effect.collect { effect ->
+                        when (effect) {
+                            is RoadContract.Effect.ShowError -> {
+                                val msg = effect.message
+                                msg?.let {
+                                    MyLog.e(it)
+                                }
 
+                            }
                         }
                     }
                 }

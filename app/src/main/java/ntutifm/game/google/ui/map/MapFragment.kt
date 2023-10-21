@@ -121,16 +121,16 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var favoriteFlag: Boolean = false
     private var weatherState: Boolean = true
     private var permissionDenied: Boolean = false
-    private var isTTSInitialized = false
-    private var isInitialized = false
-    private var markLike = false
+    private var isTTSInitialized: Boolean = false
+    private var isInitialized: Boolean = false
+    private var markLike: Boolean = false
 
     private var searchData: SearchHistory? = null
     private var oldIncident: List<Incident>? = null
     private var mFusedLocationClient: FusedLocationProviderClient? = null
     private var lastLatLng: LatLng? = null
     private var lastCamera: Camera? = null
-    private var azimuth: Float? = null
+    private var azimuth: Float = 0f
 
     private var recycleView: RecyclerView? = null
     private var adaptor: SearchAdaptor? = null
@@ -170,7 +170,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         bottomSheetInit()
         webViewInit()
         incidentCheck()
-        initSensor()
     }
 
     override fun onResume() {
@@ -347,7 +346,14 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             bundle.putBoolean("notReset", true)
             navController.navigate(R.id.notificationFragment, bundle, navOptions)
         }
-        Handler(Looper.getMainLooper()).post{popupWindow.showAtLocation(popupView, Gravity.TOP, 0, 300)}
+        Handler(Looper.getMainLooper()).post {
+            popupWindow.showAtLocation(
+                popupView,
+                Gravity.TOP,
+                0,
+                300
+            )
+        }
         Handler(Looper.getMainLooper()).postDelayed({
             popupWindow.dismiss()
         }, 5000)
@@ -488,8 +494,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     @SuppressLint("MissingPermission", "VisibleForTests")
     private fun startDistanceMeasurement() {
         val locationRequest = LocationRequest()
-        locationRequest.interval = 2000 // two minute interval
-        locationRequest.fastestInterval = 2000
+        locationRequest.interval = 1000
+        locationRequest.fastestInterval = 1000
         locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
         mFusedLocationClient?.requestLocationUpdates(
             locationRequest,
@@ -518,16 +524,27 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private fun updateUIWithDistance(distance: Int, newLocation: LatLng) {
         viewLifecycleOwner.lifecycleScope.launch {
             moveTo(newLocation)
-            binding.mySpeedNumber.text = (distance * 18 / 10).toString()
+            binding.mySpeedNumber.text = (distance * 36 / 10).toString()
+            if (lastCamera != null && lastCamera!!.limit.toInt() < (distance * 36 / 10)) {
+                speakText("注意!!您已超速")
+                AppUtil.showTopToast(requireActivity(), "注意!!您已超速")
+            }
         }
     }
 
     /** 測速模式移動到現在位置 */
     private fun moveTo(location: LatLng) {
         val targetLatLng = LatLng(location.latitude - 0.00006, location.longitude)
-        val targetZoomLevel = 18f
-        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(targetLatLng, targetZoomLevel)
-        map.animateCamera(cameraUpdate, 1000, null)
+        val currentCameraPosition = map.cameraPosition
+        val newCameraPosition = CameraPosition.builder(currentCameraPosition)
+            .target(targetLatLng)
+            .bearing(azimuth)
+            .zoom(18f)
+            .build()
+        Handler(Looper.getMainLooper()).post {
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(newCameraPosition))
+
+        }
     }
 
     /** 計算距離 */
@@ -894,8 +911,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                     SensorManager.getOrientation(rotationMatrix, orientationValues)
                     azimuth = Math.toDegrees(orientationValues[0].toDouble()).toFloat()
 
-                    // 在这里处理方向角度（azimuth）
-                    // 可以使用角度来旋转地图
                 }
             }
 
@@ -907,6 +922,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 設置地圖 */
     override fun onMapReady(googleMap: GoogleMap) {
+        initSensor()
         map = googleMap
         map.isTrafficEnabled = true
         mFusedLocationClient =
@@ -1007,19 +1023,18 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     /** 點擊定位 */
     override fun onMyLocationButtonClick(): Boolean {
         moveToCurrentLocation()
-        rotateCamera()
         return false
     }
 
     private fun rotateCamera() {
         val currentCameraPosition = map.cameraPosition
-        azimuth?.let {
-            MyLog.e("角度: $azimuth")
-            val newCameraPosition = CameraPosition.builder(currentCameraPosition)
-                .bearing(it)
-                .build()
+        val newCameraPosition = CameraPosition.builder(currentCameraPosition)
+            .bearing(azimuth)
+            .build()
+        Handler(Looper.getMainLooper()).post {
             map.animateCamera(CameraUpdateFactory.newCameraPosition(newCameraPosition))
         }
+
     }
 
     /** 通用移動到現在位置 */
@@ -1038,13 +1053,24 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                             )
                         }
                         MyLog.e("Start Navigation")
-//                        getNavigation(LatLng(25.0141, 121.5181))
                         val targetLatLng =
                             LatLng(newLatLng.latitude - 0.00006, newLatLng.longitude)
                         val targetZoomLevel = 18f
-                        val cameraUpdate =
-                            CameraUpdateFactory.newLatLngZoom(targetLatLng, targetZoomLevel)
-                        map.animateCamera(cameraUpdate, 1000, null)
+                        val currentCameraPosition = map.cameraPosition
+
+                        val newCameraPosition = CameraPosition.builder(currentCameraPosition)
+                            .target(targetLatLng)
+                            .bearing(azimuth)
+                            .zoom(targetZoomLevel)
+                            .build()
+                        Handler(Looper.getMainLooper()).post {
+                            map.animateCamera(
+                                CameraUpdateFactory.newCameraPosition(
+                                    newCameraPosition
+                                )
+                            )
+
+                        }
                     }
                 }
         } else {

@@ -20,16 +20,11 @@ import android.view.*
 import android.webkit.SslErrorHandler
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.ImageView
-import android.widget.PopupWindow
-import android.widget.RelativeLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
-import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -49,7 +44,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
@@ -61,35 +55,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ntutifm.game.google.*
 import ntutifm.game.google.R
-import ntutifm.game.google.apiClass.CCTV
-import ntutifm.game.google.apiClass.Camera
-import ntutifm.game.google.apiClass.Incident
-import ntutifm.game.google.apiClass.OilStation
-import ntutifm.game.google.apiClass.Parking
-import ntutifm.game.google.apiClass.RoadFavorite
-import ntutifm.game.google.apiClass.SearchHistory
+import ntutifm.game.google.apiClass.*
 import ntutifm.game.google.databinding.FragmentMapBinding
 import ntutifm.game.google.entity.*
 import ntutifm.game.google.entity.adaptor.RoadAdaptor
 import ntutifm.game.google.entity.adaptor.SearchAdaptor
 import ntutifm.game.google.entity.adaptor.SpnOnItemSelected
 import ntutifm.game.google.entity.mark.MyItem
-import ntutifm.game.google.entity.sync.SyncCamera
-import ntutifm.game.google.entity.sync.SyncIncident
-import ntutifm.game.google.entity.sync.SyncPosition
-import ntutifm.game.google.entity.sync.SyncRoad
-import ntutifm.game.google.entity.sync.SyncSpeed
-import ntutifm.game.google.entity.sync.SyncWeather
+import ntutifm.game.google.entity.sync.*
 import ntutifm.game.google.global.AppUtil
 import ntutifm.game.google.global.MyLog
 import ntutifm.game.google.net.*
-import java.util.Locale
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.roundToInt
-import kotlin.math.sin
-import kotlin.math.sqrt
+import java.util.*
+import kotlin.math.*
 
 
 @SuppressLint("InflateParams")
@@ -131,6 +109,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var lastLatLng: LatLng? = null
     private var lastCamera: Camera? = null
     private var azimuth: Float = 0f
+    private var roadFavorite: SearchHistory? = null
 
     private var recycleView: RecyclerView? = null
     private var adaptor: SearchAdaptor? = null
@@ -154,6 +133,10 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 bundle.getString("cctvName",""),
                 bundle.getString("cctvUrl","")
             )
+            roadFavorite = SearchHistory(null,
+                bundle.getString("roadId",""),
+                bundle.getString("roadName",""),
+                null)
         }
         return binding.root
     }
@@ -174,6 +157,11 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         bottomSheetInit()
         webViewInit()
         incidentCheck()
+        if(roadFavorite != null) {
+            searchItem(roadFavorite!!)
+        }else{
+            searchItem(SearchHistory(null,"600333A","忠孝東路一段",null))
+        }
     }
 
     override fun onResume() {
@@ -327,7 +315,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     }
 
     private fun accident(c: FragmentActivity, incident: Incident) {
-        MyLog.e("${incident.title}")
+        MyLog.e(incident.title)
         // 載入自定義的 layout
         val inflater = c.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = inflater.inflate(R.layout.accident_item, null)
@@ -836,65 +824,60 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             if (searchData != null) {
                 searchData!!.searchTime = System.currentTimeMillis()
                 viewModel.insertHistory(searchData!!)
-                if (BuildConfig.DEBUG) {
-                    MyLog.d(searchData!!.roadName)
-                    MyLog.d(searchData!!.roadId)
-                }
-                var l = 0
-                val searchSet = mutableSetOf<CCTV>()
-                while (l < searchData!!.roadName.length - 1) {
-                    val s = searchData!!.roadName.substring(l, l + 2)
-                    if (s.contains("段") || s.contains("路") || s.contains("巷") || s.contains("號") || s.contains(
-                            "橋"
-                        ) || s.contains("街")
-                    ) {
-                        l += 1
-                        continue
-                    }
-                    if (BuildConfig.DEBUG) {
-                        MyLog.e("searchWord:$s")
-                    }
-                    val matchingKeys = mapData.entries.filter { roadData ->
-                        roadData.key.contains(s)
-                    }
-                    if (matchingKeys.isNotEmpty()) {
-                        val roadList = matchingKeys.map { (name, no) ->
-                            if (BuildConfig.DEBUG) {
-                                MyLog.e("searchResult:$name")
-                            }
-                            CCTV(
-                                id = null,
-                                name = name,
-                                url = "https://cctv.bote.gov.taipei:8501/mjpeg/$no"
-                            )
-                        }
-                        searchSet.addAll(roadList)
-                    }
-                    l += 1
-                    if (BuildConfig.DEBUG) {
-                        MyLog.e("index:$l")
-                    }
-                }
-                if (BuildConfig.DEBUG) {
-                    MyLog.e("updateAdapterData over")
-                }
-                updateAdapterData(searchSet.toMutableList())
-                binding.fragmentHome.favoriteBtn.tag = searchData
-                binding.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
-                binding.fragmentSearch.searchView.setQuery("", false)
-                SyncSpeed.getCityRoadSpeed(this, searchData!!.roadId, this)
+                searchItem(searchData!!)
 
-                binding.fragmentSearch.root.visibility = View.GONE
-                binding.fragmentHome.root.visibility = View.VISIBLE
-                binding.fragmentHome.textView.text = searchData!!.roadName
-                viewModel.checkFavorite(searchData!!.roadName)
-
-                isOpen = false
-                AppUtil.showTopToast(requireActivity(), "搜尋中...")
             }
         } catch (e: Exception) {
             MyLog.e(e.toString())
         }
+    }
+    private fun filterCCTV(data:SearchHistory){
+        var l = 0
+        val searchSet = mutableSetOf<CCTV>()
+        while (l < data.roadName.length - 1) {
+            val s = data.roadName.substring(l, l + 2)
+            if (s.contains("段") || s.contains("路") || s.contains("巷") || s.contains("號") || s.contains(
+                    "橋"
+                ) || s.contains("街")
+            ) {
+                l += 1
+                continue
+            }
+            val matchingKeys = mapData.entries.filter { roadData ->
+                roadData.key.contains(s)
+            }
+            if (matchingKeys.isNotEmpty()) {
+                val roadList = matchingKeys.map { (name, no) ->
+                    if (BuildConfig.DEBUG) {
+                        MyLog.e("searchResult:$name")
+                    }
+                    CCTV(
+                        id = null,
+                        name = name,
+                        url = "https://cctv.bote.gov.taipei:8501/mjpeg/$no"
+                    )
+                }
+                searchSet.addAll(roadList)
+            }
+            l += 1
+        }
+        updateAdapterData(searchSet.toMutableList())
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun searchItem(data:SearchHistory){
+        filterCCTV(data)
+        binding.fragmentHome.favoriteBtn.tag = searchData
+        binding.fragmentHome.favoriteBtn.setOnClickListener(favoriteBtnListener)
+        binding.fragmentSearch.searchView.setQuery("", false)
+        SyncSpeed.getCityRoadSpeed(this, data.roadId, this)
+
+        binding.fragmentSearch.root.visibility = View.GONE
+        binding.fragmentHome.root.visibility = View.VISIBLE
+        binding.fragmentHome.textView.text = searchData!!.roadName
+        viewModel.checkFavorite(data.roadName)
+
+        isOpen = false
+        AppUtil.showTopToast(requireActivity(), "搜尋中...")
     }
 
     /** 刪除歷史紀錄 */

@@ -94,15 +94,27 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         infoWindowView.findViewById<View>(R.id.mark_like) as ImageView
     }
 
-    private var isOpen: Boolean = false
-    private var sitMode: Boolean = false
-    private var favoriteFlag: Boolean = false
-    private var weatherState: Boolean = true
-    private var permissionDenied: Boolean = false
-    private var isTTSInitialized: Boolean = false
-    private var isInitialized: Boolean = false
-    private var markLike: Boolean = false
-    private var noChange: Boolean = false
+    data class UiState(
+        var isOpen: Boolean = false,
+        var sitMode: Boolean = false,
+        var weatherState: Boolean = true
+    )
+
+    data class InitializationState(
+        var isTTSInitialized: Boolean = false,
+        var isUiInitialized: Boolean = false,
+        var permissionDenied: Boolean = false
+    )
+
+    data class UserInteractionState(
+        var favoriteFlag: Boolean = false,
+        var markLike: Boolean = false,
+        var noChange: Boolean = false
+    )
+    private val uiState = UiState()
+    private val initializationState = InitializationState()
+    private val userInteractionState = UserInteractionState()
+
 
     private var searchData: SearchHistory? = null
     private var oldIncident: List<Incident>? = null
@@ -125,7 +137,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     ): View {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         arguments?.let { bundle ->
-            isInitialized = bundle.getBoolean("notReset")
+            initializationState.isUiInitialized = bundle.getBoolean("notReset")
             destination = LatLng(
                 bundle.getDouble("latitude"),
                 bundle.getDouble("longitude")
@@ -166,9 +178,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     override fun onResume() {
         super.onResume()
-        if (permissionDenied) {
+        if (initializationState.permissionDenied) {
             showMissingPermissionError()
-            permissionDenied = false
+            initializationState.permissionDenied = false
         }
     }
 
@@ -184,7 +196,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         if (roadFavorite != null && roadFavorite?.roadId != "") {
             searchItem(roadFavorite!!)
         } else {
-            noChange = true
+            userInteractionState.noChange = true
             searchItem(SearchHistory(null, "600333A", "忠孝東路一段", null))
         }
     }
@@ -197,7 +209,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Log.e("TTS", "該語言不被支持或缺少數據")
                 } else {
-                    isTTSInitialized = true
+                    initializationState.isTTSInitialized = true
                 }
             } else {
                 Log.e("TTS", "初始化失敗")
@@ -207,7 +219,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 關掉cover */
     private fun loadingView() {
-        if (!isInitialized) {
+        if (!initializationState.isUiInitialized) {
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
                 delay(6000)
                 withContext(Dispatchers.Main) {
@@ -221,7 +233,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 撥放語音 */
     private fun speakText(textToSpeak: String) {
-        if (isTTSInitialized) {
+        if (initializationState.isTTSInitialized) {
             textToSpeech?.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null, null)
         }
     }
@@ -463,8 +475,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 測速初始化 */
     private val slButtonListener = View.OnClickListener {
-        sitMode = !sitMode
-        if (sitMode) {
+        uiState.sitMode = !uiState.sitMode
+        if (uiState.sitMode) {
             AppUtil.showTopToast(requireActivity(), "開啟測速模式")
             speakText("開啟測速模式")
             opensl()
@@ -582,7 +594,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.favoriteState.collect {
-                    favoriteFlag = if (it) {
+                    userInteractionState.favoriteFlag = if (it) {
                         binding.fragmentHome.favoriteBtn.setImageResource(R.drawable.ic_baseline_star_25)
                         true
                     } else {
@@ -596,7 +608,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.markState.collect {
                     MyLog.d("收藏:$it")
-                    markLike = if (it) {
+                    userInteractionState.noChange = if (it) {
                         markFavorite.setImageResource(R.drawable.ic_baseline_star_25)
                         true
                     } else {
@@ -614,9 +626,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private val favoriteBtnListener = View.OnClickListener {
         val data = it.tag as SearchHistory
         if (BuildConfig.DEBUG) {
-            MyLog.e(favoriteFlag.toString())
+            MyLog.e(userInteractionState.favoriteFlag.toString())
         }
-        if (favoriteFlag) {
+        if (userInteractionState.favoriteFlag) {
             binding.fragmentHome.favoriteBtn.setImageResource(R.drawable.ic_baseline_star_24)
             viewModel.deleteFavorite(data.roadName)
         } else {
@@ -629,21 +641,21 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 )
             )
         }
-        favoriteFlag = !favoriteFlag
+        userInteractionState.favoriteFlag = !userInteractionState.favoriteFlag
 
     }
 
     private val cameraMarkListener = View.OnClickListener {
         val data = it.tag as Camera
         val image = it as ImageView
-        if (markLike) {
+        if (userInteractionState.noChange) {
             viewModel.deleteMarkCamera(data.cameraId)
             image.setImageResource(R.drawable.ic_baseline_star_24)
         } else {
             viewModel.addMarkCamera(data)
             image.setImageResource(R.drawable.ic_baseline_star_25)
         }
-        markLike = !markLike
+        userInteractionState.noChange = !userInteractionState.noChange
     }
 
     /** 抽屜初始化 */
@@ -673,7 +685,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 binding.cars2.text = "無資料"
                 binding.speed2.text = "無資料"
             }
-            if (!noChange) {
+            if (!userInteractionState.noChange) {
                 behavior?.state = BottomSheetBehavior.STATE_EXPANDED
                 binding.webView.visibility = View.VISIBLE
                 binding.carDirection1.visibility = View.VISIBLE
@@ -714,7 +726,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     /** 跳轉到天氣 */
     @SuppressLint("MissingPermission")
     private val weatherButtonListener = View.OnClickListener {
-        if (!permissionDenied) {
+        if (!initializationState.permissionDenied) {
             mFusedLocationClient?.lastLocation
                 ?.addOnSuccessListener { location: Location? ->
                     location?.let {
@@ -735,7 +747,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     @SuppressLint("SwitchIntDef")
     private val backBtnListener = View.OnClickListener {
         if (BuildConfig.DEBUG) {
-            MyLog.e(isOpen.toString())
+            MyLog.e(uiState.isOpen.toString())
         }
         binding.fragmentSearch.root.visibility = View.GONE
         binding.fragmentHome.root.visibility = View.VISIBLE
@@ -744,25 +756,25 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         when (behavior?.state) {
             //全開
             3 -> {
-                if (isOpen) {
+                if (uiState.isOpen) {
                     binding.carDirection1.visibility = View.VISIBLE
                     binding.trafficFlow.visibility = View.VISIBLE
                 }
             }
             //半開
             6 -> {
-                if (isOpen) {
+                if (uiState.isOpen) {
                     binding.carDirection1.visibility = View.GONE
                     binding.trafficFlow.visibility = View.GONE
                 }
             }
         }
-        isOpen = false
+        uiState.isOpen = false
     }
 
     /** 開啟搜尋欄 */
     private val searchBtnListener = View.OnClickListener {
-        isOpen = true
+        uiState.isOpen = true
         binding.fragmentSearch.root.visibility = View.VISIBLE
         binding.fragmentHome.root.visibility = View.GONE
         binding.webView.visibility = View.GONE
@@ -885,8 +897,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         binding.fragmentHome.textView.text = data.roadName
         viewModel.checkFavorite(data.roadName)
 
-        isOpen = false
-        if (!noChange) {
+        uiState.isOpen = false
+        if (!userInteractionState.noChange) {
             AppUtil.showTopToast(requireActivity(), "搜尋中...")
         }
     }
@@ -949,7 +961,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     @SuppressLint("MissingPermission")
     private fun getNavigation(destination: LatLng) {
-        if (!permissionDenied) {
+        if (!initializationState.permissionDenied) {
             MyLog.d("獲取當前位置1")
             mFusedLocationClient?.lastLocation
                 ?.addOnSuccessListener { location: Location? ->
@@ -1046,7 +1058,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     private fun currentLocationInit() {
         getLocation{
-            if (weatherState) {
+            if (uiState.weatherState) {
                 SyncPosition.weatherLocationApi(
                     this@MapFragment,
                     this@MapFragment,
@@ -1102,7 +1114,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     /** 拿取現在位置 */
     @SuppressLint("MissingPermission")
     private fun getLocation(action:(location:LatLng)->Unit) {
-        if (!permissionDenied) {
+        if (!initializationState.permissionDenied) {
             mFusedLocationClient?.lastLocation
                 ?.addOnSuccessListener { location: Location? ->
                     location?.let {
@@ -1186,7 +1198,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         ) {
             enableMyLocation()
         } else {
-            permissionDenied = true
+            initializationState.permissionDenied = true
         }
     }
 
@@ -1334,37 +1346,37 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private val parkingMarkListener = View.OnClickListener {
         val data = it.tag as Parking
         val image = it as ImageView
-        if (markLike) {
+        if (userInteractionState.noChange) {
             viewModel.deleteMarkParking(data.parkingName)
             image.setImageResource(R.drawable.ic_baseline_star_24)
         } else {
             viewModel.addMarkParking(data)
             image.setImageResource(R.drawable.ic_baseline_star_25)
         }
-        markLike = !markLike
+        userInteractionState.noChange = !userInteractionState.noChange
     }
     private val oilStationMarkListener = View.OnClickListener {
         val data = it.tag as OilStation
         val image = it as ImageView
-        if (markLike) {
+        if (userInteractionState.noChange) {
             viewModel.deleteMarkOil(data.station)
             image.setImageResource(R.drawable.ic_baseline_star_24)
         } else {
             viewModel.addMarkOil(data)
             image.setImageResource(R.drawable.ic_baseline_star_25)
         }
-        markLike = !markLike
+        userInteractionState.noChange = !userInteractionState.noChange
     }
     private val cctvListener = View.OnClickListener {
         val data = binding.spinner.selectedItem as CCTV
-        if (favoriteFlag) {
+        if (userInteractionState.favoriteFlag) {
             viewModel.deleteCCTV(data.name)
             binding.fragmentHome.favoriteBtn.setImageResource(R.drawable.ic_baseline_star_24)
         } else {
             viewModel.addCCTV(data)
             binding.fragmentHome.favoriteBtn.setImageResource(R.drawable.ic_baseline_star_25)
         }
-        favoriteFlag = !favoriteFlag
+        userInteractionState.favoriteFlag = !userInteractionState.favoriteFlag
     }
 
     /** API CALLBACK */

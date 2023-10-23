@@ -40,7 +40,6 @@ class CCTVViewModel(application: Application) : BaseViewModel<CCTVContract.Event
         viewModelScope.launch {
             repository.deleteFavorite(data)
             MyLog.e("資料被刪")
-            fetchPosts()
         }
     }
 

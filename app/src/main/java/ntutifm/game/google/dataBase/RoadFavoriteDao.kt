@@ -3,6 +3,7 @@ package ntutifm.game.google.dataBase
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 import ntutifm.game.google.apiClass.RoadFavorite
 
 @Dao
@@ -17,6 +18,6 @@ interface RoadFavoriteDao {
     suspend fun isRoadFavorite(roadName: String):Boolean
 
     @Query("SELECT * FROM RoadFavorite")
-    suspend fun getAllRoadFavorite(): List<RoadFavorite>
+    fun getAllRoadFavorite(): Flow<List<RoadFavorite>>
 
 }

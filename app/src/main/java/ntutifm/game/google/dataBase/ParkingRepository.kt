@@ -2,7 +2,8 @@ package ntutifm.game.google.dataBase
 
 import android.content.Context
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import ntutifm.game.google.apiClass.Parking
 import ntutifm.game.google.global.Resource
 
@@ -23,13 +24,11 @@ class ParkingRepository(context: Context) {
         return parkingDao.isParkingFavorite(data)
     }
 
-    suspend fun getAllStation(): Flow<Resource<List<Parking>>> {
-        return flow {
-            try {
-                emit(Resource.Success(parkingDao.getAllParking()))
-            } catch (ex: Exception) {
-                emit(Resource.Error(ex))
+    fun getAllStation(): Flow<Resource<List<Parking>>> {
+        return parkingDao.getAllParking()
+        .map { Resource.Success(it)}
+            .catch {
+                Resource.Error(it)
             }
-        }
     }
 }

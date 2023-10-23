@@ -69,7 +69,6 @@ class CameraViewModel(application: Application) : BaseViewModel<CameraContract.E
         viewModelScope.launch {
             repository.deleteFavorite(data)
             MyLog.e("資料被刪")
-            fetchPosts()
         }
     }
 

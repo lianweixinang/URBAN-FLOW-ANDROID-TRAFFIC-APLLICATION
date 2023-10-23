@@ -3,6 +3,7 @@ package ntutifm.game.google.dataBase
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 import ntutifm.game.google.apiClass.Camera
 
 @Dao
@@ -15,5 +16,5 @@ interface CameraDao{
     @Query("SELECT EXISTS (SELECT 1 FROM Camera WHERE cameraId= :cameraId LIMIT 1)")
     suspend fun isCameraFavorite(cameraId: String): Boolean
     @Query("SELECT * FROM Camera")
-    suspend fun getAllCamera() : List<Camera>
+    fun getAllCamera() : Flow<List<Camera>>
 }

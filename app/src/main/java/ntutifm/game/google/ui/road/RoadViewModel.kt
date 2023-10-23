@@ -70,7 +70,6 @@ class RoadViewModel(application: Application) : BaseViewModel<RoadContract.Event
         viewModelScope.launch {
             repository.deleteFavorite(data)
             MyLog.e("資料被刪")
-            fetchPosts()
         }
     }
 

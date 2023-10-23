@@ -3,6 +3,7 @@ package ntutifm.game.google.dataBase
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 import ntutifm.game.google.apiClass.CCTV
 
 @Dao
@@ -15,5 +16,5 @@ interface CCTVDao{
     @Query("SELECT EXISTS (SELECT 1 FROM CCTV WHERE name= :name LIMIT 1)")
     suspend fun isCCTVFavorite(name: String): Boolean
     @Query("SELECT * FROM CCTV")
-    suspend fun getAllcctv() : List<CCTV>
+    fun getAllCCTV() : Flow<List<CCTV>>
 }

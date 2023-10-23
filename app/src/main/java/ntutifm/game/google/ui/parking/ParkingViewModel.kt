@@ -71,7 +71,6 @@ class ParkingViewModel(application: Application) : BaseViewModel<ParkingContract
         viewModelScope.launch {
             repository.deleteFavorite(data)
             MyLog.e("資料被刪")
-            fetchPosts()
         }
     }
 

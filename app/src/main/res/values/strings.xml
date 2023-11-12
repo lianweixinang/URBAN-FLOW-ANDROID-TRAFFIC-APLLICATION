@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">google</string>
+    <string name="app_name">UrbanFlow</string>
     <string name="road">選擇路段監視器</string>
     <string-array name="road_array">
         <item>Mercury</item>

@@ -4,15 +4,14 @@ plugins {
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'com.google.gms.google-services'
     id 'kotlin-kapt'
-
 }
 
 android {
-    namespace 'ntutifm.game.google'
+    namespace 'ntutifm.game.urbanflow'
     compileSdk 33
 
     defaultConfig {
-        applicationId "ntutifm.game.google"
+        applicationId "ntutifm.game.urbanflow"
         minSdk 21
         targetSdk 33
         versionCode 1

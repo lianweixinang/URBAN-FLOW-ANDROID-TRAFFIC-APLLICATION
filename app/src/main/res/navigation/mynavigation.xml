@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/mapFragment"
-        android:name="ntutifm.game.google.ui.map.MapFragment"
+        android:name="ntutifm.game.urbanflow.ui.map.MapFragment"
         android:label="MapFragment" >
         <action
             android:id="@+id/action_mapFragment_to_weatherFragment"
@@ -29,7 +29,7 @@
     </fragment>
     <fragment
         android:id="@+id/weatherFragment"
-        android:name="ntutifm.game.google.ui.weather.WeatherFragment"
+        android:name="ntutifm.game.urbanflow.ui.weather.WeatherFragment"
         android:label="WeatherFragment" >
         <action
             android:id="@+id/action_weatherFragment_to_mapFragment"
@@ -37,7 +37,7 @@
     </fragment>
     <fragment
         android:id="@+id/instructionFragment"
-        android:name="ntutifm.game.google.ui.oil.InstructionFragment"
+        android:name="ntutifm.game.urbanflow.ui.oil.InstructionFragment"
         android:label="InstructionFragment" >
         <action
             android:id="@+id/action_instructionFragment_to_mapFragment"
@@ -45,7 +45,7 @@
     </fragment>
     <fragment
         android:id="@+id/aboutFragment"
-        android:name="ntutifm.game.google.ui.oil.AboutFragment"
+        android:name="ntutifm.game.urbanflow.ui.oil.AboutFragment"
         android:label="AboutFragment" >
         <action
             android:id="@+id/action_aboutFragment_to_mapFragment"
@@ -53,7 +53,7 @@
     </fragment>
     <fragment
         android:id="@+id/notificationFragment"
-        android:name="ntutifm.game.google.ui.notification.NotificationFragment"
+        android:name="ntutifm.game.urbanflow.ui.notification.NotificationFragment"
         android:label="NotificationFragment" >
         <action
             android:id="@+id/action_notificationFragment_to_mapFragment"
@@ -61,7 +61,7 @@
     </fragment>
     <fragment
         android:id="@+id/oilFragment"
-        android:name="ntutifm.game.google.ui.oil.OilFragment"
+        android:name="ntutifm.game.urbanflow.ui.oil.OilFragment"
         android:label="OilFragment" >
         <action
             android:id="@+id/action_oilFragment_to_mapFragment"
@@ -69,7 +69,7 @@
     </fragment>
     <fragment
         android:id="@+id/routeFragment"
-        android:name="ntutifm.game.google.ui.route.RouteFragment"
+        android:name="ntutifm.game.urbanflow.ui.route.RouteFragment"
         android:label="RouteFragment" >
         <action
             android:id="@+id/action_routeFragment_to_mapFragment"
@@ -92,7 +92,7 @@
     </fragment>
     <fragment
         android:id="@+id/CCTVFragment"
-        android:name="ntutifm.game.google.ui.parking.CCTVFragment"
+        android:name="ntutifm.game.urbanflow.ui.parking.CCTVFragment"
         android:label="CCTVFragment" >
         <action
             android:id="@+id/action_CCTVFragment_to_routeFragment"
@@ -100,7 +100,7 @@
     </fragment>
     <fragment
         android:id="@+id/cameraFragment"
-        android:name="ntutifm.game.google.ui.camera.CameraFragment"
+        android:name="ntutifm.game.urbanflow.ui.camera.CameraFragment"
         android:label="CameraFragment" >
         <action
             android:id="@+id/action_cameraFragment_to_routeFragment"
@@ -108,7 +108,7 @@
     </fragment>
     <fragment
         android:id="@+id/roadFragment"
-        android:name="ntutifm.game.google.ui.road.RoadFragment"
+        android:name="ntutifm.game.urbanflow.ui.road.RoadFragment"
         android:label="RoadFragment" >
         <action
             android:id="@+id/action_roadFragment_to_routeFragment"
@@ -116,7 +116,7 @@
     </fragment>
     <fragment
         android:id="@+id/oilStationFragment"
-        android:name="ntutifm.game.google.ui.oilStation.OilStationFragment"
+        android:name="ntutifm.game.urbanflow.ui.oilStation.OilStationFragment"
         android:label="OilStationFragment" >
         <action
             android:id="@+id/action_oilStationFragment_to_routeFragment"
@@ -124,7 +124,7 @@
     </fragment>
     <fragment
         android:id="@+id/parkingFragment"
-        android:name="ntutifm.game.google.ui.parking.ParkingFragment"
+        android:name="ntutifm.game.urbanflow.ui.parking.ParkingFragment"
         android:label="ParkingFragment" >
         <action
             android:id="@+id/action_parkingFragment_to_routeFragment"

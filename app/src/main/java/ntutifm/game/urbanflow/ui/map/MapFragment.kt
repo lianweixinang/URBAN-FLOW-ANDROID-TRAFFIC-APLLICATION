@@ -427,7 +427,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                             return@observe
                         }
                         lastCamera!!.distance = it.distance
-//                        showCurrent(50)
+                        showCurrent(50)
                     }
 
                     in 0..2 -> {
@@ -523,10 +523,32 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private fun updateUIWithDistance(distance: Int, newLocation: LatLng) {
         viewLifecycleOwner.lifecycleScope.launch {
             moveTo(newLocation)
-            binding.mySpeedNumber.text = (distance * 36 / 10).toString()
             if (lastCamera != null && lastCamera!!.limit.toInt() < (distance * 36 / 10)) {
                 speakText("注意!!您已超速")
                 AppUtil.showTopToast(requireActivity(), "注意!!您已超速")
+            }
+            val pre =  binding.mySpeedNumber.text.toString().toInt()
+            val span =  (distance * 36 / 10) - binding.mySpeedNumber.text.toString().toInt() / 3
+            if(span == 0){
+                return@launch
+            }else if(abs(span) == 1){
+                    withContext(Dispatchers.Main) {
+                        binding.mySpeedNumber.text = (pre + span).toString()
+                    }
+            }else if(abs(span) == 2){
+                for(i in 1 .. 2) {
+                    withContext(Dispatchers.Main) {
+                        binding.mySpeedNumber.text = (pre + span * i).toString()
+                    }
+                    delay(600)
+                }
+            }else {
+                for(i in 1 .. 3) {
+                    withContext(Dispatchers.Main) {
+                        binding.mySpeedNumber.text = (pre + span * i).toString()
+                    }
+                    delay(600)
+                }
             }
         }
     }
@@ -1202,7 +1224,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                                 p
                             )
                         )
-                        delay(100)
                     }
                     withContext(Dispatchers.Main) {
                         SyncCamera.cameraMarkApi()
@@ -1221,7 +1242,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                                 1, p
                             )
                         )
-                        delay(100)
                     }
                     withContext(Dispatchers.Main) {
                         SyncPosition.oilStationApi()
@@ -1241,7 +1261,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                                 2, p
                             )
                         )
-                        delay(100)
+                        withContext(Dispatchers.Main) {
+                            mClusterManager?.cluster()
+                        }
                     }
                 }
             }

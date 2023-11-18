@@ -493,8 +493,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     @SuppressLint("MissingPermission", "VisibleForTests")
     private fun startDistanceMeasurement() {
         val locationRequest = LocationRequest()
-        locationRequest.interval = 1000
-        locationRequest.fastestInterval = 1000
+        locationRequest.interval = 5000
+        locationRequest.fastestInterval = 5000
         locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
         mFusedLocationClient?.requestLocationUpdates(
             locationRequest,
@@ -522,33 +522,23 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     /** 更新目前速度 */
     private fun updateUIWithDistance(distance: Int, newLocation: LatLng) {
         viewLifecycleOwner.lifecycleScope.launch {
-            moveTo(newLocation)
-            if (lastCamera != null && lastCamera!!.limit.toInt() < (distance * 36 / 10)) {
-                speakText("注意!!您已超速")
-                AppUtil.showTopToast(requireActivity(), "注意!!您已超速")
-            }
-            val pre =  binding.mySpeedNumber.text.toString().toInt()
-            val span =  (distance * 36 / 10) - binding.mySpeedNumber.text.toString().toInt() / 3
-            if(span == 0){
-                return@launch
-            }else if(abs(span) == 1){
-                    withContext(Dispatchers.Main) {
-                        binding.mySpeedNumber.text = (pre + span).toString()
-                    }
-            }else if(abs(span) == 2){
-                for(i in 1 .. 2) {
-                    withContext(Dispatchers.Main) {
-                        binding.mySpeedNumber.text = (pre + span * i).toString()
-                    }
-                    delay(600)
+            val speed = (distance * 72 / 100)
+            val span = speed - binding.mySpeedNumber.text.toString().toInt()
+            withContext(Dispatchers.Main) {
+                if (lastCamera != null && lastCamera!!.limit.toInt() < (distance * 72 / 100)) {
+                    speakText("注意!!您已超速")
+                    AppUtil.showTopToast(requireActivity(), "注意!!您已超速")
                 }
-            }else {
-                for(i in 1 .. 3) {
-                    withContext(Dispatchers.Main) {
-                        binding.mySpeedNumber.text = (pre + span * i).toString()
-                    }
-                    delay(600)
+                binding.mySpeedNumber.text = "$speed"
+                if (span <= 4) {
+                    return@withContext
                 }
+                moveTo(newLocation)
+
+//                for (i in 1..3) {
+//                    delay(1000)
+//                    binding.mySpeedNumber.text = (pre + span / 3).toString()
+//                }
             }
         }
     }

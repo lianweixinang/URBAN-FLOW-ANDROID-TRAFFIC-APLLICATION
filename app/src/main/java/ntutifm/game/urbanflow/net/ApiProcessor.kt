@@ -2,6 +2,9 @@ package ntutifm.game.urbanflow.net
 
 import android.content.Context
 import android.util.Log
+import ntutifm.game.urbanflow.apiClass.Camera
+import ntutifm.game.urbanflow.apiClass.OilStation
+import ntutifm.game.urbanflow.apiClass.Parking
 import ntutifm.game.urbanflow.entity.sync.SyncCamera
 import ntutifm.game.urbanflow.entity.sync.SyncIncident
 import ntutifm.game.urbanflow.entity.sync.SyncOil
@@ -13,32 +16,27 @@ import ntutifm.game.urbanflow.global.MyLog
 
 class ApiProcessor {
     companion object {
-        const val getParking = "getParking"
         const val getCityRoadId = "getCityRoadId"
         const val getCityRoadSpeed = "getCityRoadSpeed"
         const val getIncident = "getIncident"
         const val getOil = "getOil"
         const val getWeather = "getWeather"
         const val getWeatherLocation = "getWeatherLocation"
-        const val getCameraMark = "getCameraMark"
         const val getFindCamera = "getFindCamera"
-        const val getOilStation = "getOilStation"
     }
 
-    suspend fun getParking() {
+    suspend fun getParking():APIResult<out Parking> {
         val myAPIService = RetrofitManager.api
         val response =
             myAPIService?.parkingList?.execute()
         try {
             if (response?.isSuccessful == true) {
-                MyLog.d(response?.body()!!.toString())
-                SyncPosition.updateParking(response.body()!!)
-            } else {
-                Log.d("parkingName", "Null")
+                return APIResult.Success(response.body()!!)
             }
         } catch (exception: Exception) {
-            Log.d("ParkTitle", exception.toString())
+            return APIResult.Error(exception)
         }
+        return APIResult.Error(null)
     }
 
     fun getCityRoadId(c: Context, successData: ArrayList<String>, errorData: ArrayList<String>) {
@@ -142,18 +140,17 @@ class ApiProcessor {
         }
     }
 
-    suspend fun getCameraMark() {
+    suspend fun getCameraMark():APIResult<out Camera> {
         val myAPIService = RetrofitManager.api
         val response = myAPIService?.cameraMark?.execute()
         try {
             if (response?.isSuccessful == true) {
-                SyncCamera.updateCameraMark(response.body()!!)
-            } else {
-                Log.d("getList<Camera>Mark", "Null")
+                return APIResult.Success(response.body()!!)
             }
         } catch (exception: Exception) {
-            Log.d("getList<Camera>Mark", exception.toString())
+            return APIResult.Error(exception)
         }
+        return APIResult.Error(null)
     }
 
     fun getFindCamera(
@@ -175,17 +172,21 @@ class ApiProcessor {
         }
     }
 
-    suspend fun getOilStation() {
+    suspend fun getOilStation(): APIResult<out OilStation> {
         val myAPIService = RetrofitManager.api
         val response = myAPIService?.oilStationList?.execute()
         try {
             if (response?.isSuccessful == true) {
-                SyncPosition.updateOilStation(response.body()!!)
-            } else {
-                Log.d("getOilStationMark", "Null")
+                return APIResult.Success(response.body()!!)
             }
         } catch (exception: Exception) {
-            Log.d("getOilStationMark", exception.toString())
+            return APIResult.Error(exception)
         }
+        return APIResult.Error(null)
     }
+}
+
+sealed class APIResult<T>{
+    data class Success<T>(val data:List<T>): APIResult<T>()
+    class Error(val exception: Throwable?) : APIResult<Nothing>()
 }

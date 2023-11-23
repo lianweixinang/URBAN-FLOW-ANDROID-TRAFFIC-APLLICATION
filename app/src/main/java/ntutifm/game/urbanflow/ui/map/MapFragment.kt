@@ -1204,7 +1204,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
-                SyncPosition.parkingLists.collect {
+                viewModel.parkingLists.collect {
                     for (p in it) {
                         mClusterManager?.addItem(
                             MyItem(
@@ -1216,14 +1216,14 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                         )
                     }
                     withContext(Dispatchers.Main) {
-                        SyncCamera.cameraMarkApi()
+                        viewModel.cameraMarkApi()
                     }
                 }
             }
         }
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
-                SyncCamera.cameraLists.collect {
+                viewModel.cameraLists.collect {
                     for (p in it) {
                         mClusterManager?.addItem(
                             MyItem(
@@ -1234,7 +1234,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                         )
                     }
                     withContext(Dispatchers.Main) {
-                        SyncPosition.oilStationApi()
+                        viewModel.oilStationMarkApi()
                     }
                 }
             }
@@ -1242,7 +1242,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
-                SyncPosition.oilStation.collect {
+                viewModel.oilStation.collect {
                     for (p in it) {
                         mClusterManager?.addItem(
                             MyItem(
@@ -1260,7 +1260,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         }
 
         map.setOnCameraIdleListener(mClusterManager)
-        SyncPosition.parkingApi()
+        viewModel.parkingMarkApi()
         mClusterManager?.setOnClusterItemClickListener {
             showInfoWindowForItem(it)
             true

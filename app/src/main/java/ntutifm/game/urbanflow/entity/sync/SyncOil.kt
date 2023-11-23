@@ -13,12 +13,6 @@ object SyncOil {
 
     private val _searchLists = MutableLiveData<List<Oil>>()
     val oilLists: LiveData<List<Oil>> = _searchLists
-    fun oilDataApi(callBack: ApiCallBack?, data: String, fragment: Fragment){
-        ApiManager(callBack, listOf(data)).execute(fragment, ApiProcessor.getOil)
-    }
-    fun clearSearch(){
-        _searchLists.postValue(listOf<Oil>())
-    }
 
     fun updateOil(data:List<Oil>){
         _searchLists.postValue(data)

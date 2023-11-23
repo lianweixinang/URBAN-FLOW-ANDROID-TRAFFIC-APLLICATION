@@ -3,39 +3,16 @@ package ntutifm.game.urbanflow.entity.sync
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
+import ntutifm.game.urbanflow.apiClass.WeatherLocation
 import ntutifm.game.urbanflow.global.MyLog
 import ntutifm.game.urbanflow.net.ApiCallBack
-import ntutifm.game.urbanflow.apiClass.OilStation
-import ntutifm.game.urbanflow.apiClass.Parking
-import ntutifm.game.urbanflow.apiClass.WeatherLocation
 import ntutifm.game.urbanflow.net.ApiManager
 import ntutifm.game.urbanflow.net.ApiProcessor
 
 object SyncPosition {
-
-    private val _parkingLists = MutableSharedFlow<List<Parking>>()
-    val parkingLists = _parkingLists.asSharedFlow()
-
     private val _weatherLocation = MutableLiveData<WeatherLocation>()
     val weatherLocation = _weatherLocation
 
-    private val _oilStation = MutableSharedFlow<List<OilStation>>()
-    val oilStation = _oilStation.asSharedFlow()
-    fun parkingApi(){
-        CoroutineScope(Dispatchers.IO).launch {
-            MyLog.e("StartCallParkingApi")
-            ApiProcessor().getParking()
-        }
-    }
-    suspend fun updateParking(data:List<Parking>){
-        MyLog.e("updateParking")
-        _parkingLists.emit(data)
-    }
     fun weatherLocationApi(callBack: ApiCallBack, fragment: Fragment,latLong:LatLng){
         MyLog.e("StartCallWeatherLocationApi")
         ApiManager(callBack,listOf(latLong.latitude.toString(),latLong.longitude.toString())).execute(fragment, ApiProcessor.getWeatherLocation)
@@ -44,16 +21,6 @@ object SyncPosition {
         MyLog.e("updateWeatherLocation")
         _weatherLocation.postValue(data)
 
-    }
-    fun oilStationApi(){
-        CoroutineScope(Dispatchers.IO).launch {
-            MyLog.e("startOilStationApi")
-            ApiProcessor().getOilStation()
-        }
-    }
-    suspend fun updateOilStation(data:List<OilStation>){
-        MyLog.e("updateOilStation")
-        _oilStation.emit(data)
     }
     fun districtToIndex(): Int {
         if(_weatherLocation.value!=null) {

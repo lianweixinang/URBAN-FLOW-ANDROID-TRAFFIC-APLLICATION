@@ -21,8 +21,8 @@
 
     <ImageView
         android:id="@+id/mySpeedButton"
-        android:layout_width="85dp"
-        android:layout_height="100dp"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
         android:layout_marginTop="8dp"
         android:src="@drawable/sl"
         app:layout_constraintEnd_toEndOf="parent"
@@ -32,8 +32,8 @@
 
     <ImageView
         android:id="@+id/cameraSpeedButton"
-        android:layout_width="85dp"
-        android:layout_height="85dp"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
         android:layout_marginTop="16dp"
         android:src="@drawable/sl"
         android:visibility="gone"
@@ -74,8 +74,8 @@
 
     <ImageView
         android:id="@+id/menuButton"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginTop="16dp"
         android:src="@drawable/group_225"
         app:layout_constraintEnd_toStartOf="@+id/leftGuideline"
@@ -85,8 +85,8 @@
 
     <ImageView
         android:id="@+id/weatherButton"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginTop="16dp"
         android:src="@drawable/sun"
         app:layout_constraintEnd_toStartOf="@+id/leftGuideline"
@@ -324,7 +324,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.15"/>
+        app:layout_constraintGuide_percent="0.20"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/rightGuideline"

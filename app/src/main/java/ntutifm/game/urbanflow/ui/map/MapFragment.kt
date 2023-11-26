@@ -232,22 +232,22 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         SyncWeather.weatherLists.observe(viewLifecycleOwner) {
             binding.weatherButton.setImageResource(
                 when (it[SyncPosition.districtToIndex()].wx1) {
-                    "晴天" -> R.drawable.sun
-                    "雨天" -> R.drawable.heavy_rain
-                    "短暫陣雨" -> R.drawable.heavy_rain
-                    "多雲短暫陣雨" -> R.drawable.heavy_rain
-                    "陰時多雲短暫陣雨" -> R.drawable.heavy_rain
-                    "多雲午後短暫陣雨" -> R.drawable.heavy_rain
-                    "晴時多雲" -> R.drawable.cloudy
-                    "多雲晴時" -> R.drawable.cloudy
-                    "午後短暫雷陣雨" -> R.drawable.storm
-                    "短暫陣雨或雷雨" -> R.drawable.storm
-                    "多雲午後短暫雷陣雨" -> R.drawable.storm
-                    "多雲" -> R.drawable.cloudy_nosun
-                    "多雲時陰" -> R.drawable.cloudy_nosun
-                    "多雲時晴" -> R.drawable.cloudy_nosun
-                    "陰時多雲" -> R.drawable.cloudy_nosun
-                    else -> R.drawable.cloudy_nosun
+                    "晴天" -> R.drawable.sun_circle
+                    "雨天" -> R.drawable.heavy_rain_circle
+                    "短暫陣雨" -> R.drawable.heavy_rain_circle
+                    "多雲短暫陣雨" -> R.drawable.heavy_rain_circle
+                    "陰時多雲短暫陣雨" -> R.drawable.heavy_rain_circle
+                    "多雲午後短暫陣雨" -> R.drawable.heavy_rain_circle
+                    "晴時多雲" -> R.drawable.cloudy_circle
+                    "多雲晴時" -> R.drawable.cloudy_circle
+                    "午後短暫雷陣雨" -> R.drawable.storm_circle
+                    "短暫陣雨或雷雨" -> R.drawable.storm_circle
+                    "多雲午後短暫雷陣雨" -> R.drawable.storm_circle
+                    "多雲" -> R.drawable.cloudy_nosun_circle
+                    "多雲時陰" -> R.drawable.cloudy_nosun_circle
+                    "多雲時晴" -> R.drawable.cloudy_nosun_circle
+                    "陰時多雲" -> R.drawable.cloudy_nosun_circle
+                    else -> R.drawable.cloudy_nosun_circle
                 }
             )
         }

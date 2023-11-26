@@ -3,6 +3,7 @@ package ntutifm.game.urbanflow.ui.map
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -21,6 +22,7 @@ import android.webkit.SslErrorHandler
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -549,7 +551,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 測速模式移動到現在位置 */
     private fun moveTo(location: LatLng) {
-        val targetLatLng = LatLng(location.latitude - 0.00006, location.longitude)
+        val targetLatLng = LatLng(location.latitude - 0.0004, location.longitude)
         val currentCameraPosition = map.cameraPosition
         val newCameraPosition = CameraPosition.builder(currentCameraPosition)
             .target(targetLatLng)
@@ -933,8 +935,17 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 設置地圖 */
     override fun onMapReady(googleMap: GoogleMap) {
-        initSensor()
         map = googleMap
+        enableMyLocation()
+        refreshMap()
+        if (destination != null) {
+            MyLog.d("開啟導航")
+            getNavigation(destination!!)
+        }
+    }
+
+    private fun refreshMap(){
+        initSensor()
         map.isTrafficEnabled = true
         mFusedLocationClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -942,15 +953,10 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         map.uiSettings.isRotateGesturesEnabled = true
         map.setOnMyLocationButtonClickListener(this)
         map.setOnMyLocationClickListener(this)
-        enableMyLocation()
         currentLocationInit()
         markInit()
         setLocationInitBtn()
         weatherInit()
-        if (destination != null) {
-            MyLog.d("開啟導航")
-            getNavigation(destination!!)
-        }
     }
 
     @SuppressLint("MissingPermission")
@@ -1058,7 +1064,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             )
             MyLog.e("Start Navigation")
             val targetLatLng =
-                LatLng(it.latitude - 0.00006, it.longitude)
+                LatLng(it.latitude - 0.0004, it.longitude)
             val targetZoomLevel = 18f
             val currentCameraPosition = map.cameraPosition
 
@@ -1083,7 +1089,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         getLocation {
             MyLog.e("Start Navigation")
             val targetLatLng =
-                LatLng(it.latitude - 0.00006, it.longitude)
+                LatLng(it.latitude - 0.0004, it.longitude)
             val targetZoomLevel = 18f
             val currentCameraPosition = map.cameraPosition
 
@@ -1092,6 +1098,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 .bearing(azimuth)
                 .zoom(targetZoomLevel)
                 .build()
+
             Handler(Looper.getMainLooper()).post {
                 map.animateCamera(
                     CameraUpdateFactory.newCameraPosition(
@@ -1145,51 +1152,29 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
         ) {
-            PermissionUtils.RationaleDialog.newInstance(
-                MainActivity.LOCATION_PERMISSION_REQUEST_CODE,
-                true
-            ).show(parentFragmentManager, "dialog")
+
+            val positiveButtonListener = DialogInterface.OnClickListener { dialog, which ->
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                dialog.dismiss()
+            }
+            val msg = requireActivity().getString(R.string.permission_rationale_location)
+            AppUtil.showDialog(msg, requireActivity(), positiveButtonListener)
+
             return
         }
 
-        // 3. Otherwise, request permission
-        ActivityCompat.requestPermissions(
-            requireActivity(),
-            arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ),
-            MainActivity.LOCATION_PERMISSION_REQUEST_CODE
-        )
+        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
     /** 定位權限要求result */
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray,
-    ) {
-        if (requestCode != MainActivity.LOCATION_PERMISSION_REQUEST_CODE) {
-            super.onRequestPermissionsResult(
-                requestCode,
-                permissions,
-                grantResults
-            )
-            return
-        }
-
-        if (PermissionUtils.isPermissionGranted(
-                permissions,
-                grantResults,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) || PermissionUtils.isPermissionGranted(
-                permissions,
-                grantResults,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-        ) {
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
             enableMyLocation()
+            refreshMap()
         } else {
+            enableMyLocation()
             initializationState.permissionDenied = true
         }
     }
@@ -1260,7 +1245,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         Toast.makeText(activity, "Current location:\n$location", Toast.LENGTH_LONG)
             .show()
         val targetlastLatLng = LatLng(
-            location.latitude - 0.00006,
+            location.latitude - 0.0004,
             location.longitude
         )
         val targetZoomLevel = 18f

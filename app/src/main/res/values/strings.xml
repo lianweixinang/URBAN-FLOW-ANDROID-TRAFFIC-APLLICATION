@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">UrbanFlow</string>
+    <string name="permission_rationale_location">親愛的用戶您好，由於UrbanFlow 需要定位功能才能使用大部分功能，請您開啟定位功能</string>
     <string name="road">選擇路段監視器</string>
     <string-array name="road_array">
         <item>Mercury</item>

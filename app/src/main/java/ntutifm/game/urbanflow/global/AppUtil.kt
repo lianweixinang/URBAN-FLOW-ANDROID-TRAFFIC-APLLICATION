@@ -3,6 +3,7 @@ package ntutifm.game.urbanflow.global
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -114,8 +115,19 @@ class AppUtil {
                 val builder = AlertDialog.Builder(activity)
                 builder.setCancelable(false)
                 builder.setMessage(this)
-                builder.setTitle("交通流量小幫手")
+                builder.setTitle("UrbanFlow")
                 builder.setPositiveButton("確認", null)
+                builder.create().show()
+            }
+        }
+        @JvmStatic
+        fun showDialog(message : String?, activity: Activity?,listener: DialogInterface.OnClickListener){
+            message?.run {
+                val builder = AlertDialog.Builder(activity)
+                builder.setCancelable(false)
+                builder.setMessage(this)
+                builder.setTitle("UrbanFlow")
+                builder.setPositiveButton("確認", listener)
                 builder.create().show()
             }
         }

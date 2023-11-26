@@ -71,7 +71,6 @@ import ntutifm.game.urbanflow.global.InitializationState
 import ntutifm.game.urbanflow.global.MyLog
 import ntutifm.game.urbanflow.global.UiElementState
 import ntutifm.game.urbanflow.net.*
-import java.io.BufferedInputStream
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.security.cert.CertificateException
@@ -266,15 +265,10 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 更新錄像清單 */
     private fun updateAdapterData(dataList: List<CCTV>) {
-        if (BuildConfig.DEBUG) {
-            MyLog.e("updateAdapterData")
-            for (i in dataList) {
-                MyLog.e("updateAdapterData" + i.name)
-            }
-        }
         adapter?.clear()
         adapter?.addAll(dataList)
         adapter?.notifyDataSetChanged()
+        binding.webView.loadUrl(dataList[0].url)
     }
 
     private fun loadSSLCertificates() {

@@ -1,8 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Google" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:statusBarColor">#F0F0F0</item>
-        <item name="android:navigationBarColor">#F0F0F0</item>
+    <style name="Theme.UrbanFlow" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">#FFEDEFF4</item>
+        <item name="android:navigationBarColor">#FFEDEFF4</item>
 
         <!-- Customize your theme here. -->
     </style>

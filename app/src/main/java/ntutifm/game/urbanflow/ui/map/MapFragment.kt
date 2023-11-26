@@ -10,6 +10,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.location.Location
+import android.net.http.SslCertificate
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
@@ -70,6 +71,12 @@ import ntutifm.game.urbanflow.global.InitializationState
 import ntutifm.game.urbanflow.global.MyLog
 import ntutifm.game.urbanflow.global.UiElementState
 import ntutifm.game.urbanflow.net.*
+import java.io.BufferedInputStream
+import java.io.ByteArrayInputStream
+import java.io.IOException
+import java.security.cert.CertificateException
+import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
 import java.util.*
 import kotlin.math.*
 
@@ -98,6 +105,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     }
     private val uiState = UiElementState()
     private val initializationState = InitializationState()
+    private val certificates = ArrayList<SslCertificate>()
     private var searchData: SearchHistory? = null
     private var oldIncident: List<Incident>? = null
     private var mFusedLocationClient: FusedLocationProviderClient? = null
@@ -134,6 +142,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 null
             )
         }
+        loadSSLCertificates()
         return binding.root
     }
 
@@ -268,6 +277,31 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         adapter?.notifyDataSetChanged()
     }
 
+    private fun loadSSLCertificates() {
+        try {
+            val certificateFactory = CertificateFactory.getInstance("X.509")
+            val certString = getString(R.string.website_certificate) // 憑證字符串
+            val inputStream = ByteArrayInputStream(certString.toByteArray(Charsets.UTF_8))
+            try {
+                val certificate = certificateFactory.generateCertificate(inputStream)
+                if (certificate is X509Certificate) {
+                    val sslCertificate = SslCertificate(certificate)
+                    certificates.add(sslCertificate)
+                }
+            } catch (exception: CertificateException) {
+                MyLog.e("Cannot read certificate")
+            } finally {
+                try {
+                    inputStream.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+        } catch (e: CertificateException) {
+            e.printStackTrace()
+        }
+    }
+
     /** 監視器初始化 */
     @SuppressLint("SetJavaScriptEnabled")
     private fun webViewInit() {
@@ -283,16 +317,45 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         binding.spinner.onItemSelectedListener = SpnOnItemSelected(
             binding, viewModel
         ) { attachCCTVListener() }
+
+
         binding.webView.webViewClient = object : WebViewClient() {
             @SuppressLint("WebViewClientOnReceivedSslError")
-            override fun onReceivedSslError(
-                view: WebView?,
-                handler: SslErrorHandler?,
-                error: SslError?,
-            ) {
-                handler?.proceed()
+            override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError) {
+                // Checks Embedded certificates
+                val serverCertificate = error.certificate
+                val serverBundle = SslCertificate.saveState(serverCertificate)
+                for (appCertificate in certificates) {
+                    if (serverCertificate.toString() == appCertificate.toString()) { // First fast check
+                        val appBundle = SslCertificate.saveState(appCertificate)
+                        val keySet = appBundle.keySet()
+                        var matches = true
+                        for (key in keySet) {
+                            val serverObj = serverBundle.get(key)
+                            val appObj = appBundle.get(key)
+                            if (serverObj is ByteArray && appObj is ByteArray) {     // key "x509-certificate"
+                                if (!serverObj.contentEquals(appObj)) {
+                                    matches = false
+                                    break
+                                }
+                            } else if (serverObj != null && serverObj != appObj) {
+                                matches = false
+                                break
+                            }
+                        }
+                        if (matches) {
+                            handler.proceed()
+                            return
+                        }
+                    }
+                }
+
+                handler.cancel()
+                val message = "SSL Error " + error.primaryError
+                MyLog.e(message)
             }
         }
+
         binding.webView.settings.apply {
             this.javaScriptEnabled = true
             this.loadWithOverviewMode = true

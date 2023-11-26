@@ -6,6 +6,10 @@ plugins {
     id 'kotlin-kapt'
 }
 
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def mapsApiKey = properties.getProperty('MAPS.API.KEY')
+
 android {
     namespace 'ntutifm.game.urbanflow'
     compileSdk 33
@@ -16,7 +20,7 @@ android {
         targetSdk 33
         versionCode 3
         versionName "1.2"
-
+        manifestPlaceholders = [mapsApiKey: mapsApiKey]
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true

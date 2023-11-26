@@ -1,9 +1,11 @@
 package ntutifm.game.urbanflow
 
 import android.app.Activity
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import android.view.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.navigation.NavOptions
@@ -13,17 +15,38 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import ntutifm.game.urbanflow.databinding.ActivityMainBinding
 
+
 open class MainActivity : AppCompatActivity(),
-    NavigationView.OnNavigationItemSelectedListener{
+    NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var binding: ActivityMainBinding
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setNavigationViewListener()
-//        AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, MapFragment())
+        val window = window
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // For Android 11 (API Level 30) and above
+            val insetsController = window.insetsController
+            insetsController?.setSystemBarsAppearance(
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS, // Use light status and navigation bar icons
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS // Apply to both status and navigation bars
+            )
+        } else {
+            // For Android 8 (Oreo) to Android 10
+            var uiVisibility = window.decorView.systemUiVisibility
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                uiVisibility = uiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR // For status bar
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                uiVisibility = uiVisibility or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR // For navigation bar
+            }
+            window.decorView.systemUiVisibility = uiVisibility
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -31,8 +54,10 @@ open class MainActivity : AppCompatActivity(),
         menuInflater.inflate(R.menu.menulayout, menu)
         return true
     }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         val navController = navHostFragment.navController
         val navOptions = NavOptions.Builder()
             .setPopUpTo(R.id.mapFragment, true)
@@ -88,6 +113,7 @@ open class MainActivity : AppCompatActivity(),
         }
     }
 }
+
 class MyActivity : MainActivity() {
 
     val context = this@MyActivity

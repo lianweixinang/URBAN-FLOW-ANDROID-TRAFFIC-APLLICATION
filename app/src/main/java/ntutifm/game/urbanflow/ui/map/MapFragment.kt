@@ -66,7 +66,7 @@ import ntutifm.game.urbanflow.entity.sync.*
 import ntutifm.game.urbanflow.global.AppUtil
 import ntutifm.game.urbanflow.global.InitializationState
 import ntutifm.game.urbanflow.global.MyLog
-import ntutifm.game.urbanflow.global.UiEelementState
+import ntutifm.game.urbanflow.global.UiElementState
 import ntutifm.game.urbanflow.net.*
 import java.util.*
 import kotlin.math.*
@@ -94,7 +94,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private val markFavorite: ImageView by lazy {
         infoWindowView.findViewById<View>(R.id.mark_like) as ImageView
     }
-    private val uiState = UiEelementState()
+    private val uiState = UiElementState()
     private val initializationState = InitializationState()
     private var searchData: SearchHistory? = null
     private var oldIncident: List<Incident>? = null
@@ -172,9 +172,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     @RequiresApi(Build.VERSION_CODES.O)
     private fun roadInit() {
         if (roadFavorite != null && roadFavorite?.roadId != "") {
+            uiState.expandDrawer = true
             searchItem(roadFavorite!!)
         } else {
-            uiState.noChange = true
             searchItem(SearchHistory(null, "600333A", "忠孝東路一段", null))
         }
     }
@@ -300,11 +300,15 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             adapter?.clear()
             adapter?.add(cctv)
             adapter?.notifyDataSetChanged()
-            viewModel.checkCCTV(cctv!!.name)
-            binding.fragmentHome.textView.text = cctv?.name
-            binding.webView.loadUrl(cctv!!.url)
-            binding.carDirection1.visibility = View.GONE
-            binding.trafficFlow.visibility = View.GONE
+            viewModel.checkCCTV(cctv!!.name) //可以不查直接改成有收藏
+
+            Handler(Looper.getMainLooper()).post {
+                binding.fragmentHome.textView.text = cctv?.name
+                binding.webView.loadUrl(cctv!!.url)
+                binding.carDirection1.visibility = View.GONE
+                binding.trafficFlow.visibility = View.GONE
+                binding.spinner.setSelection(adapter!!.getPosition(cctv), false)
+            }
         } else {
             binding.webView.loadUrl("https://cctv.bote.gov.taipei:8501/mjpeg/232")
         }
@@ -598,7 +602,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.markState.collect {
                     MyLog.d("收藏:$it")
-                    uiState.noChange = if (it) {
+                    uiState.favoriteMark = if (it) {
                         markFavorite.setImageResource(R.drawable.ic_baseline_star_25)
                         true
                     } else {
@@ -638,14 +642,14 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private val cameraMarkListener = View.OnClickListener {
         val data = it.tag as Camera
         val image = it as ImageView
-        if (uiState.noChange) {
+        if (uiState.favoriteMark) {
             viewModel.deleteMarkCamera(data.cameraId)
             image.setImageResource(R.drawable.ic_baseline_star_24)
         } else {
             viewModel.addMarkCamera(data)
             image.setImageResource(R.drawable.ic_baseline_star_25)
         }
-        uiState.noChange = !uiState.noChange
+        uiState.favoriteMark = !uiState.favoriteMark
     }
 
     /** 抽屜初始化 */
@@ -675,13 +679,15 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 binding.cars2.text = "無資料"
                 binding.speed2.text = "無資料"
             }
-            if (!uiState.noChange) {
+            if (uiState.expandDrawer) {
                 behavior?.state = BottomSheetBehavior.STATE_EXPANDED
                 binding.webView.visibility = View.VISIBLE
                 binding.carDirection1.visibility = View.VISIBLE
                 binding.trafficFlow.visibility = View.VISIBLE
                 binding.spinner.visibility = View.VISIBLE
+                uiState.expandDrawer = false
             }
+
         }
     }
 
@@ -736,9 +742,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     /** 關閉搜尋欄 */
     @SuppressLint("SwitchIntDef")
     private val backBtnListener = View.OnClickListener {
-        if (BuildConfig.DEBUG) {
-            MyLog.e(uiState.isOpen.toString())
-        }
         binding.fragmentSearch.root.visibility = View.GONE
         binding.fragmentHome.root.visibility = View.VISIBLE
         binding.webView.visibility = View.VISIBLE
@@ -833,6 +836,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             if (searchData != null) {
                 searchData!!.searchTime = System.currentTimeMillis()
                 viewModel.insertHistory(searchData!!)
+                uiState.expandDrawer = true
                 searchItem(searchData!!)
 
             }
@@ -888,7 +892,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         viewModel.checkFavorite(data.roadName)
 
         uiState.isOpen = false
-        if (!uiState.noChange) {
+        if(uiState.expandDrawer) {
             AppUtil.showTopToast(requireActivity(), "搜尋中...")
         }
     }
@@ -1199,41 +1203,32 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     /** 批量生成mark */
     private fun markInit() {
         mClusterManager = ClusterManager(context, map)
-        mClusterManager?.renderer =
-            CustomClusterRenderer(requireActivity(), map, mClusterManager!!)
+        mClusterManager?.renderer = CustomClusterRenderer(requireActivity(), map, mClusterManager!!)
+
+        fun <T> addItemsToClusterManager(items: List<MyItem<T>>) {
+            val anyItems = items.map { it as MyItem<Any> }
+            mClusterManager?.addItems(anyItems)
+            mClusterManager?.cluster()
+        }
 
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
-                viewModel.parkingLists.collect {
-                    for (p in it) {
-                        mClusterManager?.addItem(
-                            MyItem(
-                                p.latitude,
-                                p.longitude,
-                                0,
-                                p
-                            )
-                        )
-                    }
+                viewModel.parkingLists.collect { list ->
+                    val items = list.map { MyItem(it.latitude, it.longitude, 0, it) }
                     withContext(Dispatchers.Main) {
+                        addItemsToClusterManager(items)
                         viewModel.cameraMarkApi()
                     }
                 }
             }
         }
+
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
-                viewModel.cameraLists.collect {
-                    for (p in it) {
-                        mClusterManager?.addItem(
-                            MyItem(
-                                p.latitude,
-                                p.longitude,
-                                1, p
-                            )
-                        )
-                    }
+                viewModel.cameraLists.collect { list ->
+                    val items = list.map { MyItem(it.latitude, it.longitude, 1, it) }
                     withContext(Dispatchers.Main) {
+                        addItemsToClusterManager(items)
                         viewModel.oilStationMarkApi()
                     }
                 }
@@ -1242,22 +1237,15 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
-                viewModel.oilStation.collect {
-                    for (p in it) {
-                        mClusterManager?.addItem(
-                            MyItem(
-                                p.latitude,
-                                p.longitude,
-                                2, p
-                            )
-                        )
-                        withContext(Dispatchers.Main) {
-                            mClusterManager?.cluster()
-                        }
+                viewModel.oilStation.collect { list ->
+                    val items = list.map { MyItem(it.latitude, it.longitude, 2, it) }
+                    withContext(Dispatchers.Main) {
+                        addItemsToClusterManager(items)
                     }
                 }
             }
         }
+
 
         map.setOnCameraIdleListener(mClusterManager)
         viewModel.parkingMarkApi()
@@ -1334,26 +1322,26 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private val parkingMarkListener = View.OnClickListener {
         val data = it.tag as Parking
         val image = it as ImageView
-        if (uiState.noChange) {
+        if (uiState.favoriteMark) {
             viewModel.deleteMarkParking(data.parkingName)
             image.setImageResource(R.drawable.ic_baseline_star_24)
         } else {
             viewModel.addMarkParking(data)
             image.setImageResource(R.drawable.ic_baseline_star_25)
         }
-        uiState.noChange = !uiState.noChange
+        uiState.favoriteMark = !uiState.favoriteMark
     }
     private val oilStationMarkListener = View.OnClickListener {
         val data = it.tag as OilStation
         val image = it as ImageView
-        if (uiState.noChange) {
+        if (uiState.favoriteMark) {
             viewModel.deleteMarkOil(data.station)
             image.setImageResource(R.drawable.ic_baseline_star_24)
         } else {
             viewModel.addMarkOil(data)
             image.setImageResource(R.drawable.ic_baseline_star_25)
         }
-        uiState.noChange = !uiState.noChange
+        uiState.favoriteMark = !uiState.favoriteMark
     }
     private val cctvListener = View.OnClickListener {
         val data = binding.spinner.selectedItem as CCTV

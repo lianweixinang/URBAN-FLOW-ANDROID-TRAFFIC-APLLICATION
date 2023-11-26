@@ -1,12 +1,12 @@
 package ntutifm.game.urbanflow.global
 interface UiState
 
-data class UiEelementState(
+data class UiElementState(
     var isOpen: Boolean = false,
     var sitMode: Boolean = false,
     var favoriteFlag: Boolean = false,
-    var markLike: Boolean = false,
-    var noChange: Boolean = false,
+    var expandDrawer: Boolean = false,
+    var favoriteMark: Boolean = false,
 )
 
 data class InitializationState(

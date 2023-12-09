@@ -28,39 +28,23 @@ class RouteFragment : Fragment() {
         shareData.roadFavorite.value = null
         shareData.cctv.value = null
         shareData.roadFavorite.value = null
+        val navController = Navigation.findNavController(binding.root)
+        val navOptions = NavOptions.Builder()
+            .setPopUpTo(R.id.routeFragment, false)
+            .build()
         binding.navRoad.setOnClickListener{
-            val navController = Navigation.findNavController(binding.root)
-            val navOptions = NavOptions.Builder()
-                .setPopUpTo(R.id.mapFragment, true)
-                .build()
             navController.navigate(R.id.roadFragment, null, navOptions)
         }
         binding.navPark.setOnClickListener{
-            val navController = Navigation.findNavController(binding.root)
-            val navOptions = NavOptions.Builder()
-                .setPopUpTo(R.id.mapFragment, true)
-                .build()
             navController.navigate(R.id.parkingFragment, null, navOptions)
         }
         binding.navOilStation.setOnClickListener{
-            val navController = Navigation.findNavController(binding.root)
-            val navOptions = NavOptions.Builder()
-                .setPopUpTo(R.id.mapFragment, true)
-                .build()
             navController.navigate(R.id.oilStationFragment, null, navOptions)
         }
         binding.navCctv.setOnClickListener{
-            val navController = Navigation.findNavController(binding.root)
-            val navOptions = NavOptions.Builder()
-                .setPopUpTo(R.id.mapFragment, true)
-                .build()
             navController.navigate(R.id.CCTVFragment, null, navOptions)
         }
         binding.navCamera.setOnClickListener{
-            val navController = Navigation.findNavController(binding.root)
-            val navOptions = NavOptions.Builder()
-                .setPopUpTo(R.id.mapFragment, true)
-                .build()
             navController.navigate(R.id.cameraFragment, null, navOptions)
         }
     }

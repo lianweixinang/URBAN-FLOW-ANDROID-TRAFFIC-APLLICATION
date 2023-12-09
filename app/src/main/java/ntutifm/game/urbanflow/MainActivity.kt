@@ -96,10 +96,6 @@ open class MainActivity : AppCompatActivity(),
         navigationView.setNavigationItemSelectedListener(this)
     }
 
-//    override fun onBackPressed() {
-//        AppUtil.popBackStack(supportFragmentManager)
-//    }
-
     companion object {
         const val LOCATION_PERMISSION_REQUEST_CODE = 1
         val applicationScope = CoroutineScope(SupervisorJob())

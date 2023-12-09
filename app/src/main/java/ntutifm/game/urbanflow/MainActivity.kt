@@ -14,12 +14,13 @@ import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import ntutifm.game.urbanflow.databinding.ActivityMainBinding
+import ntutifm.game.urbanflow.global.AppUtil
 import ntutifm.game.urbanflow.ui.ShareViewModel
 
 
 open class MainActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener {
-    val shareData: ShareViewModel by viewModels()
+    private val shareData: ShareViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -96,7 +97,6 @@ open class MainActivity : AppCompatActivity(),
     }
 
 //    override fun onBackPressed() {
-//        val bundle = Bundle()
 //        AppUtil.popBackStack(supportFragmentManager)
 //    }
 

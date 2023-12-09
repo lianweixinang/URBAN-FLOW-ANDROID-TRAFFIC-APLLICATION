@@ -52,6 +52,7 @@ import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.maps.android.PolyUtil
+import com.google.maps.android.SphericalUtil
 import com.google.maps.android.clustering.ClusterManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -981,8 +982,14 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         enableMyLocation()
         refreshMap()
         if (shareData.destination.value != null) {
-            MyLog.d("開啟導航")
             getNavigation(shareData.destination.value!!)
+            binding.unWriteButton.visibility = View.VISIBLE
+            binding.unWriteButton.setOnClickListener {
+                binding.unWriteButton.visibility = View.GONE
+                shareData.polyline.value?.remove()
+                shareData.destination.value = null
+                map.isTrafficEnabled = true
+            }
         }
     }
 
@@ -1004,12 +1011,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     @SuppressLint("MissingPermission")
     private fun getNavigation(destination: LatLng) {
         if (!initializationState.permissionDenied) {
-            MyLog.d("獲取當前位置1")
             mFusedLocationClient?.lastLocation
                 ?.addOnSuccessListener { location: Location? ->
-                    MyLog.d("獲取當前位置2")
                     location?.let {
-                        MyLog.d("獲取當前位置3")
                         val origin = LatLng(location.latitude, location.longitude)
                         getDestination(origin, destination)
                     }
@@ -1025,7 +1029,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                     "${origin.latitude},${origin.longitude}",
                     "${destination.latitude},${destination.longitude}",
                     "driving",
-                    "AIzaSyDRjDWqLgUb2xrIOzhKNixOOLbn249kAto"
+                    BuildConfig.MAPSAPIKEY
                 )
                 if (response != null) {
                     val route = response.routes[0]
@@ -1036,7 +1040,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                         val decodedPoints = PolyUtil.decode(points)
                         routePoints.addAll(decodedPoints)
                     }
-                    MyLog.d("$routePoints")
                     withContext(Dispatchers.Main) {
                         drawRoute(routePoints)
                     }
@@ -1050,11 +1053,23 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private fun drawRoute(routePoints: List<LatLng>) {
         val lineOptions = PolylineOptions()
         lineOptions.addAll(routePoints)
-        lineOptions.width(40f) // 路线宽度
-        lineOptions.color(R.color.purple_700) // 路线颜色
+        lineOptions.width(40f)
+        lineOptions.color(R.color.purple_700)
         lineOptions.zIndex(20f)
         map.isTrafficEnabled = false
-        map.addPolyline(lineOptions)
+        shareData.polyline.value = map.addPolyline(lineOptions)
+        val points = shareData.polyline.value!!.points
+        if (points.size >= 2) {
+            val firstLatLng = points[0]
+            val secondLatLng = points[1]
+            val heading = SphericalUtil.computeHeading(firstLatLng, secondLatLng)
+            val cameraPosition = CameraPosition.Builder()
+                .target(firstLatLng)
+                .zoom(18f)
+                .bearing(heading.toFloat())
+                .build()
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+        }
         MyLog.d("繪製完成")
     }
 

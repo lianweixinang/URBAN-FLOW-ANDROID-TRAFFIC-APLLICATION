@@ -19,7 +19,6 @@ import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 import ntutifm.game.urbanflow.MyActivity
 import ntutifm.game.urbanflow.R
-import ntutifm.game.urbanflow.apiClass.Oil
 import ntutifm.game.urbanflow.apiClass.OilStation
 import ntutifm.game.urbanflow.databinding.FragmentOilStationBinding
 import ntutifm.game.urbanflow.entity.adaptor.OilStationAdaptor
@@ -70,7 +69,7 @@ class OilStationFragment:Fragment() {
         binding.recycleView.adapter = adapter
     }
 
-    private val parkingBtnListener = View.OnClickListener() {
+    private val parkingBtnListener = View.OnClickListener {
         val data = it.tag as OilStation
         val navController = Navigation.findNavController(binding.root)
         val navOptions = NavOptions.Builder()
@@ -80,7 +79,7 @@ class OilStationFragment:Fragment() {
         navController.navigate(R.id.mapFragment, null, navOptions)
     }
 
-    private val parkingDeleteListener = View.OnClickListener() {
+    private val parkingDeleteListener = View.OnClickListener {
         val data = it.tag as OilStation
         viewModel.setEvent(OilStationContract.Event.OnDeleteItem(data.station))
     }

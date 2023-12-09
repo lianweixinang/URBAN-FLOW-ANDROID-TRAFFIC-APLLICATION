@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -14,19 +15,23 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 import ntutifm.game.urbanflow.MyActivity
 import ntutifm.game.urbanflow.R
 import ntutifm.game.urbanflow.apiClass.RoadFavorite
+import ntutifm.game.urbanflow.apiClass.SearchHistory
 import ntutifm.game.urbanflow.databinding.FragmentRoadBinding
 import ntutifm.game.urbanflow.entity.adaptor.RoadFavoriteAdaptor
 import ntutifm.game.urbanflow.entity.contract.RoadContract
 import ntutifm.game.urbanflow.global.MyLog
+import ntutifm.game.urbanflow.ui.ShareViewModel
 
 class RoadFragment:Fragment() {
     private var _binding: FragmentRoadBinding? = null
     private val binding get() = _binding!!
     private var adapter: RoadFavoriteAdaptor? = null
+    private val shareData: ShareViewModel by activityViewModels()
     private val viewModel: RoadViewModel by lazy {
         ViewModelProvider(
             this,
@@ -72,9 +77,7 @@ class RoadFragment:Fragment() {
             .setPopUpTo(R.id.mapFragment, true)
             .build()
         val bundle = Bundle()
-        bundle.putBoolean("notReset", true)
-        bundle.putString("roadId", data.roadId)
-        bundle.putString("roadName", data.roadName)
+        shareData.roadFavorite.value = SearchHistory(null,data.roadId,data.roadName,null)
         navController.navigate(R.id.mapFragment, bundle, navOptions)
     }
     private val roadDeleteListener = View.OnClickListener() {

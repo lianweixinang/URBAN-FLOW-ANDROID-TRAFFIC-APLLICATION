@@ -1,4 +1,4 @@
-package ntutifm.game.urbanflow.ui.parking
+package ntutifm.game.urbanflow.ui.cctv
 
 import android.os.Build
 import android.os.Bundle
@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -22,13 +23,14 @@ import ntutifm.game.urbanflow.databinding.FragmentCctvBinding
 import ntutifm.game.urbanflow.entity.adaptor.CCTVAdaptor
 import ntutifm.game.urbanflow.entity.contract.CCTVContract
 import ntutifm.game.urbanflow.global.MyLog
-import ntutifm.game.urbanflow.ui.cctv.CCTVViewModel
+import ntutifm.game.urbanflow.ui.ShareViewModel
 
 
 class CCTVFragment:Fragment() {
     private var _binding: FragmentCctvBinding? = null
     private val binding get() = _binding!!
     private var adapter: CCTVAdaptor? = null
+    private val shareData: ShareViewModel by activityViewModels()
     private val viewModel: CCTVViewModel by lazy {
         ViewModelProvider(this, CCTVViewModel.CCTVViewModelFactory(requireActivity().application))[CCTVViewModel::class.java]
     }
@@ -69,9 +71,7 @@ class CCTVFragment:Fragment() {
             .setPopUpTo(R.id.mapFragment, true)
             .build()
         val bundle = Bundle()
-        bundle.putBoolean("notReset", true)
-        bundle.putString("cctvName", data.name)
-        bundle.putString("cctvUrl", data.url)
+        shareData.cctv.value = CCTV(null, data.name, data.url)
         navController.navigate(R.id.mapFragment, bundle, navOptions)
     }
     private val cctvDeleteListener = View.OnClickListener() {

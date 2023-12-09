@@ -1,10 +1,10 @@
 package ntutifm.game.urbanflow
 
 import android.app.Activity
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -14,11 +14,12 @@ import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import ntutifm.game.urbanflow.databinding.ActivityMainBinding
+import ntutifm.game.urbanflow.ui.ShareViewModel
 
 
 open class MainActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener {
-
+    val shareData: ShareViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -60,28 +61,27 @@ open class MainActivity : AppCompatActivity(),
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         val navController = navHostFragment.navController
         val navOptions = NavOptions.Builder()
-            .setPopUpTo(R.id.mapFragment, true)
+            .setPopUpTo(R.id.mapFragment, false)
             .build()
-        val bundle = Bundle()
-        bundle.putBoolean("notReset", true)
+        shareData.isUiInitialized.value = true
         when (item.itemId) {
             R.id.nav_map -> {
-                navController.navigate(R.id.mapFragment, bundle, navOptions)
+                navController.navigate(R.id.mapFragment, null, navOptions)
             }
             R.id.nav_oil -> {
-                navController.navigate(R.id.oilFragment, bundle, navOptions)
+                navController.navigate(R.id.oilFragment, null, navOptions)
             }
             R.id.nav_weather -> {
-                navController.navigate(R.id.weatherFragment, bundle, navOptions)
+                navController.navigate(R.id.weatherFragment, null, navOptions)
             }
             R.id.nav_route -> {
-                navController.navigate(R.id.routeFragment, bundle, navOptions)
+                navController.navigate(R.id.routeFragment, null, navOptions)
             }
             R.id.nav_notification -> {
-                navController.navigate(R.id.notificationFragment, bundle, navOptions)
+                navController.navigate(R.id.notificationFragment, null, navOptions)
             }
             R.id.nav_about -> {
-                navController.navigate(R.id.aboutFragment, bundle, navOptions)
+                navController.navigate(R.id.aboutFragment, null, navOptions)
             }
         }
         //AppUtil.startFragment(supportFragmentManager, R.id.fragmentMap, MapFragment())
@@ -94,6 +94,11 @@ open class MainActivity : AppCompatActivity(),
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
     }
+
+//    override fun onBackPressed() {
+//        val bundle = Bundle()
+//        AppUtil.popBackStack(supportFragmentManager)
+//    }
 
     companion object {
         const val LOCATION_PERMISSION_REQUEST_CODE = 1

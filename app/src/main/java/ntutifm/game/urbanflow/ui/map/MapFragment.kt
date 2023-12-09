@@ -32,6 +32,7 @@ import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -71,6 +72,7 @@ import ntutifm.game.urbanflow.global.InitializationState
 import ntutifm.game.urbanflow.global.MyLog
 import ntutifm.game.urbanflow.global.UiElementState
 import ntutifm.game.urbanflow.net.*
+import ntutifm.game.urbanflow.ui.ShareViewModel
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.security.cert.CertificateException
@@ -92,6 +94,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             MapViewModel.MapViewModelFactory(requireActivity().application)
         )[MapViewModel::class.java]
     }
+    private val shareData:ShareViewModel by activityViewModels()
     private var mClusterManager: ClusterManager<MyItem<Any>>? = null
     private var behavior: BottomSheetBehavior<View>? = null
     private lateinit var map: GoogleMap
@@ -111,9 +114,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private var lastLatLng: LatLng? = null
     private var lastCamera: Camera? = null
     private var azimuth: Float = 0f
-    private var roadFavorite: SearchHistory? = null
-    private var destination: LatLng? = null
-    private var cctv: CCTV? = null
     private var recycleView: RecyclerView? = null
     private var adaptor: SearchAdaptor? = null
     private var adapter: RoadAdaptor? = null
@@ -123,24 +123,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
-        arguments?.let { bundle ->
-            initializationState.isUiInitialized = bundle.getBoolean("notReset")
-            destination = LatLng(
-                bundle.getDouble("latitude"),
-                bundle.getDouble("longitude")
-            )
-            cctv = CCTV(
-                null,
-                bundle.getString("cctvName", ""),
-                bundle.getString("cctvUrl", "")
-            )
-            roadFavorite = SearchHistory(
-                null,
-                bundle.getString("roadId", ""),
-                bundle.getString("roadName", ""),
-                null
-            )
-        }
         loadSSLCertificates()
         return binding.root
     }
@@ -182,9 +164,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun roadInit() {
-        if (roadFavorite != null && roadFavorite?.roadId != "") {
+        if (shareData.roadFavorite.value != null) {
             uiState.expandDrawer = true
-            searchItem(roadFavorite!!)
+            shareData.roadFavorite.value?.let { searchItem(it) }
         } else {
             searchItem(SearchHistory(null, "600333A", "忠孝東路一段", null))
         }
@@ -208,7 +190,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 關掉cover */
     private fun loadingView() {
-        if (!initializationState.isUiInitialized) {
+        if (!shareData.isUiInitialized.value!!) {
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
                 delay(6000)
                 withContext(Dispatchers.Main) {
@@ -356,18 +338,18 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             this.loadWithOverviewMode = true
             this.useWideViewPort = true
         }
-        if (cctv?.url != "" && cctv?.url != null) {
+        if (shareData.cctv.value != null) {
             adapter?.clear()
-            adapter?.add(cctv)
+            adapter?.add(shareData.cctv.value)
             adapter?.notifyDataSetChanged()
-            viewModel.checkCCTV(cctv!!.name) //可以不查直接改成有收藏
+            viewModel.checkCCTV(shareData.cctv.value!!.name) //可以不查直接改成有收藏
 
             Handler(Looper.getMainLooper()).post {
-                binding.fragmentHome.textView.text = cctv?.name
-                binding.webView.loadUrl(cctv!!.url)
+                binding.fragmentHome.textView.text = shareData.cctv.value!!.name
+                binding.webView.loadUrl(shareData.cctv.value!!.url)
                 binding.carDirection1.visibility = View.GONE
                 binding.trafficFlow.visibility = View.GONE
-                binding.spinner.setSelection(adapter!!.getPosition(cctv), false)
+                binding.spinner.setSelection(adapter!!.getPosition(shareData.cctv.value), false)
             }
         } else {
             binding.webView.loadUrl("https://cctv.bote.gov.taipei:8501/mjpeg/232")
@@ -998,9 +980,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         map = googleMap
         enableMyLocation()
         refreshMap()
-        if (destination != null) {
+        if (shareData.destination.value != null) {
             MyLog.d("開啟導航")
-            getNavigation(destination!!)
+            getNavigation(shareData.destination.value!!)
         }
     }
 

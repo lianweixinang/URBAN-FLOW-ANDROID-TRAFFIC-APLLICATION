@@ -21,7 +21,6 @@ import ntutifm.game.urbanflow.entity.sync.SyncIncident
 import ntutifm.game.urbanflow.entity.adaptor.NotificationAdaptor
 import ntutifm.game.urbanflow.global.MyLog
 import ntutifm.game.urbanflow.net.ApiCallBack
-import ntutifm.game.urbanflow.ui.oil.NotificationViewModel
 
 class NotificationFragment : Fragment(), ApiCallBack {
 

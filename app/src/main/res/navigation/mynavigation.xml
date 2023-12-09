@@ -92,7 +92,7 @@
     </fragment>
     <fragment
         android:id="@+id/CCTVFragment"
-        android:name="ntutifm.game.urbanflow.ui.parking.CCTVFragment"
+        android:name="ntutifm.game.urbanflow.ui.cctv.CCTVFragment"
         android:label="CCTVFragment" >
         <action
             android:id="@+id/action_CCTVFragment_to_routeFragment"

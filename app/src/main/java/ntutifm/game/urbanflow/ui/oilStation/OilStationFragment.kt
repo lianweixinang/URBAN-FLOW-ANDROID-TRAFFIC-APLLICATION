@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -14,19 +15,23 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 import ntutifm.game.urbanflow.MyActivity
 import ntutifm.game.urbanflow.R
+import ntutifm.game.urbanflow.apiClass.Oil
 import ntutifm.game.urbanflow.apiClass.OilStation
 import ntutifm.game.urbanflow.databinding.FragmentOilStationBinding
 import ntutifm.game.urbanflow.entity.adaptor.OilStationAdaptor
 import ntutifm.game.urbanflow.entity.contract.OilStationContract
 import ntutifm.game.urbanflow.global.MyLog
+import ntutifm.game.urbanflow.ui.ShareViewModel
 
 class OilStationFragment:Fragment() {
     private var _binding: FragmentOilStationBinding? = null
     private val binding get() = _binding!!
     private var adapter: OilStationAdaptor? = null
+    private val shareData: ShareViewModel by activityViewModels()
     private val viewModel: OilStationViewModel by lazy {
         ViewModelProvider(
             this,
@@ -71,11 +76,8 @@ class OilStationFragment:Fragment() {
         val navOptions = NavOptions.Builder()
             .setPopUpTo(R.id.mapFragment, true)
             .build()
-        val bundle = Bundle()
-        bundle.putBoolean("notReset", true)
-        bundle.putDouble("latitude", data.latitude)
-        bundle.putDouble("longitude", data.longitude)
-        navController.navigate(R.id.mapFragment, bundle, navOptions)
+        shareData.destination.value = LatLng(data.latitude, data.longitude)
+        navController.navigate(R.id.mapFragment, null, navOptions)
     }
 
     private val parkingDeleteListener = View.OnClickListener() {

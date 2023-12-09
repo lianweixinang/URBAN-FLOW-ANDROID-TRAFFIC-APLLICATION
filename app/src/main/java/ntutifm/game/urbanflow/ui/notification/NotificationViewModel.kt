@@ -1,4 +1,4 @@
-package ntutifm.game.urbanflow.ui.oil
+package ntutifm.game.urbanflow.ui.notification
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

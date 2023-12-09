@@ -11,6 +11,5 @@ data class UiElementState(
 
 data class InitializationState(
     var isTTSInitialized: Boolean = false,
-    var isUiInitialized: Boolean = false,
     var permissionDenied: Boolean = false,
 )

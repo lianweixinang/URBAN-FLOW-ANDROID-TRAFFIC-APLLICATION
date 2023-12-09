@@ -115,4 +115,5 @@ class OilFragment : Fragment(), ApiCallBack {
         super.onDestroyView()
         _binding = null
     }
+
 }

@@ -176,6 +176,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         _binding = null
         textToSpeech?.stop()
         textToSpeech?.shutdown()
+        mFusedLocationClient?.removeLocationUpdates(locationCallback)
         super.onDestroyView()
     }
 
@@ -589,8 +590,10 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             val span = speed - binding.mySpeedNumber.text.toString().toInt()
             withContext(Dispatchers.Main) {
                 if (lastCamera != null && lastCamera!!.limit.toInt() < (distance * 72 / 100)) {
-                    speakText("注意!!您已超速")
-                    AppUtil.showTopToast(requireActivity(), "注意!!您已超速")
+                    Handler(Looper.getMainLooper()).post {
+                        speakText("注意!!您已超速")
+                        AppUtil.showTopToast(requireActivity(), "注意!!您已超速")
+                    }
                 }
                 binding.mySpeedNumber.text = "$speed"
                 if (span <= 4) {

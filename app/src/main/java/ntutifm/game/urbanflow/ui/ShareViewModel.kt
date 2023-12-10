@@ -6,6 +6,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Polyline
 import ntutifm.game.urbanflow.apiClass.CCTV
 import ntutifm.game.urbanflow.apiClass.SearchHistory
+import ntutifm.game.urbanflow.global.UiElementState
 
 class ShareViewModel:ViewModel() {
     var roadFavorite = MutableLiveData<SearchHistory>(null)
@@ -13,4 +14,6 @@ class ShareViewModel:ViewModel() {
     var cctv = MutableLiveData<CCTV>(null)
     var isUiInitialized = MutableLiveData<Boolean>(false)
     var polyline = MutableLiveData<Polyline>(null)
+    val uiState = MutableLiveData(UiElementState())
+    var speed = MutableLiveData(0)
 }

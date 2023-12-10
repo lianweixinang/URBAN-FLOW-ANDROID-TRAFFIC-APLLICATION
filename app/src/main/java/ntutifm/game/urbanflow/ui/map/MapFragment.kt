@@ -621,7 +621,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private fun updateUIWithDistance(distance: Int, newLocation: LatLng) {
         viewLifecycleOwner.lifecycleScope.launch {
             var new = distance * 72 / 100.0
-            shareData.speed.value = if(new >= 150){
+            shareData.speed.value = if(new >= 100){
                 ((new % 100) * 0.1 + shareData.speed.value!! * 0.9).toInt()
             }else{
                 (new * 0.8 + shareData.speed.value!! * 0.2).toInt()

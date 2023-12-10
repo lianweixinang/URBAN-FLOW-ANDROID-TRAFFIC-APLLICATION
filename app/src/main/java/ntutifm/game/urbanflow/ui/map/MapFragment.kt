@@ -518,11 +518,12 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                     }
 
                     in 3..50 -> {
-                        if ((lastCamera!!.distance in 3..50)
+                        if ((lastCamera!!.distance in 6..50)
                         ) {
                             return@observe
                         }
-                        if(lastCamera!!.distance < it.distance){
+                        if ((lastCamera!!.distance in 3..5)
+                        ) {
                             passCamera(it)
                             return@observe
                         }
@@ -530,11 +531,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                     }
 
                     in 0..2 -> {
-                        if ((lastCamera!!.distance in 0..2) ||
-                            lastCamera!!.distance < it.distance
-                        ) {
-                            return@observe
-                        }
                         passCamera(it)
                     }
                 }
@@ -634,31 +630,16 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             val span = shareData.speed.value!! - binding.mySpeedNumber.text.toString().toInt()
             withContext(Dispatchers.Main) {
                 binding.mySpeedNumber.text = "${shareData.speed.value}"
-                if (span <= 4) {
+                if (span <= 4 && distance < 4) {
                     return@withContext
                 }
-                moveToCurrentLocation()
+                moveToCurrentLocation(19f)
 
 //                for (i in 1..3) {
 //                    delay(1000)
 //                    binding.mySpeedNumber.text = (pre + span / 3).toString()
 //                }
             }
-        }
-    }
-
-    /** 測速模式移動到現在位置 */
-    private fun moveTo(location: LatLng) {
-        val targetLatLng = LatLng(location.latitude, location.longitude)
-        val currentCameraPosition = map.cameraPosition
-        val newCameraPosition = CameraPosition.builder(currentCameraPosition)
-            .target(targetLatLng)
-            .bearing(azimuth)
-            .zoom(18f)
-            .build()
-        Handler(Looper.getMainLooper()).post {
-            map.animateCamera(CameraUpdateFactory.newCameraPosition(newCameraPosition))
-
         }
     }
 
@@ -1197,11 +1178,11 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 通用移動到現在位置 */
     @SuppressLint("MissingPermission")
-    private fun moveToCurrentLocation() {
+    private fun moveToCurrentLocation(zoom:Float=18f) {
         getLocation {
             val targetLatLng =
                 LatLng(it.latitude, it.longitude)
-            val targetZoomLevel = 18f
+            val targetZoomLevel = zoom
             val currentCameraPosition = map.cameraPosition
 
             val newCameraPosition = CameraPosition.builder(currentCameraPosition)

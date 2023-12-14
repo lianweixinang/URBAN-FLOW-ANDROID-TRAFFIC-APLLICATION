@@ -71,7 +71,6 @@ import ntutifm.game.urbanflow.entity.sync.*
 import ntutifm.game.urbanflow.global.AppUtil
 import ntutifm.game.urbanflow.global.InitializationState
 import ntutifm.game.urbanflow.global.MyLog
-import ntutifm.game.urbanflow.global.UiElementState
 import ntutifm.game.urbanflow.net.*
 import ntutifm.game.urbanflow.ui.ShareViewModel
 import java.io.ByteArrayInputStream
@@ -590,29 +589,31 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     /** 開啟定時測速 */
     @SuppressLint("MissingPermission", "VisibleForTests")
     private fun startDistanceMeasurement() {
-        val locationRequest = LocationRequest()
-        locationRequest.interval = 5000
-        locationRequest.fastestInterval = 5000
-        locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        val locationRequest = LocationRequest.create().apply {
+            interval = 5000
+            fastestInterval = 5000
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+
         mFusedLocationClient?.requestLocationUpdates(
             locationRequest,
             locationCallback,
-            Looper.myLooper()
+            Looper.getMainLooper()
         )
     }
 
     /** 測速模式邏輯 */
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult?) {
-            super.onLocationResult(locationResult)
-            locationResult?.lastLocation?.let { location ->
-                val newLocation = LatLng(location.latitude, location.longitude)
+            locationResult ?: return
+            locationResult.lastLocation.let { location ->
+                val latLng = LatLng(location.latitude, location.longitude)
                 lastLatLng?.let {
-                    val distance = calculateDistance(it, newLocation)
-                    updateUIWithDistance(distance, newLocation)
-                    SyncCamera.cameraFindCamera(this@MapFragment, this@MapFragment, newLocation)
+                    val distance = calculateDistance(it, latLng)
+                    updateUIWithDistance(distance, latLng)
+                    SyncCamera.cameraFindCamera(this@MapFragment, this@MapFragment, latLng)
                 }
-                lastLatLng = newLocation
+                lastLatLng = latLng
             }
         }
     }
@@ -633,7 +634,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 if (span <= 4 && distance < 4) {
                     return@withContext
                 }
-                moveToCurrentLocation(19f)
+                moveToLocation(newLocation)
 
 //                for (i in 1..3) {
 //                    delay(1000)
@@ -1176,19 +1177,37 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         }
     }
 
+    /** 測速用移動到現在位置 */
+    @SuppressLint("MissingPermission")
+    private fun moveToLocation(latLng: LatLng) {
+        val currentCameraPosition = map.cameraPosition
+        val newCameraPosition = CameraPosition.builder(currentCameraPosition)
+            .target(latLng)
+            .bearing(azimuth)
+            .zoom(19f)
+            .build()
+
+        Handler(Looper.getMainLooper()).post {
+            map.animateCamera(
+                CameraUpdateFactory.newCameraPosition(
+                    newCameraPosition
+                )
+            )
+
+        }
+    }
+
     /** 通用移動到現在位置 */
     @SuppressLint("MissingPermission")
-    private fun moveToCurrentLocation(zoom:Float=18f) {
+    private fun moveToCurrentLocation() {
         getLocation {
-            val targetLatLng =
-                LatLng(it.latitude, it.longitude)
-            val targetZoomLevel = zoom
+            val targetLatLng = LatLng(it.latitude, it.longitude)
             val currentCameraPosition = map.cameraPosition
 
             val newCameraPosition = CameraPosition.builder(currentCameraPosition)
                 .target(targetLatLng)
                 .bearing(azimuth)
-                .zoom(targetZoomLevel)
+                .zoom(18f)
                 .build()
 
             Handler(Looper.getMainLooper()).post {

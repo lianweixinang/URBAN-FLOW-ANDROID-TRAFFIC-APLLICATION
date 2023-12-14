@@ -590,8 +590,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     @SuppressLint("MissingPermission", "VisibleForTests")
     private fun startDistanceMeasurement() {
         val locationRequest = LocationRequest.create().apply {
-            interval = 5000
-            fastestInterval = 5000
+            interval = 3000
+            fastestInterval = 3000
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
 

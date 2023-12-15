@@ -81,10 +81,7 @@ class NotificationFragment : Fragment(), ApiCallBack {
 
         detailTitle.text = incident.part + incident.type
         detailContent.text = incident.title
-        detailState.text = "(狀況:" +
-                (if(incident.solved!="nxx"){
-                    incident.solved
-                } else {" 未排除"} ) + ")"
+        detailState.text = "(狀況:" + if(incident.solved!="nxx") "已排除)" else " 未排除)"
         detailSource.text = "來源:" + incident.auth
         detailTime.text = "時間:" + incident.raiseTime
 

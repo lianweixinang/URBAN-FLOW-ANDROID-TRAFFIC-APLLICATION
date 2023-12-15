@@ -12,11 +12,15 @@ class ParkingRepository(context: Context) {
         MapDatabase.getDatabase(context.applicationContext).getParkingDao()
     }
 
+    suspend fun insertParking(data: List<Parking>) {
+        parkingDao.insertParking(data)
+    }
+
     suspend fun deleteFavorite(data: String) {
         parkingDao.deleteFavorite(data)
     }
 
-    suspend fun addFavorite(data: Parking) {
+    suspend fun addFavorite(data: String) {
         parkingDao.insertFavorite(data)
     }
 
@@ -24,9 +28,16 @@ class ParkingRepository(context: Context) {
         return parkingDao.isParkingFavorite(data)
     }
 
-    fun getAllStation(): Flow<Resource<List<Parking>>> {
+    fun getAllParking(): Flow<Resource<List<Parking>>> {
         return parkingDao.getAllParking()
         .map { Resource.Success(it)}
+            .catch {
+                Resource.Error(it)
+            }
+    }
+    fun getAllFavorite(): Flow<Resource<List<Parking>>> {
+        return parkingDao.getAllFavorite()
+            .map { Resource.Success(it)}
             .catch {
                 Resource.Error(it)
             }

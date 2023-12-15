@@ -10,5 +10,6 @@ data class Parking(
     val id :Int?,
     @SerializedName("CarParkName") val parkingName:String,
     @SerializedName("PositionLat") val latitude: Double,
-    @SerializedName("PositionLon") val longitude: Double
+    @SerializedName("PositionLon") val longitude: Double,
+    val isFavorite: Boolean
 )

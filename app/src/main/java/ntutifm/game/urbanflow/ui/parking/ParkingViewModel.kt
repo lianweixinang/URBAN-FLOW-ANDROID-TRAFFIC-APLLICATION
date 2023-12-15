@@ -41,7 +41,7 @@ class ParkingViewModel(application: Application) : BaseViewModel<ParkingContract
      */
     private fun fetchPosts() {
         viewModelScope.launch {
-            repository.getAllStation().flowOn(Dispatchers.IO)
+            repository.getAllFavorite().flowOn(Dispatchers.IO)
                 .onStart { emit(Resource.Loading) }
                 .collect {
                     when (it) {

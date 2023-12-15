@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import ntutifm.game.urbanflow.apiClass.CCTV
 import ntutifm.game.urbanflow.apiClass.Camera
@@ -24,6 +26,7 @@ import ntutifm.game.urbanflow.dataBase.ParkingRepository
 import ntutifm.game.urbanflow.dataBase.RoadFavoriteRepository
 import ntutifm.game.urbanflow.dataBase.SearchHistoryRepository
 import ntutifm.game.urbanflow.global.MyLog
+import ntutifm.game.urbanflow.global.Resource
 import ntutifm.game.urbanflow.net.APIResult
 import ntutifm.game.urbanflow.net.ApiProcessor
 
@@ -148,7 +151,7 @@ class MapViewModel(application: Application) : ViewModel() {
 
     fun addMarkParking(data: Parking) {
         viewModelScope.launch(Dispatchers.Default) {
-            parkingRepository.addFavorite(data)
+            parkingRepository.addFavorite(data.parkingName)
             _markState.value = true
         }
     }
@@ -186,7 +189,7 @@ class MapViewModel(application: Application) : ViewModel() {
         }
     }
 
-    fun cameraFindCamera(latLng:LatLng) {
+    fun cameraFindCamera(latLng: LatLng) {
         viewModelScope.launch(Dispatchers.IO) {
             MyLog.e("StartCameraMarkApi")
             ApiProcessor().getFindCamera(latLng).let { _response ->
@@ -200,13 +203,31 @@ class MapViewModel(application: Application) : ViewModel() {
 
     fun parkingMarkApi() {
         viewModelScope.launch(Dispatchers.IO) {
-            MyLog.e("StartCameraMarkApi")
-            ApiProcessor().getParking().let { _response ->
-                when (_response) {
-                    is APIResult.Success -> _parkingLists.emit(_response.data)
-                    is APIResult.Error -> MyLog.e(_response.exception.toString())
+            parkingRepository.getAllParking().flowOn(Dispatchers.IO)
+                .onStart { emit(Resource.Loading) }
+                .collect {
+                    val localData = when (it) {
+                        is Resource.Success -> {
+                            it.data
+                        }
+
+                        else -> emptyList()
+                    }
+                    if (localData.isEmpty()) {
+                        ApiProcessor().getParking().let { _response ->
+                            when (_response) {
+                                is APIResult.Success -> {
+                                    parkingRepository.insertParking(_response.data)
+                                    _parkingLists.emit(_response.data)
+                                }
+
+                                is APIResult.Error -> MyLog.e(_response.exception.toString())
+                            }
+                        }
+                    } else {
+                        _parkingLists.emit(localData)
+                    }
                 }
-            }
         }
     }
 

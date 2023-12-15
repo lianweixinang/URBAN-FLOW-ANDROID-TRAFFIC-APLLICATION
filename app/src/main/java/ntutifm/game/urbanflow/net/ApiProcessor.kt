@@ -2,10 +2,10 @@ package ntutifm.game.urbanflow.net
 
 import android.content.Context
 import android.util.Log
+import com.google.android.gms.maps.model.LatLng
 import ntutifm.game.urbanflow.apiClass.Camera
 import ntutifm.game.urbanflow.apiClass.OilStation
 import ntutifm.game.urbanflow.apiClass.Parking
-import ntutifm.game.urbanflow.entity.sync.SyncCamera
 import ntutifm.game.urbanflow.entity.sync.SyncIncident
 import ntutifm.game.urbanflow.entity.sync.SyncOil
 import ntutifm.game.urbanflow.entity.sync.SyncPosition
@@ -153,23 +153,17 @@ class ApiProcessor {
         return APIResult.Error(null)
     }
 
-    fun getFindCamera(
-        c: Context,
-        successData: ArrayList<String>,
-        errorData: ArrayList<String>,
-    ) {
+    suspend fun getFindCamera(latLng: LatLng) :APIResult<out Camera> {
         val myAPIService = RetrofitManager.api
-        val response = myAPIService?.getFindCamera(successData[1], successData[2])?.execute()
+        val response = myAPIService?.getFindCamera(latLng.latitude.toString(), latLng.longitude.toString())?.execute()
         try {
             if (response?.isSuccessful == true) {
-                MyLog.e("getFindCamera:close")
-                SyncCamera.updateFindCamera(response.body()!!)
-            } else {
-                MyLog.e("getFindCamera:Null")
+                return APIResult.Success(listOf(response.body()!!))
             }
         } catch (exception: Exception) {
-            MyLog.d("getFindCamera:$exception")
+            return APIResult.Error(exception)
         }
+        return APIResult.Error(null)
     }
 
     suspend fun getOilStation(): APIResult<out OilStation> {

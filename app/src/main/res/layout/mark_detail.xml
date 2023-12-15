@@ -5,6 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:gravity="center_horizontal"
     android:background="@drawable/rounded_border_background"
     android:padding="10dp">
 
@@ -13,7 +14,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:srcCompat="@drawable/ic_baseline_star_24"
-        android:layout_gravity="left"
         android:id="@+id/mark_like"/>
     <TextView
         android:id="@+id/title"

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -17,6 +18,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.speech.tts.TextToSpeech
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
+import android.text.style.UnderlineSpan
 import android.util.Log
 import android.view.*
 import android.webkit.SslErrorHandler
@@ -452,7 +457,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     private fun showCurrent(camera: Camera, d:String) {
         lastCamera!!.distance = camera.distance
-        var text :String = if (camera.limit.toInt() < shareData.speed.value!!) {
+        val text :String = if (camera.limit.toInt() < shareData.speed.value!!) {
             "注意您已超速"
         }else {
             "前方限速${camera.limit}公里\n    距離${d}公尺"
@@ -464,7 +469,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     }
     private fun passCamera(camera:Camera) {
         lastCamera!!.distance = camera.distance
-        var text :String = if (camera.limit.toInt() < shareData.speed.value!!) {
+        val text :String = if (camera.limit.toInt() < shareData.speed.value!!) {
             "你的錢飛走了"
         }else {
             "通過測速照相"
@@ -480,67 +485,71 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     /** 測速UI初始化 */
     private fun cameraInit() {
         binding.mySpeedButton.setOnClickListener(slButtonListener)
-        SyncCamera.camara.observe(viewLifecycleOwner) {
-            if (it != null && it.distance < 500) {
-                if(lastCamera == null){
-                    lastCamera = it
-                    showCurrent(it, it.distance.toString())
-                    binding.cameraSpeedButton.setImageResource(R.drawable.slnull)
-                    binding.cameraSpeedNumber.apply {
-                        this.visibility = View.VISIBLE
-                        this.text = it.limit
-                    }
-                }
-                when (it.distance) {
-                    in 251..500 -> {
-                        if (it.cameraId != lastCamera!!.cameraId) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.camera.collect {
+                    if (it.distance < 500 && it.limit != "0") {
+                        if (lastCamera == null) {
                             lastCamera = it
+                            showCurrent(it, it.distance.toString())
+                            binding.cameraSpeedButton.setImageResource(R.drawable.slnull)
+                            binding.cameraSpeedNumber.apply {
+                                this.visibility = View.VISIBLE
+                                this.text = it.limit
+                            }
                         }
-                    }
+                        when (it.distance) {
+                            in 251..500 -> {
+                                if (it.cameraId != lastCamera!!.cameraId) {
+                                    lastCamera = it
+                                }
+                            }
 
-                    in 151..250 -> {
-                        if ((lastCamera!!.distance in 151..250) ||
-                            lastCamera!!.distance < it.distance
-                        ) {
-                            return@observe
-                        }
-                        showCurrent(it,"200")
-                    }
+                            in 151..250 -> {
+                                if ((lastCamera!!.distance in 151..250) ||
+                                    lastCamera!!.distance < it.distance
+                                ) {
+                                    return@collect
+                                }
+                                showCurrent(it, "200")
+                            }
 
-                    in 51..150 -> {
-                        if ((lastCamera!!.distance in 51..150) ||
-                            lastCamera!!.distance < it.distance
-                        ) {
-                            return@observe
-                        }
-                        showCurrent(it, "100")
-                    }
+                            in 51..150 -> {
+                                if ((lastCamera!!.distance in 51..150) ||
+                                    lastCamera!!.distance < it.distance
+                                ) {
+                                    return@collect
+                                }
+                                showCurrent(it, "100")
+                            }
 
-                    in 3..50 -> {
-                        if ((lastCamera!!.distance in 6..50)
-                        ) {
-                            return@observe
-                        }
-                        if ((lastCamera!!.distance in 3..5)
-                        ) {
-                            passCamera(it)
-                            return@observe
-                        }
-                        showCurrent(it,"50")
-                    }
+                            in 3..50 -> {
+                                if ((lastCamera!!.distance in 6..50)
+                                ) {
+                                    return@collect
+                                }
+                                if ((lastCamera!!.distance in 3..5)
+                                ) {
+                                    passCamera(it)
+                                    return@collect
+                                }
+                                showCurrent(it, "50")
+                            }
 
-                    in 0..2 -> {
-                        passCamera(it)
+                            in 0..2 -> {
+                                passCamera(it)
+                            }
+                        }
+                        binding.cameraSpeedButton.setImageResource(R.drawable.slnull)
+                        binding.cameraSpeedNumber.apply {
+                            this.visibility = View.VISIBLE
+                            this.text = it.limit
+                        }
+                    } else {
+                        binding.cameraSpeedButton.setImageResource(R.drawable.sldash)
+                        binding.cameraSpeedNumber.visibility = View.GONE
                     }
                 }
-                binding.cameraSpeedButton.setImageResource(R.drawable.slnull)
-                binding.cameraSpeedNumber.apply {
-                    this.visibility = View.VISIBLE
-                    this.text = it.limit
-                }
-            } else {
-                binding.cameraSpeedButton.setImageResource(R.drawable.sldash)
-                binding.cameraSpeedNumber.visibility = View.GONE
             }
         }
     }
@@ -611,7 +620,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 lastLatLng?.let {
                     val distance = calculateDistance(it, latLng)
                     updateUIWithDistance(distance, latLng)
-                    SyncCamera.cameraFindCamera(this@MapFragment, this@MapFragment, latLng)
+                    viewModel.cameraFindCamera(latLng)
                 }
                 lastLatLng = latLng
             }
@@ -621,7 +630,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     /** 更新目前速度 */
     private fun updateUIWithDistance(distance: Int, newLocation: LatLng) {
         viewLifecycleOwner.lifecycleScope.launch {
-            var new = distance * 72 / 100.0
+            val new = distance * 72 / 100.0
             shareData.speed.value = if(new >= 100){
                 ((new % 100) * 0.1 + shareData.speed.value!! * 0.9).toInt()
             }else{
@@ -1017,16 +1026,10 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         enableMyLocation()
+        markInit()
         refreshMap()
         if (shareData.destination.value != null) {
             getNavigation(shareData.destination.value!!)
-            binding.unWriteButton.visibility = View.VISIBLE
-            binding.unWriteButton.setOnClickListener {
-                binding.unWriteButton.visibility = View.GONE
-                shareData.polyline.value?.remove()
-                shareData.destination.value = null
-                map.isTrafficEnabled = true
-            }
         }
     }
 
@@ -1040,7 +1043,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         map.setOnMyLocationButtonClickListener(this)
         map.setOnMyLocationClickListener(this)
         currentLocationInit()
-        markInit()
         setLocationInitBtn()
         weatherInit()
     }
@@ -1053,6 +1055,13 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                     location?.let {
                         val origin = LatLng(location.latitude, location.longitude)
                         getDestination(origin, destination)
+                        binding.unWriteButton.visibility = View.VISIBLE
+                        binding.unWriteButton.setOnClickListener {
+                            binding.unWriteButton.visibility = View.GONE
+                            shareData.polyline.value?.remove()
+                            shareData.destination.value = null
+                            map.isTrafficEnabled = true
+                        }
                     }
                 }
         }
@@ -1264,7 +1273,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             )
         ) {
 
-            val positiveButtonListener = DialogInterface.OnClickListener { dialog, which ->
+            val positiveButtonListener = DialogInterface.OnClickListener { dialog, _ ->
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                 dialog.dismiss()
             }
@@ -1366,7 +1375,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     @SuppressLint("SetTextI18n")
     private fun showInfoWindowForItem(item: MyItem<Any>) {
-        val targetLatLng = LatLng(item.position.latitude - 0.0005, item.position.longitude)
+        val targetLatLng = LatLng(item.position.latitude, item.position.longitude)
         val targetZoomLevel = 18f
         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(targetLatLng, targetZoomLevel)
         map.animateCamera(cameraUpdate, 1000, null)
@@ -1376,28 +1385,44 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         if (item.data::class == Parking::class) {
             val data = item.data as Parking
             viewModel.checkMarkParking(data.parkingName)
-            title.text = "停車場: " + data.parkingName
-            title.text = "停車場: " + data.parkingName
-            description.text = "連結"
+            title.text = "停車場: ${data.parkingName}"
+            val spannableString = SpannableString("點擊指引路線")
+            spannableString.setSpan(UnderlineSpan(), 0, spannableString.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            spannableString.setSpan(ForegroundColorSpan(Color.parseColor("#ADD8E6") ), 0, spannableString.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            description.text = spannableString
+            description.setOnClickListener{
+                getNavigation(LatLng(data.latitude,data.longitude))
+            }
 
             markFavorite.tag = data
             markFavorite.setOnClickListener(parkingMarkListener)
-        }
-        if (item.data::class == Camera::class) {
+        } else if (item.data::class == Camera::class) {
             val data = item.data as Camera
             viewModel.checkMarkCamera(data.cameraId)
-            title.text = "測速照相: ${data.road}"
-            description.text = "限速:${data.limit} "
-
+            if(data.limit == "0") {
+                title.text = "${data.road}"
+                description.text = "${data.type} "
+            }else {
+                title.text = "測速照相: ${data.road}"
+                description.text = "限速:${data.limit} "
+            }
+            description.setOnClickListener(null)
             markFavorite.tag = data
             markFavorite.setOnClickListener(cameraMarkListener)
         }
-        if (item.data::class == OilStation::class) {
+        else if (item.data::class == OilStation::class) {
             val data = item.data as OilStation
             viewModel.checkMarkOil(data.station)
             title.text = "加油站: ${data.station}"
-            description.text = data.address
+            val spannableString = SpannableString("點擊指引路線")
+            spannableString.setSpan(UnderlineSpan(), 0, spannableString.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            spannableString.setSpan(ForegroundColorSpan(Color.parseColor("#ADD8E6") ), 0, spannableString.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 
+            description.text = spannableString
+            description.setOnClickListener{
+                getNavigation(LatLng(data.latitude,data.longitude))
+            }
             markFavorite.tag = data
             markFavorite.setOnClickListener(oilStationMarkListener)
         }

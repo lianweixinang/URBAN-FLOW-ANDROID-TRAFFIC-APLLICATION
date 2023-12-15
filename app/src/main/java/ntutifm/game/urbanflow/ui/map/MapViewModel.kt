@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,6 +54,8 @@ class MapViewModel(application: Application) : ViewModel() {
     val oilStation = _oilStation.asSharedFlow()
     private val _cameraLists = MutableSharedFlow<List<Camera>>()
     val cameraLists = _cameraLists.asSharedFlow()
+    private val _camera = MutableSharedFlow<Camera>()
+    val camera = _camera.asSharedFlow()
     val searchHistory = searchHistoryRepository.searchHistory
     private val _favoriteState = MutableStateFlow(false)
     val favoriteState = _favoriteState.asStateFlow()
@@ -172,7 +175,7 @@ class MapViewModel(application: Application) : ViewModel() {
 
 
     fun cameraMarkApi() {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.IO) {
             MyLog.e("StartCameraMarkApi")
             ApiProcessor().getCameraMark().let { _response ->
                 when (_response) {
@@ -183,8 +186,20 @@ class MapViewModel(application: Application) : ViewModel() {
         }
     }
 
+    fun cameraFindCamera(latLng:LatLng) {
+        viewModelScope.launch(Dispatchers.IO) {
+            MyLog.e("StartCameraMarkApi")
+            ApiProcessor().getFindCamera(latLng).let { _response ->
+                when (_response) {
+                    is APIResult.Success -> _camera.emit(_response.data[0])
+                    is APIResult.Error -> MyLog.e(_response.exception.toString())
+                }
+            }
+        }
+    }
+
     fun parkingMarkApi() {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.IO) {
             MyLog.e("StartCameraMarkApi")
             ApiProcessor().getParking().let { _response ->
                 when (_response) {
@@ -196,7 +211,7 @@ class MapViewModel(application: Application) : ViewModel() {
     }
 
     fun oilStationMarkApi() {
-        viewModelScope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.IO) {
             MyLog.e("StartOilStationMarkApi")
             ApiProcessor().getOilStation().let { _response ->
                 when (_response) {

@@ -757,21 +757,17 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         behavior?.addBottomSheetCallback(bottomSheetCallback)
 
         SyncSpeed.speedLists.observe(viewLifecycleOwner) {
-            if (BuildConfig.DEBUG) {
-                MyLog.e("updateSpeedEnd")
-            }
-            if (it.isNotEmpty()) {
-                val oneSpeed = it[0]
-                binding.cars.text = "${oneSpeed.volume} Cars"
-                binding.speed.text = "${oneSpeed.avgSpeed.roundToInt()} km/h"
-                if (it.size > 1) {
-                    val twoSpeed = it[1]
-                    binding.cars2.text = "${twoSpeed.volume} Cars"
-                    binding.speed2.text = "${twoSpeed.avgSpeed.roundToInt()} km/h"
-                }
-            } else {
+            if (it.isNotEmpty() && it[0].volume >= 0 && it[0].avgSpeed >= 0) {
+                binding.cars.text = "${it[0].volume} Cars"
+                binding.speed.text = "${it[0].avgSpeed.roundToInt()} km/h"
+            }else {
                 binding.cars.text = "無資料"
                 binding.speed.text = "無資料"
+            }
+            if (it.size > 1 && it[1].volume >= 0 && it[1].avgSpeed >= 0) {
+                binding.cars2.text = "${it[1].volume} Cars"
+                binding.speed2.text = "${it[1].avgSpeed.roundToInt()} km/h"
+            }else {
                 binding.cars2.text = "無資料"
                 binding.speed2.text = "無資料"
             }

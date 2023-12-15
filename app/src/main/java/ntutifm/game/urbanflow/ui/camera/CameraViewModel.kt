@@ -41,7 +41,7 @@ class CameraViewModel(application: Application) : BaseViewModel<CameraContract.E
      */
     private fun fetchPosts() {
         viewModelScope.launch {
-            repository.getAllCamera().flowOn(Dispatchers.IO)
+            repository.getAllFavorite().flowOn(Dispatchers.IO)
                 .onStart { emit(Resource.Loading) }
                 .collect {
                     when (it) {

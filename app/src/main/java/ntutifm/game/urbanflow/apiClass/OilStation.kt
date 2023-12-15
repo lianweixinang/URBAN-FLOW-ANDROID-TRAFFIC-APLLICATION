@@ -11,4 +11,5 @@ data class OilStation (
     @SerializedName("Longitude") val longitude: Double,
     @SerializedName("Latitude") val latitude: Double,
     @SerializedName("Address") val address: String,
+    val isFavorite: Boolean = false
 )

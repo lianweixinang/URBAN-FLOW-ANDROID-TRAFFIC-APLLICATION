@@ -99,7 +99,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             MapViewModel.MapViewModelFactory(requireActivity().application)
         )[MapViewModel::class.java]
     }
-    private val shareData:ShareViewModel by activityViewModels()
+    private val shareData: ShareViewModel by activityViewModels()
     private var mClusterManager: ClusterManager<MyItem<Any>>? = null
     private var behavior: BottomSheetBehavior<View>? = null
     private lateinit var map: GoogleMap
@@ -161,8 +161,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 this.visibility = View.VISIBLE
             }
             startDistanceMeasurement()
-            if(lastCamera != null){
-                binding.cameraSpeedButton.apply{
+            if (lastCamera != null) {
+                binding.cameraSpeedButton.apply {
                     setImageResource(R.drawable.slnull)
                     visibility = View.VISIBLE
                 }
@@ -171,7 +171,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                     visibility = View.VISIBLE
                 }
             }
-        }else{
+        } else {
             lastCamera = null
             binding.cameraSpeedNumber.visibility = View.GONE
             binding.cameraSpeedNumber.text = ""
@@ -226,7 +226,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private fun loadingView() {
         if (!shareData.isUiInitialized.value!!) {
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
-                delay(6000)
+                delay(2000)
                 withContext(Dispatchers.Main) {
                     binding.cover.visibility = View.GONE
                 }
@@ -332,7 +332,11 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
         binding.webView.webViewClient = object : WebViewClient() {
             @SuppressLint("WebViewClientOnReceivedSslError")
-            override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError) {
+            override fun onReceivedSslError(
+                view: WebView,
+                handler: SslErrorHandler,
+                error: SslError,
+            ) {
                 // Checks Embedded certificates
                 val serverCertificate = error.certificate
                 val serverBundle = SslCertificate.saveState(serverCertificate)
@@ -455,11 +459,11 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         }
     }
 
-    private fun showCurrent(camera: Camera, d:String) {
+    private fun showCurrent(camera: Camera, d: String) {
         lastCamera!!.distance = camera.distance
-        val text :String = if (camera.limit.toInt() < shareData.speed.value!!) {
+        val text: String = if (camera.limit.toInt() < shareData.speed.value!!) {
             "注意您已超速"
-        }else {
+        } else {
             "前方限速${camera.limit}公里\n    距離${d}公尺"
         }
         Handler(Looper.getMainLooper()).post {
@@ -467,11 +471,12 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             AppUtil.showTopToast(requireActivity(), text)
         }
     }
-    private fun passCamera(camera:Camera) {
+
+    private fun passCamera(camera: Camera) {
         lastCamera!!.distance = camera.distance
-        val text :String = if (camera.limit.toInt() < shareData.speed.value!!) {
+        val text: String = if (camera.limit.toInt() < shareData.speed.value!!) {
             "你的錢飛走了"
-        }else {
+        } else {
             "通過測速照相"
         }
         Handler(Looper.getMainLooper()).post {
@@ -631,9 +636,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private fun updateUIWithDistance(distance: Int, newLocation: LatLng) {
         viewLifecycleOwner.lifecycleScope.launch {
             val new = distance * 72 / 100.0
-            shareData.speed.value = if(new >= 100){
+            shareData.speed.value = if (new >= 100) {
                 ((new % 100) * 0.1 + shareData.speed.value!! * 0.9).toInt()
-            }else{
+            } else {
                 (new * 0.8 + shareData.speed.value!! * 0.2).toInt()
             }
 
@@ -983,7 +988,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         viewModel.checkFavorite(data.roadName)
 
         shareData.uiState.value!!.isOpen = false
-        if(shareData.uiState.value!!.expandDrawer) {
+        if (shareData.uiState.value!!.expandDrawer) {
             AppUtil.showTopToast(requireActivity(), "搜尋中...")
         }
     }
@@ -1033,7 +1038,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         }
     }
 
-    private fun refreshMap(){
+    private fun refreshMap() {
         initSensor()
         map.isTrafficEnabled = true
         mFusedLocationClient =
@@ -1310,20 +1315,19 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         mClusterManager = ClusterManager(context, map)
         mClusterManager?.renderer = CustomClusterRenderer(requireActivity(), map, mClusterManager!!)
 
-        fun <T> addItemsToClusterManager(items: List<MyItem<T>>) {
+        suspend fun <T> addItemsToClusterManager(items: List<MyItem<T>>) {
             val anyItems = items.map { it as MyItem<Any> }
-            mClusterManager?.addItems(anyItems)
-            mClusterManager?.cluster()
+            withContext(Dispatchers.Main) {
+                mClusterManager?.addItems(anyItems)
+                mClusterManager?.cluster()
+            }
         }
 
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 viewModel.parkingLists.collect { list ->
                     val items = list.map { MyItem(it.latitude, it.longitude, 0, it) }
-                    withContext(Dispatchers.Main) {
-                        addItemsToClusterManager(items)
-                        viewModel.cameraMarkApi()
-                    }
+                    addItemsToClusterManager(items)
                 }
             }
         }
@@ -1332,10 +1336,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 viewModel.cameraLists.collect { list ->
                     val items = list.map { MyItem(it.latitude, it.longitude, 1, it) }
-                    withContext(Dispatchers.Main) {
-                        addItemsToClusterManager(items)
-                        viewModel.oilStationMarkApi()
-                    }
+                    addItemsToClusterManager(items)
                 }
             }
         }
@@ -1344,9 +1345,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 viewModel.oilStation.collect { list ->
                     val items = list.map { MyItem(it.latitude, it.longitude, 2, it) }
-                    withContext(Dispatchers.Main) {
-                        addItemsToClusterManager(items)
-                    }
+                    addItemsToClusterManager(items)
                 }
             }
         }
@@ -1354,6 +1353,8 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
         map.setOnCameraIdleListener(mClusterManager)
         viewModel.parkingMarkApi()
+        viewModel.cameraMarkApi()
+        viewModel.oilStationMarkApi()
         mClusterManager?.setOnClusterItemClickListener {
             showInfoWindowForItem(it)
             true
@@ -1387,12 +1388,22 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             viewModel.checkMarkParking(data.parkingName)
             title.text = "停車場: ${data.parkingName}"
             val spannableString = SpannableString("點擊指引路線")
-            spannableString.setSpan(UnderlineSpan(), 0, spannableString.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            spannableString.setSpan(ForegroundColorSpan(Color.parseColor("#ADD8E6") ), 0, spannableString.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            spannableString.setSpan(
+                UnderlineSpan(),
+                0,
+                spannableString.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            spannableString.setSpan(
+                ForegroundColorSpan(Color.parseColor("#ADD8E6")),
+                0,
+                spannableString.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
 
             description.text = spannableString
-            description.setOnClickListener{
-                getNavigation(LatLng(data.latitude,data.longitude))
+            description.setOnClickListener {
+                getNavigation(LatLng(data.latitude, data.longitude))
             }
 
             markFavorite.tag = data
@@ -1400,28 +1411,37 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         } else if (item.data::class == Camera::class) {
             val data = item.data as Camera
             viewModel.checkMarkCamera(data.cameraId)
-            if(data.limit == "0") {
+            if (data.limit == "0") {
                 title.text = "${data.road}"
                 description.text = "${data.type} "
-            }else {
+            } else {
                 title.text = "測速照相: ${data.road}"
                 description.text = "限速:${data.limit} "
             }
             description.setOnClickListener(null)
             markFavorite.tag = data
             markFavorite.setOnClickListener(cameraMarkListener)
-        }
-        else if (item.data::class == OilStation::class) {
+        } else if (item.data::class == OilStation::class) {
             val data = item.data as OilStation
             viewModel.checkMarkOil(data.station)
             title.text = "加油站: ${data.station}"
             val spannableString = SpannableString("點擊指引路線")
-            spannableString.setSpan(UnderlineSpan(), 0, spannableString.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            spannableString.setSpan(ForegroundColorSpan(Color.parseColor("#ADD8E6") ), 0, spannableString.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            spannableString.setSpan(
+                UnderlineSpan(),
+                0,
+                spannableString.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            spannableString.setSpan(
+                ForegroundColorSpan(Color.parseColor("#ADD8E6")),
+                0,
+                spannableString.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
 
             description.text = spannableString
-            description.setOnClickListener{
-                getNavigation(LatLng(data.latitude,data.longitude))
+            description.setOnClickListener {
+                getNavigation(LatLng(data.latitude, data.longitude))
             }
             markFavorite.tag = data
             markFavorite.setOnClickListener(oilStationMarkListener)

@@ -51,11 +51,11 @@ class MapViewModel(application: Application) : ViewModel() {
         CCTVRepository(application)
     }
 
-    private val _parkingLists = MutableSharedFlow<List<Parking>>()
+    private val _parkingLists = MutableSharedFlow<List<Parking>>(replay = 1)
     val parkingLists = _parkingLists.asSharedFlow()
-    private val _oilStation = MutableSharedFlow<List<OilStation>>()
+    private val _oilStation = MutableSharedFlow<List<OilStation>>(replay = 1)
     val oilStation = _oilStation.asSharedFlow()
-    private val _cameraLists = MutableSharedFlow<List<Camera>>()
+    private val _cameraLists = MutableSharedFlow<List<Camera>>(replay = 1)
     val cameraLists = _cameraLists.asSharedFlow()
     private val _camera = MutableSharedFlow<Camera>()
     val camera = _camera.asSharedFlow()
@@ -131,7 +131,7 @@ class MapViewModel(application: Application) : ViewModel() {
 
     fun addMarkOil(data: OilStation) {
         viewModelScope.launch(Dispatchers.Default) {
-            oilStationRepository.addFavorite(data)
+            oilStationRepository.addFavorite(data.station)
             _markState.value = true
         }
     }
@@ -179,13 +179,28 @@ class MapViewModel(application: Application) : ViewModel() {
 
     fun cameraMarkApi() {
         viewModelScope.launch(Dispatchers.IO) {
-            MyLog.e("StartCameraMarkApi")
-            ApiProcessor().getCameraMark().let { _response ->
-                when (_response) {
-                    is APIResult.Success -> _cameraLists.emit(_response.data)
-                    is APIResult.Error -> MyLog.e(_response.exception.toString())
+            cameraRepository.getAllCamera().flowOn(Dispatchers.IO)
+                .collect {
+                    val localData = when (it) {
+                        is Resource.Success -> {
+                            it.data
+                        }
+                        else -> emptyList()
+                    }
+                    if (localData.isEmpty()) {
+                        ApiProcessor().getCameraMark().let { _response ->
+                            when (_response) {
+                                is APIResult.Success ->{
+                                    cameraRepository.insertStation(_response.data)
+                                    _cameraLists.emit(_response.data)
+                                }
+                                is APIResult.Error -> MyLog.e(_response.exception.toString())
+                            }
+                        }
+                    } else {
+                        _cameraLists.emit(localData)
+                    }
                 }
-            }
         }
     }
 
@@ -204,7 +219,6 @@ class MapViewModel(application: Application) : ViewModel() {
     fun parkingMarkApi() {
         viewModelScope.launch(Dispatchers.IO) {
             parkingRepository.getAllParking().flowOn(Dispatchers.IO)
-                .onStart { emit(Resource.Loading) }
                 .collect {
                     val localData = when (it) {
                         is Resource.Success -> {
@@ -233,13 +247,30 @@ class MapViewModel(application: Application) : ViewModel() {
 
     fun oilStationMarkApi() {
         viewModelScope.launch(Dispatchers.IO) {
-            MyLog.e("StartOilStationMarkApi")
-            ApiProcessor().getOilStation().let { _response ->
-                when (_response) {
-                    is APIResult.Success -> _oilStation.emit(_response.data)
-                    is APIResult.Error -> MyLog.e(_response.exception.toString())
+            oilStationRepository.getAllStation().flowOn(Dispatchers.IO)
+                .collect {
+                    val localData = when (it) {
+                        is Resource.Success -> {
+                            it.data
+                        }
+
+                        else -> emptyList()
+                    }
+                    if (localData.isEmpty()) {
+                        ApiProcessor().getOilStation().let { _response ->
+                            when (_response) {
+                                is APIResult.Success -> {
+                                    oilStationRepository.insertStation(_response.data)
+                                    _oilStation.emit(_response.data)
+                                }
+
+                                is APIResult.Error -> MyLog.e(_response.exception.toString())
+                            }
+                        }
+                    } else {
+                        _oilStation.emit(localData)
+                    }
                 }
-            }
         }
     }
 

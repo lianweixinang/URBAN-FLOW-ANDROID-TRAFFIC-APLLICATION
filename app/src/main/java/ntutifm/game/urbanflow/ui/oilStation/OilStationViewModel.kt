@@ -41,7 +41,7 @@ class OilStationViewModel(application: Application) : BaseViewModel<OilStationCo
      */
     private fun fetchPosts() {
         viewModelScope.launch {
-            repository.getAllOilStation().flowOn(Dispatchers.IO)
+            repository.getAllFavorite().flowOn(Dispatchers.IO)
                 .onStart { emit(Resource.Loading) }
                 .collect {
                     when (it) {

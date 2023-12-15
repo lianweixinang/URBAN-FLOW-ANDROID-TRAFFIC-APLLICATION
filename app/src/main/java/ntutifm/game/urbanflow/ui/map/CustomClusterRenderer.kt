@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.clustering.Cluster
@@ -21,32 +22,28 @@ class CustomClusterRenderer(
     val displayMetrics = context.resources.displayMetrics
     val dpWidth = displayMetrics.widthPixels / displayMetrics.density
     val iconSize:Int = (dpWidth / 4).toInt()
-    override fun onBeforeClusterItemRendered(item: MyItem<Any>, markerOptions: MarkerOptions) {
-        // 根據 item 的 type 設置 markerOptions 的圖示
-        when (item.type) {
-            0 -> {
-                val bitmap = BitmapFactory.decodeResource(r, R.drawable.parking)
-                val scaledBitmap = Bitmap.createScaledBitmap(bitmap, iconSize, iconSize, false)
-                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(scaledBitmap))
-            }
-            1 -> {
-                val bitmap = BitmapFactory.decodeResource(r, R.drawable.speed_camera)
-                val scaledBitmap = Bitmap.createScaledBitmap(bitmap, iconSize, iconSize, false)
-                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(scaledBitmap))
-            }
-            2 -> {
-                val bitmap = BitmapFactory.decodeResource(r, R.drawable.gas_station)
-                val scaledBitmap = Bitmap.createScaledBitmap(bitmap, iconSize, iconSize, false)
-                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(scaledBitmap))
-            }
-        }
-        // 設置標記的大小
-//        markerOptions.anchor(0.1f, 0.1f)
-//        markerOptions.infoWindowAnchor(0.1f, 0.1f)
+    private val parkingIcon: BitmapDescriptor by lazy {
+        val bitmap = BitmapFactory.decodeResource(r, R.drawable.parking)
+        BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmap, iconSize, iconSize, false))
     }
 
+    private val speedCameraIcon: BitmapDescriptor by lazy {
+        val bitmap = BitmapFactory.decodeResource(r, R.drawable.speed_camera)
+        BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmap, iconSize, iconSize, false))
+    }
 
+    private val gasStationIcon: BitmapDescriptor by lazy {
+        val bitmap = BitmapFactory.decodeResource(r, R.drawable.gas_station)
+        BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap(bitmap, iconSize, iconSize, false))
+    }
 
+    override fun onBeforeClusterItemRendered(item: MyItem<Any>, markerOptions: MarkerOptions) {
+        when (item.type) {
+            0 -> markerOptions.icon(parkingIcon)
+            1 -> markerOptions.icon(speedCameraIcon)
+            2 -> markerOptions.icon(gasStationIcon)
+        }
+    }
     override fun onClustersChanged(clusters: MutableSet<out Cluster<MyItem<Any>>>?) {
         super.onClustersChanged(clusters)
     }

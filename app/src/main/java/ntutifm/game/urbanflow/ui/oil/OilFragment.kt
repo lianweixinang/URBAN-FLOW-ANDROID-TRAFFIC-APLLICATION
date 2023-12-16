@@ -44,7 +44,7 @@ class OilFragment : Fragment(), ApiCallBack {
                 }
                 else ->{}
             }
-            MyLog.e("oilUpdate")
+            binding.progressBar.visibility = View.GONE
         }
         SyncOil.getOil(this,this)
     }

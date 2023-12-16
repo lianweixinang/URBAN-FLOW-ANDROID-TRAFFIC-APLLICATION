@@ -39,7 +39,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/rightGuideline"
         app:layout_constraintTop_toBottomOf="@+id/mySpeedButton"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/mySpeedNumber"
@@ -79,8 +79,7 @@
         android:src="@drawable/group_225"
         app:layout_constraintEnd_toStartOf="@+id/leftGuideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/weatherButton"
@@ -91,16 +90,17 @@
         app:layout_constraintEnd_toStartOf="@+id/leftGuideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/menuButton" />
+
     <ImageView
         android:id="@+id/unWriteButton"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginTop="16dp"
         android:src="@drawable/unwrite"
+        android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@+id/leftGuideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/weatherButton"
-        android:visibility="gone"/>
+        app:layout_constraintTop_toBottomOf="@+id/weatherButton" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/coordinatorLayout"
@@ -122,10 +122,10 @@
             app:cardMaxElevation="20dp"
             app:contentPadding="10dp"
             app:layout_behavior="@string/bottom_sheet_behavior"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -146,29 +146,54 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <WebView
-                    android:id="@+id/webView"
+                <LinearLayout
+                    android:id="@+id/webViewContainer"
                     android:layout_width="match_parent"
                     android:layout_height="210dp"
                     android:layout_marginTop="70dp"
-                    android:visibility="visible"
+                    android:background="#FFFFFF"
+                    android:gravity="center"
+                    android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <WebView
+                        android:id="@+id/webView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:visibility="gone"/>
+
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="70dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:visibility="visible"/>
+                </LinearLayout>
 
                 <Spinner
                     android:id="@+id/spinner"
-                    android:padding="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:prompt="@string/road"
-                    android:spinnerMode="dialog"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/rounded_spinner"
-                    app:layout_constraintLeft_toLeftOf="@id/webView"
-                    app:layout_constraintRight_toRightOf="@id/webView"
-                    app:layout_constraintTop_toBottomOf="@id/webView"
-                    tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck"/>
+                    android:padding="4dp"
+                    android:prompt="@string/road"
+                    android:spinnerMode="dialog"
+                    app:layout_constraintLeft_toLeftOf="@id/webViewContainer"
+                    app:layout_constraintRight_toRightOf="@id/webViewContainer"
+                    app:layout_constraintTop_toBottomOf="@id/webViewContainer"
+                    tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
                 <androidx.cardview.widget.CardView
                     android:id='@+id/trafficFlow'
@@ -316,9 +341,9 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center"
+            android:contentDescription="cover"
             app:cardCornerRadius="10dp"
-            app:srcCompat="@drawable/ntutifm"
-            android:contentDescription="cover" />
+            app:srcCompat="@drawable/ntutifm" />
 
         <TextView
             android:id="@+id/Version"
@@ -334,7 +359,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.20"/>
+        app:layout_constraintGuide_percent="0.20" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/rightGuideline"

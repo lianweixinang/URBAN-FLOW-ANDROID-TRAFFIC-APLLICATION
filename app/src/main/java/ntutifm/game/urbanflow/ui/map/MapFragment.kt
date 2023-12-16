@@ -87,7 +87,7 @@ import java.util.*
 import kotlin.math.*
 
 
-@SuppressLint("InflateParams")
+
 class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     GoogleMap.OnMyLocationClickListener, OnMapReadyCallback,
     ActivityCompat.OnRequestPermissionsResultCallback, ApiCallBack {
@@ -314,7 +314,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     }
 
     /** 監視器初始化 */
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressLint("SetJavaScriptEnabled", "JavascriptInterface")
     private fun webViewInit() {
         adapter = RoadAdaptor(
             requireActivity(),
@@ -369,8 +369,25 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                 val message = "SSL Error " + error.primaryError
                 MyLog.e(message)
             }
-        }
+            override fun shouldOverrideUrlLoading(view: WebView, url: String?): Boolean {
+                Handler(Looper.getMainLooper()).post{
+                    binding.webView.visibility = View.GONE
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                view.loadUrl(url!!)
+                return true
+            }
 
+            override fun onPageFinished(view: WebView?, url: String?) {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    binding.webView.visibility = View.VISIBLE
+                    binding.progressBar.visibility = View.GONE
+                }, 3000)
+
+                super.onPageFinished(view, url)
+            }
+
+        }
         binding.webView.settings.apply {
             this.javaScriptEnabled = true
             this.loadWithOverviewMode = true
@@ -779,7 +796,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             }
             if (shareData.uiState.value!!.expandDrawer) {
                 behavior?.state = BottomSheetBehavior.STATE_EXPANDED
-                binding.webView.visibility = View.VISIBLE
+                binding.webViewContainer.visibility = View.VISIBLE
                 binding.carDirection1.visibility = View.VISIBLE
                 binding.trafficFlow.visibility = View.VISIBLE
                 binding.spinner.visibility = View.VISIBLE
@@ -846,7 +863,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     private val backBtnListener = View.OnClickListener {
         binding.fragmentSearch.root.visibility = View.GONE
         binding.fragmentHome.root.visibility = View.VISIBLE
-        binding.webView.visibility = View.VISIBLE
+        binding.webViewContainer.visibility = View.VISIBLE
         binding.spinner.visibility = View.VISIBLE
         when (behavior?.state) {
             //全開
@@ -872,7 +889,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
         shareData.uiState.value!!.isOpen = true
         binding.fragmentSearch.root.visibility = View.VISIBLE
         binding.fragmentHome.root.visibility = View.GONE
-        binding.webView.visibility = View.GONE
+        binding.webViewContainer.visibility = View.GONE
         binding.carDirection1.visibility = View.GONE
         binding.trafficFlow.visibility = View.GONE
         binding.spinner.visibility = View.GONE

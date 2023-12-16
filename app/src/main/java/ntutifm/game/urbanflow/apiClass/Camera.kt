@@ -14,7 +14,7 @@ data class Camera(
     @SerializedName("Introduction") val introduction: String?,
     @SerializedName("Session") val session: String,
     @SerializedName("Direction") val direction: String,
-    @SerializedName("Limit") val limit: String,
+    @SerializedName("Limit") var limit: String,
     @SerializedName("Latitude") val latitude: Double,
     @SerializedName("Longitude") val longitude: Double,
     @SerializedName("Distance") var distance: Int,

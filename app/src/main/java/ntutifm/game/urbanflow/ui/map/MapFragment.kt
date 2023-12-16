@@ -423,18 +423,16 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             popupWindow.dismiss()
             val navController = Navigation.findNavController(binding.root)
             val navOptions = NavOptions.Builder()
-                .setPopUpTo(R.id.mapFragment, true)
+                .setPopUpTo(R.id.mapFragment, false)
                 .build()
-            val bundle = Bundle()
-            bundle.putBoolean("notReset", true)
-            navController.navigate(R.id.notificationFragment, bundle, navOptions)
+            navController.navigate(R.id.notificationFragment, null, navOptions)
         }
         Handler(Looper.getMainLooper()).post {
             popupWindow.showAtLocation(
                 popupView,
                 Gravity.TOP,
                 0,
-                300
+                if(shareData.uiState.value!!.sitMode) 1600 else 300
             )
         }
         Handler(Looper.getMainLooper()).postDelayed({
@@ -460,6 +458,9 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     }
 
     private fun showCurrent(camera: Camera, d: String) {
+        if(lastCamera!!.limit=="0"){
+            return
+        }
         lastCamera!!.distance = camera.distance
         val text: String = if (camera.limit.toInt() < shareData.speed.value!!) {
             "注意您已超速"
@@ -473,10 +474,14 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
     }
 
     private fun passCamera(camera: Camera) {
+        if(lastCamera!!.limit=="0"){
+            return
+        }
         lastCamera!!.distance = camera.distance
         val text: String = if (camera.limit.toInt() < shareData.speed.value!!) {
             "你的錢飛走了"
         } else {
+            lastCamera!!.limit = "0"
             "通過測速照相"
         }
         Handler(Looper.getMainLooper()).post {
@@ -528,12 +533,13 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                                 showCurrent(it, "100")
                             }
 
-                            in 3..50 -> {
-                                if ((lastCamera!!.distance in 6..50)
+                            in 5..50 -> {
+                                if ((lastCamera!!.distance in 21..50) ||
+                                    lastCamera!!.distance < it.distance
                                 ) {
                                     return@collect
                                 }
-                                if ((lastCamera!!.distance in 3..5)
+                                if ((lastCamera!!.distance in 5..20)
                                 ) {
                                     passCamera(it)
                                     return@collect
@@ -541,7 +547,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                                 showCurrent(it, "50")
                             }
 
-                            in 0..2 -> {
+                            in 0..4 -> {
                                 passCamera(it)
                             }
                         }
@@ -578,7 +584,7 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
 
     /** 開啟測速模式 */
     private fun opensl() {
-        binding.mySpeedButton.setImageResource(R.drawable.slnull)
+        binding.mySpeedButton.setImageResource(R.drawable.curnull)
         binding.mySpeedNumber.apply {
             this.text = "0"
             this.visibility = View.VISIBLE
@@ -821,8 +827,12 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
                         val bundle = Bundle()
                         bundle.putDouble("lat", it.latitude)
                         bundle.putDouble("long", it.longitude)
-                        Navigation.findNavController(binding.root)
-                            .navigate(R.id.action_mapFragment_to_weatherFragment)
+                        shareData.isUiInitialized.value = true
+                        val navController = Navigation.findNavController(binding.root)
+                        val navOptions = NavOptions.Builder()
+                            .setPopUpTo(R.id.mapFragment, false)
+                            .build()
+                        navController.navigate(R.id.weatherFragment, bundle, navOptions)
                     }
                 }
         } else {
@@ -954,9 +964,6 @@ class MapFragment : Fragment(), GoogleMap.OnMyLocationButtonClickListener,
             }
             if (matchingKeys.isNotEmpty()) {
                 val roadList = matchingKeys.map { (name, no) ->
-                    if (BuildConfig.DEBUG) {
-                        MyLog.e("searchResult:$name")
-                    }
                     CCTV(
                         id = null,
                         name = name,
